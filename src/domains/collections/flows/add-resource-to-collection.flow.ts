@@ -3,7 +3,7 @@ import type { Flow } from "@/core/flows/flow";
 import type { FlowContext } from "@/core/flows/flow-context";
 import { CollectionService }    from "../collection.service";
 import { CollectionRepository } from "../collection.repository";
-import { ApiError } from "@/lib/errors/api-error";
+import { ApiError } from "@/lib/errors";
 
 const Input = z.object({ collectionId: z.string(), resourceId: z.string() });
 

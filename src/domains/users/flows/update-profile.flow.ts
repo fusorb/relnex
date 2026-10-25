@@ -4,7 +4,7 @@ import type { FlowContext } from "@/core/flows/flow-context";
 import { UpdateProfileDto } from "../user.dto";
 import { UserRepository }   from "../user.repository";
 
-export const updateProfileFlow: Flow<z.infer<typeof UpdateProfileDto>> = {
+export const updateProfileFlow: Flow<z.infer<typeof UpdateProfileDto>, { user: unknown }> = {
   name: "user:update-profile", inputSchema: UpdateProfileDto,
   async execute(input, ctx) {
     const repo = new UserRepository(ctx.db);

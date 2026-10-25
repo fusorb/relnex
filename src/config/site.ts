@@ -1,12 +1,12 @@
 import { ResourceTypeRenderer } from "../../prisma/generated";
 
 export const siteConfig = {
-  name: "ArcBase",
+  name: "Relnex",
   tagline: "Knowledge Infrastructure for the Digital Age",
   description:
-    "ArcBase is the knowledge infrastructure layer of the Arcevo ecosystem, powering digital libraries, learning resources, and structured content systems.",
+    "Relnex is the knowledge infrastructure layer of the Fusorb ecosystem, powering digital libraries, learning resources, and structured content systems.",
   url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-  ogImage: "https://arcbase.example.com/og.png",
+  ogImage: "https://relnex.example.com/og.png",
 
   // 1. Dynamic UI Creation Layout Strategies mapped to Prisma Enums
   resourceCreationPaths: {
@@ -71,7 +71,7 @@ export const siteConfig = {
     "text/markdown",
   ],
 
-  supportEmail: "support@arcbase.example.com",
+  supportEmail: "support@relnex.example.com",
 };
 
 export type SiteConfig = typeof siteConfig;

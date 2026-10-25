@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { prisma }     from "@/core/db/prisma";
+import { ZodError }   from "zod";
 import type { Flow }        from "./flow";
 import type { DbClient, FlowContext } from "./flow-context";
 import { FlowError }  from "./flow-error";
@@ -42,7 +43,21 @@ export class FlowExecutor {
     } catch (err: unknown) {
       const message = (err as Error)?.message ?? "Unexpected error";
       logger.error(`[FLOW] ${flow.name} fail`, { traceId, message });
+
+      // Re-throw FlowError — carries its own statusCode, handled by handleError
       if (err instanceof FlowError) throw err;
+
+      // Re-throw ZodError — handled by handleError (returns 422 with field errors)
+      if (err instanceof ZodError) throw err;
+
+      // Re-throw ApiError (statusCode) and SgError (status) via duck-typing
+      // to avoid circular import: handle-error.ts → @/core/flows → flow-executor.ts
+      if (err && typeof err === "object" && err !== null) {
+        const e = err as { statusCode?: number; status?: number };
+        if (typeof e.statusCode === "number" || typeof e.status === "number") throw err;
+      }
+
+      // Wrap truly unexpected errors as 500
       throw new FlowError("FLOW_ERROR", message, 500);
     }
   }

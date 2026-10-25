@@ -5,7 +5,7 @@ import { prisma } from "@/core/db/prisma";
 type AuthedHandler = (req: NextRequest, session: AuthSession) => Promise<NextResponse>;
 
 /**
- * Requires a valid arc-id JWT. Returns 401 if missing or invalid.
+ * Requires a valid Sg JWT. Returns 401 if missing or invalid.
  */
 export function withAuth(handler: AuthedHandler) {
   return async (req: NextRequest): Promise<NextResponse> => {
@@ -21,7 +21,7 @@ export function withAuth(handler: AuthedHandler) {
 }
 
 /**
- * Requires authentication AND an arcbase User record.
+ * Requires authentication AND a Relnex User record.
  * If the identity has no User yet (first login), provisions one automatically.
  */
 export function withUser(handler: AuthedHandler) {

@@ -225,10 +225,10 @@ const searchItemSchema = {
 export const openApiSpec = {
   openapi: "3.0.0",
   info: {
-    title: "ArcBase Core Engine Node API",
+    title: "Relnex Core Engine Node API",
     version: "1.0.0",
     description:
-      "Internal programmatic specifications for the ArcBase ecosystem data routing layers.",
+      "Internal programmatic specifications for the Relnex ecosystem data routing layers.",
   },
   servers: [
     {

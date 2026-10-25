@@ -1,7 +1,7 @@
 import { z }             from "zod";
 import type { Flow }     from "@/core/flows/flow";
 import type { FlowContext } from "@/core/flows/flow-context";
-import { ApiError } from "@/lib/errors/api-error";
+import { ApiError } from "@/lib/errors";
 
 const Input = z.object({
   commentId: z.string(),

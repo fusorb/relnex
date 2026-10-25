@@ -1,5 +1,5 @@
 /**
- * Membership repository — data access for User ↔ arc-id Tenant membership.
+ * Membership repository — data access for User ↔ Sg Tenant membership.
  */
 
 import type { DbClient } from "@/core/flows/flow-context";

@@ -1,8 +1,8 @@
 /**
- * Pre-configured SDK instances for arcbase
+ * Pre-configured SDK instances for Relnex
  *
- * These SDKs are created from the ArcIdClient and provide
- * typed interfaces for different arc-id operations.
+ * These SDKs are created from the SgClient and provide
+ * typed interfaces for different SG operations.
  */
 
 import {
@@ -15,7 +15,7 @@ import {
   BillingSdk,
   WebhooksSdk,
   AuditSdk,
-} from "@arcevo/facet-sdk";
+} from "@fusorb/facet-sdk";
 import { createServerSideClient, getClientSideClient } from "./client";
 
 /**
@@ -72,4 +72,4 @@ export function getClientSdks() {
 }
 
 // Re-export types for convenience
-export type { ArcIdClient } from "@arcevo/facet-sdk";
+export type { SgClient } from "@fusorb/facet-sdk";

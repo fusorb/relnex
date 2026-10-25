@@ -31,7 +31,7 @@ export function presentPublicUser(user: User): PublicUser {
 // ── Private user profile (what the user sees about themselves) ──────────
 
 export interface PrivateUser extends PublicUser {
-  email: string | null; // From arc-id, shown if verified
+  email: string | null; // From Sg, shown if verified
   identityId: string;
   role: string;
   onboardingStep: number;
@@ -49,7 +49,7 @@ export function presentPrivateUser(user: User): PrivateUser {
     avatarUrl: user.avatarUrl,
     bio: user.bio,
     archetype: user.archetype,
-    email: null, // Populated from arc-id, not stored here
+    email: null, // Populated from Sg, not stored here
     identityId: user.identityId,
     role: user.role,
     onboardingStep: user.onboardingStep,

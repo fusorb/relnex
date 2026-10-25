@@ -1,4 +1,4 @@
-import { arcid } from "@/lib/arcid/client";
+import { sg } from "@/lib/sg/client";
 import { prisma } from "@/core/db/prisma";
 import { ApiError } from "@/lib/errors";
 import type { DbClient } from "@/core/flows/flow-context";
@@ -6,16 +6,16 @@ import type { RegisterInput, LoginInput } from "./auth.dto";
 
 export const authService = {
   async register(input: RegisterInput, db: DbClient = prisma) {
-    // 1. Create Identity in arc-id
-    const { identity } = await arcid.register(input.email, input.password, input.displayName);
+    // 1. Create Identity in Sg
+    const { identity } = await sg.register(input.email, input.password, input.displayName);
 
-    // 2. Check username availability in arcbase
+    // 2. Check username availability in Relnex
     const existing = await db.user.findUnique({ where: { username: input.username } });
     if (existing) {
       throw ApiError.conflict("Username is already taken");
     }
 
-    // 3. Provision arcbase User
+    // 3. Provision Relnex User
     const user = await db.user.create({
       data: {
         identityId:  identity.id,
@@ -28,27 +28,27 @@ export const authService = {
   },
 
   async login(input: LoginInput) {
-    return arcid.login(input.email, input.password);
+    return sg.login(input.email, input.password);
   },
 
   async verifyMfa(sessionId: string, code: string) {
-    return arcid.verifyMfa(sessionId, code);
+    return sg.verifyMfa(sessionId, code);
   },
 
   async logout(sessionId: string, accessToken: string) {
-    return arcid.logout(sessionId, accessToken);
+    return sg.logout(sessionId, accessToken);
   },
 
   async refreshToken(refreshToken: string) {
-    return arcid.refreshToken(refreshToken);
+    return sg.refreshToken(refreshToken);
   },
 
   async requestPasswordReset(email: string) {
-    return arcid.requestPasswordReset(email);
+    return sg.requestPasswordReset(email);
   },
 
   async confirmPasswordReset(token: string, newPassword: string) {
-    return arcid.confirmPasswordReset(token, newPassword);
+    return sg.confirmPasswordReset(token, newPassword);
   },
 
   async getProfile(db: DbClient = prisma, userId: string) {
@@ -61,8 +61,8 @@ export const authService = {
       displayName: user.displayName,
       avatarUrl:   user.avatarUrl,
       role:        user.role,
-      email:       null, // Populated from arc-id identity
-      identity:    null, // Populated from arc-id
+      email:       null, // Populated from Sg identity
+      identity:    null, // Populated from Sg
       onboardingStep: user.onboardingStep,
       preferences:   user.preferences,
       metadata:      user.metadata,

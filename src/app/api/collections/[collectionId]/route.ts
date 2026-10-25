@@ -2,10 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
-import { flowExecutor } from "@/core/flows/flow-executor";
-import { updateCollectionFlow } from "@/domains/collections/flows/update-collection.flow";
-import { deleteCollectionFlow } from "@/domains/collections/flows/delete-collection.flow";
-import { CollectionService } from "@/domains/collections/collection.service";
+import { flowExecutor } from "@/core/flows";
+import { updateCollectionFlow, deleteCollectionFlow, CollectionService } from "@/domains/collections";
 
 interface RouteParams {
   params: { collectionId: string };
@@ -17,7 +15,7 @@ export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     await requireOnboarded(req);
     const tenantId = req.headers.get("x-tenant-id") ?? null;
-    const collection = await collectionService.getCollectionDetails(
+    const collection = await collectionService.getCollection(
       params.collectionId,
       tenantId,
     );

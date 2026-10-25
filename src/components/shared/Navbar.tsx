@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
-import { buttonVariants } from "@arcevo/facet-components";
+import { buttonVariants } from "@fusorb/facet-components";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
@@ -13,7 +13,7 @@ export function Navbar() {
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center space-x-2">
             <span className="text-xl font-black tracking-tight text-foreground">
-              ARCBASE.
+              RELNEX.
             </span>
           </Link>
           <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">

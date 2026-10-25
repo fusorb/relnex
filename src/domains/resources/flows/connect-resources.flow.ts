@@ -3,11 +3,11 @@ import type { Flow }     from "@/core/flows/flow";
 import type { FlowContext } from "@/core/flows/flow-context";
 import { ConnectResourcesDto } from "../resource.dto";
 import { ResourceService }     from "../resource.service";
-import { ApiError }            from "@/lib/errors/api-error";
+import { ApiError }            from "@/lib/errors";
 
 const Input = ConnectResourcesDto.extend({ resourceId: z.string() });
 
-export const connectResourcesFlow: Flow<z.infer<typeof Input>> = {
+export const connectResourcesFlow: Flow<z.infer<typeof Input>, { relation: unknown }> = {
   name:        "resource:connect",
   inputSchema: Input,
 

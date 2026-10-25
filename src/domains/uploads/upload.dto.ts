@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Explicit white list of allowed payload extensions to prevent malware execution
+// Allowed file types for uploads
 const ALLOWED_MIME_TYPES = [
   "image/jpeg",
   "image/png",
@@ -14,15 +14,15 @@ const ALLOWED_MIME_TYPES = [
 
 export const requestUploadSchema = z
   .object({
-    filename: z.string().min(1, "Filename string payload cannot be left empty"),
+    filename: z.string().min(1, "Filename is required"),
     contentType: z.enum(ALLOWED_MIME_TYPES as [string, ...string[]], {
-      error: "Target file type extension is completely restricted from upload",
+      error: "File type not allowed",
     }),
     sizeInBytes: z
       .number()
       .max(
-        50 * 1024 * 1024,
-        "File uploads are physically performance-capped at 50MB",
+        100 * 1024 * 1024,
+        "File size exceeds 100MB limit",
       ),
   })
   .strict();

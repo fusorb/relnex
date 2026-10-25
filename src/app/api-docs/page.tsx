@@ -10,7 +10,7 @@ const SwaggerUI = dynamic(() => import("swagger-ui-react"), {
   ssr: false,
   loading: () => (
     <div className="flex min-h-[60vh] items-center justify-center rounded-2xl border border-slate-800 bg-slate-950 px-6 text-center text-sm font-medium text-slate-400 shadow-[0_24px_0_0_#000]">
-      Initializing ArcBase API console...
+      Initializing Relnex API console...
     </div>
   ),
 });
@@ -200,12 +200,12 @@ export default function ApiDocsPage() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
               <div className="mb-3 flex flex-wrap gap-2">
-                <ApiDocBadge label="ArcBase API Docs" />
+                <ApiDocBadge label="Relnex API Docs" />
                 <ApiDocBadge label="OpenAPI 3.0" />
                 <ApiDocBadge label="System Contract" />
               </div>
               <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl">
-                ArcBase API Console
+                Relnex API Console
               </h1>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-400 sm:text-base">
                 This console documents the real application surface: auth,
@@ -316,7 +316,7 @@ export default function ApiDocsPage() {
 
         <SectionCard
           title="Representation notes"
-          description="The API reflects the actual ArcBase data model and user flows."
+          description="The API reflects the actual Relnex data model and user flows."
         >
           <div className="grid gap-4 lg:grid-cols-3">
             {[

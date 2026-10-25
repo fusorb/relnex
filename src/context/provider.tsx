@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./auth-context";
 import { ThemeProvider } from "next-themes";
-import { Toaster } from "@arcevo/facet-components";
+import { Toaster } from "@fusorb/facet-components";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(

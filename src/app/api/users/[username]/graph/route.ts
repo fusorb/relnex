@@ -3,14 +3,13 @@
 // Only PUBLIC resources appear as nodes; relations are edges between those nodes.
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
-import { UserService } from "@/domains/users/user.service";
-import { prisma } from "@/core/db";
+import { UserService } from "@/domains/users";
 
 interface RouteParams { params: { username: string } }
 
 const userService = new UserService();
 
 export const GET = handleApiRoute(async (req: NextRequest, { params }: RouteParams) => {
-  const graph = await userService.getUserKnowledgeGraph(prisma, params.username);
+  const graph = await userService.getUserKnowledgeGraph(params.username);
   return NextResponse.json({ success: true, data: graph });
 });

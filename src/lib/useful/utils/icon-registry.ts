@@ -76,7 +76,7 @@ import {
   HelpCircle,
   Users,
   Send,
-} from "@arcevo/facet-components/icons";
+} from "@fusorb/facet-components/icons";
 
 /**
  * Icon registry mapping semantic names to lucide icons

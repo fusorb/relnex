@@ -2,7 +2,7 @@ import { prisma } from "@/core/db";
 import type { DbClient } from "@/core/flows/flow-context";
 import { UserRepository } from "./user.repository";
 import { presentPublicUser } from "./users.presenter";
-import { ApiError } from "@/lib/errors/api-error";
+import { ApiError } from "@/lib/errors";
 
 export class UserService {
   private db: DbClient;

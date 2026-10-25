@@ -15,6 +15,12 @@ import { prisma } from "@/core/db";
 
 export const GET = handleApiRoute(async (req: NextRequest) => {
   const session = await requireAuth(req);
+  if (!session.userId) {
+    return NextResponse.json({
+      success: true,
+      data: { requiresOnboarding: true },
+    });
+  }
   const user = await authService.getProfile(prisma, session.userId);
   return NextResponse.json({ success: true, data: user });
 });

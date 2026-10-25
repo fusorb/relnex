@@ -1,18 +1,18 @@
+// src/app/api/collections/[collectionId]/resources/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
-import { CollectionService } from "@/domains/collections/collection.service";
-import { addResourceToCollectionSchema } from "@/domains/collections/collection.dto";
+import { CollectionService, addResourceToCollectionSchema } from "@/domains/collections";
 import { ApiError } from "@/lib/errors";
 
 interface RouteParams {
   params: { collectionId: string };
 }
 
-// POST: Add an element asset into the learning collection sequence
 export const POST = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);
+    const tenantId = req.headers.get("x-tenant-id") ?? null;
     const { collectionId } = params;
 
     const body = await req.json();
@@ -24,24 +24,25 @@ export const POST = handleApiRoute(
     const collectionService = new CollectionService();
     await collectionService.addResource(
       collectionId,
-      session.userId,
       parsed.data.resourceId,
+      session.userId,
+      tenantId,
     );
 
     return NextResponse.json(
       {
         success: true,
-        message: "Resource pinned to collection stack sequence map.",
+        data: { collectionId, resourceId: parsed.data.resourceId },
       },
       { status: 201 },
     );
   },
 );
 
-// DELETE: Pull down a single resource item linkage mapping from this collection list
 export const DELETE = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);
+    const tenantId = req.headers.get("x-tenant-id") ?? null;
     const { collectionId } = params;
 
     const { searchParams } = new URL(req.url);
@@ -49,7 +50,7 @@ export const DELETE = handleApiRoute(
 
     if (!resourceId) {
       throw ApiError.badRequest(
-        "Missing required query argument payload field: 'resourceId'.",
+        "Missing required query parameter: 'resourceId'.",
       );
     }
 
@@ -58,11 +59,12 @@ export const DELETE = handleApiRoute(
       collectionId,
       session.userId,
       resourceId,
+      tenantId,
     );
 
     return NextResponse.json({
       success: true,
-      message: "Resource detached from learning collection sequence matrix.",
+      data: { collectionId, resourceId },
     });
   },
 );

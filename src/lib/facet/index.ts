@@ -1,5 +1,5 @@
 /**
- * Facet SDK integration for arcbase
+ * Facet SDK integration for Relnex
  *
  * Re-exports from the facet packages for convenient access.
  */
@@ -17,9 +17,9 @@ export type { Sdks } from "./sdks";
 
 // Re-export types from facet-sdk
 export type {
-  ArcIdClient,
+  SgClient,
   AuthSdk,
   TenantSdk,
   IdentitySdk,
   PasskeySdk,
-} from "@arcevo/facet-sdk";
+} from "@fusorb/facet-sdk";

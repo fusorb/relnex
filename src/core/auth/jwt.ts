@@ -1,10 +1,10 @@
 import { jwtVerify, type JWTPayload } from "jose";
 
-const secret = () => new TextEncoder().encode(process.env.ARCID_JWT_SECRET!);
-const ISSUER = process.env.ARCID_ISSUER ?? "arcid";
+const secret = () => new TextEncoder().encode(process.env.SG_JWT_SECRET!);
+const ISSUER = process.env.SG_ISSUER ?? "sg";
 
-export interface ArcIDTokenPayload extends JWTPayload {
-  sub:    string;    // arc-id Identity.id
+export interface SgTokenPayload extends JWTPayload {
+  sub:    string;    // Sg Identity.id
   jti:    string;
   scope:  string;    // space-separated
   aud:    string[];
@@ -12,24 +12,24 @@ export interface ArcIDTokenPayload extends JWTPayload {
 }
 
 /**
- * Verifies an arc-id access token locally (no network call).
+ * Verifies a Sg access token locally (no network call).
  * Throws jose errors on failure — caught by error boundary.
  */
-export async function verifyArcIDToken(token: string): Promise<ArcIDTokenPayload> {
+export async function verifySgToken(token: string): Promise<SgTokenPayload> {
   const { payload } = await jwtVerify(token, secret(), { issuer: ISSUER });
-  return payload as ArcIDTokenPayload;
+  return payload as SgTokenPayload;
 }
 
 export async function extractIdentityId(authHeader: string | null): Promise<string | null> {
   if (!authHeader?.startsWith("Bearer ")) return null;
   try {
-    const p = await verifyArcIDToken(authHeader.slice(7));
+    const p = await verifySgToken(authHeader.slice(7));
     return p.sub;
   } catch {
     return null;
   }
 }
 
-export function scopeArray(payload: ArcIDTokenPayload): string[] {
+export function scopeArray(payload: SgTokenPayload): string[] {
   return (payload.scope ?? "").split(" ").filter(Boolean);
 }

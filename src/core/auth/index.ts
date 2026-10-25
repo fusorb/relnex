@@ -1,5 +1,5 @@
-export { verifyArcIDToken, extractIdentityId, scopeArray } from "./jwt";
-export type { ArcIDTokenPayload } from "./jwt";
+export { verifySgToken, extractIdentityId, scopeArray } from "./jwt";
+export type { SgTokenPayload } from "./jwt";
 export { getSession }                           from "./get-session";
 export { withAuth, withUser, withScope }        from "./guards";
 export { requireAuth, requireOnboarded }        from "./require-auth";

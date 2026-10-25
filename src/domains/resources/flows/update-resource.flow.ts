@@ -7,7 +7,7 @@ import { ResourceRepository } from "../resource.repository";
 
 const Input = UpdateResourceDto.extend({ resourceId: z.string() });
 
-export const updateResourceFlow: Flow<z.infer<typeof Input>> = {
+export const updateResourceFlow: Flow<z.infer<typeof Input>, { resource: unknown }> = {
   name:        "resource:update",
   inputSchema: Input,
 

@@ -1,39 +1,39 @@
 /**
- * ArcIdClient factory for arcbase
+ * SgClient factory for Relnex
  *
- * Creates an ArcIdClient instance configured for arc-id integration.
+ * Creates an SgClient instance configured for SG integration.
  * This client is used by facet-store for token refresh and by
  * facet-auth for authentication operations.
  */
 
-import { ArcIdClient } from "@arcevo/facet-sdk";
+import { SgClient } from "@fusorb/facet-sdk";
 
 // Client-side base URL (exposed to browser)
 const CLIENT_BASE_URL =
-  process.env.NEXT_PUBLIC_ARCID_API_URL ?? "http://localhost:4000";
+  process.env.NEXT_PUBLIC_SG_API_URL ?? "http://localhost:4000";
 
 // Server-side base URL (internal only)
-const SERVER_BASE_URL = process.env.ARCID_API_URL ?? "http://localhost:4000";
+const SERVER_BASE_URL = process.env.SG_API_URL ?? "http://localhost:4000";
 
 /**
- * Creates an ArcIdClient for client-side (browser) use.
- * Use this for components that need to call arc-id directly.
+ * Creates an SgClient for client-side (browser) use.
+ * Use this for components that need to call SG directly.
  */
-export function createClientSideClient(): ArcIdClient {
-  return new ArcIdClient({
+export function createClientSideClient(): SgClient {
+  return new SgClient({
     baseUrl: CLIENT_BASE_URL,
-    clientId: process.env.NEXT_PUBLIC_ARCID_CLIENT_ID,
+    clientId: process.env.NEXT_PUBLIC_SG_CLIENT_ID,
   });
 }
 
 /**
- * Creates an ArcIdClient for server-side use.
+ * Creates an SgClient for server-side use.
  * Use this in API routes and server components.
  */
-export function createServerSideClient(accessToken?: string): ArcIdClient {
-  const client = new ArcIdClient({
+export function createServerSideClient(accessToken?: string): SgClient {
+  const client = new SgClient({
     baseUrl: SERVER_BASE_URL,
-    clientId: process.env.ARCID_CLIENT_ID,
+    clientId: process.env.SG_CLIENT_ID,
   });
 
   if (accessToken) {
@@ -47,9 +47,9 @@ export function createServerSideClient(accessToken?: string): ArcIdClient {
  * Singleton client for client-side use.
  * Created once and reused across components.
  */
-let clientSideClient: ArcIdClient | null = null;
+let clientSideClient: SgClient | null = null;
 
-export function getClientSideClient(): ArcIdClient {
+export function getClientSideClient(): SgClient {
   if (!clientSideClient) {
     clientSideClient = createClientSideClient();
   }

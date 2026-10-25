@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
-import { CommentService } from "@/domains/comments/comment.service";
+import { CommentService } from "@/domains/comments";
 
 interface RouteParams {
   params: { commentId: string };

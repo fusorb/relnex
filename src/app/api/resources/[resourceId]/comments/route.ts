@@ -2,8 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
-import { flowExecutor } from "@/core/flows/flow-executor";
-import { addCommentFlow } from "@/domains/resources/flows/add-comment.flow";
+import { flowExecutor } from "@/core/flows";
+import { addCommentFlow } from "@/domains/resources";
 import { CommentService } from "@/domains/comments/comment.service";
 
 interface RouteParams {
@@ -12,7 +12,7 @@ interface RouteParams {
 
 const commentService = new CommentService();
 
-// GET — root-level comments only
+// GET — root-level comments for this resource
 export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     await requireOnboarded(req);
@@ -21,7 +21,7 @@ export const GET = handleApiRoute(
   },
 );
 
-// POST — create a comment or reply
+// POST — create a root-level comment on this resource
 export const POST = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);
@@ -29,7 +29,7 @@ export const POST = handleApiRoute(
     const body = await req.json();
     const result = await flowExecutor.run(
       addCommentFlow,
-      { resourceId: params.resourceId, data: body },
+      { resourceId: params.resourceId, content: body.content },
       { userId: session.userId, identityId: session.identityId, tenantId },
     );
     return NextResponse.json(

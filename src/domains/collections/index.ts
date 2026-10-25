@@ -4,6 +4,8 @@ export {
   UpdateCollectionDto,
   createCollectionSchema,
   updateCollectionSchema,
+  addResourceToCollectionSchema,
+  reorderCollectionSchema,
 } from "./collection.dto";
 export type { CreateCollectionInput, UpdateCollectionInput } from "./collection.dto";
 

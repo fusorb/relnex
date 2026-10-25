@@ -1,6 +1,6 @@
 import type { DbClient } from "@/core/flows/flow-context";
 import { ReactionRepository } from "./reaction.repository";
-import { ApiError } from "@/lib/errors/api-error";
+import { ApiError } from "@/lib/errors";
 
 export class ReactionService {
   private repo: ReactionRepository;

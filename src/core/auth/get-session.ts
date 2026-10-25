@@ -1,5 +1,5 @@
 import { NextRequest }       from "next/server";
-import { verifyArcIDToken }  from "./jwt";
+import { verifySgToken } from "./jwt";
 import { getAccessTokenFromCookie } from "./auth-cookie";
 import { prisma }            from "@/core/db/prisma";
 import type { User }         from "@prisma-client";
@@ -9,11 +9,11 @@ export interface AuthSession {
   tenantId:   string | null;
   scope:      string[];
   user:       User | null;
-userId:     string | undefined; // convenience: session.user?.id
+  userId:     string | undefined; // convenience: session.user?.id
 }
 
 /**
- * AuthSession for routes that have passed onboarding. The arcbase User
+ * AuthSession for routes that have passed onboarding. The Relnex User
  * record is guaranteed to exist, so user and userId are always concrete.
  */
 export interface OnboardedSession extends AuthSession {
@@ -22,9 +22,9 @@ export interface OnboardedSession extends AuthSession {
 }
 
 /**
- * Extracts and verifies the arc-id JWT from either:
+ * Extracts and verifies the Sg JWT from either:
  *  1. Authorization: Bearer <token> header (API calls)
- *  2. arcid_at HttpOnly cookie (browser navigation)
+ *  2. sg_at HttpOnly cookie (browser navigation)
  *
  * Returns null if no valid token is present.
  */
@@ -43,7 +43,7 @@ export async function getSession(req: NextRequest): Promise<AuthSession | null> 
   if (!token) return null;
 
   try {
-    const payload = await verifyArcIDToken(token);
+    const payload = await verifySgToken(token);
     const user    = await prisma.user.findUnique({
       where: { identityId: payload.sub },
     });

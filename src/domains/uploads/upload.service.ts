@@ -3,6 +3,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3Client } from "@/lib/storage/s3";
 import { RequestUploadInput, PresignedUploadResponseDTO } from "./upload.dto";
 import { ApiError } from "@/lib/errors";
+import { logger } from "@/lib/useful/utils/logger";
 import crypto from "crypto";
 
 export class UploadService {
@@ -15,9 +16,7 @@ export class UploadService {
     this.publicBaseUrl = process.env.NEXT_PUBLIC_STORAGE_PUBLIC_URL || "";
 
     if (!this.bucketName) {
-      throw new Error(
-        "Target storage bucket identifier name variable is missing configuration",
-      );
+      throw ApiError.internal("Storage bucket name is not configured");
     }
   }
 
@@ -53,10 +52,8 @@ export class UploadService {
         fileKey,
       };
     } catch (error) {
-      console.error("S3/R2 Signature generation breakdown failure: ", error);
-      throw ApiError.internal(
-        "Failed to provision secure cloud upload link generation pipeline",
-      );
+      logger.error("Upload signature generation failed", error);
+      throw ApiError.internal("Failed to generate upload URL");
     }
   }
 }

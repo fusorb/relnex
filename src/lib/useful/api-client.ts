@@ -1,3 +1,5 @@
+import { ApiError } from "@/lib/errors";
+
 export interface FetchOptions extends Omit<RequestInit, 'credentials'> {
   bodyData?: Record<string, unknown>;
 }
@@ -29,8 +31,8 @@ export async function apiClient<T = unknown>(endpoint: string, options: FetchOpt
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      data.error ?? "An unexpected network operational crash occurred",
+    throw ApiError.internal(
+      data.error ?? "An unexpected error occurred",
     );
   }
 

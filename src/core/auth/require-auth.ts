@@ -16,7 +16,7 @@ export async function requireAuth(req: NextRequest): Promise<AuthSession> {
 }
 
 /**
- * Like requireAuth but also ensures the arcbase User record exists.
+ * Like requireAuth but also ensures the Relnex User record exists.
  * If the identity has no User yet (first login), provisions one automatically.
  * Used for routes that need a fully configured User profile.
  *

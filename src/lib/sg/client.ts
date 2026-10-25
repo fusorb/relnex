@@ -1,14 +1,14 @@
 /**
- * ArcID SDK Client for Arcbase
+ * Sg HTTP SDK Client for Relnex
  *
- * This is the integration contract between arcbase and arc-id.
+ * This is the integration contract between Relnex and Sg.
  * All auth operations go through these methods.
- * Never call arc-id endpoints directly from arcbase components or routes —
+ * Never call Sg endpoints directly from Relnex components or routes —
  * always use this client.
  */
 
-const ARCID_BASE_URL = process.env.ARCID_API_URL ?? "http://localhost:4000";
-const ARCID_SERVICE_TOKEN = process.env.ARCID_SERVICE_TOKEN!; // M2M token for server-to-server
+const SG_BASE_URL = process.env.SG_API_URL ?? "http://localhost:4000";
+const SG_SERVICE_TOKEN = process.env.SG_SERVICE_TOKEN!; // M2M token for server-to-server
 
 type FetchOptions = {
   method?: string;
@@ -16,15 +16,15 @@ type FetchOptions = {
   token?: string; // user's access token for proxied calls
 };
 
-async function arcidFetch<T>(path: string, options: FetchOptions = {}): Promise<T> {
+async function sgFetch<T>(path: string, options: FetchOptions = {}): Promise<T> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     Authorization: options.token
       ? `Bearer ${options.token}`
-      : `Bearer ${ARCID_SERVICE_TOKEN}`,
+      : `Bearer ${SG_SERVICE_TOKEN}`,
   };
 
-  const res = await fetch(`${ARCID_BASE_URL}${path}`, {
+  const res = await fetch(`${SG_BASE_URL}${path}`, {
     method: options.method ?? "GET",
     headers,
     body: options.body ? JSON.stringify(options.body) : undefined,
@@ -32,26 +32,26 @@ async function arcidFetch<T>(path: string, options: FetchOptions = {}): Promise<
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new ArcIDError(
-      err.message ?? "ArcID request failed",
+    throw new SgError(
+      err.message ?? "Sg request failed",
       res.status,
-      err.error ?? "ARCID_ERROR"
+      err.error ?? "SG_ERROR"
     );
   }
 
   return res.json();
 }
 
-export class ArcIDError extends Error {
+export class SgError extends Error {
   constructor(message: string, public status: number, public code: string) {
     super(message);
-    this.name = "ArcIDError";
+    this.name = "SgError";
   }
 }
 
 // ── Identity ──────────────────────────────────────────────────────────────────
 
-export interface ArcIDIdentity {
+export interface SgIdentity {
   id: string;
   email: string | null;
   name: string | null;
@@ -64,7 +64,7 @@ export interface ArcIDIdentity {
 }
 
 export interface RegisterResult {
-  identity: ArcIDIdentity;
+  identity: SgIdentity;
 }
 
 export interface LoginResult {
@@ -83,11 +83,11 @@ export interface TokenBundle {
   expires_in: number;
 }
 
-export const arcid = {
+export const sg = {
   // ── Registration ────────────────────────────────────────────────────────
 
   async register(email: string, password: string, name?: string): Promise<RegisterResult> {
-    const res = await arcidFetch<{ success: boolean; data: RegisterResult }>(
+    const res = await sgFetch<{ success: boolean; data: RegisterResult }>(
       "/auth/register",
       { method: "POST", body: { email, password, name } }
     );
@@ -97,7 +97,7 @@ export const arcid = {
   // ── Login ────────────────────────────────────────────────────────────────
 
   async login(email: string, password: string): Promise<LoginResult> {
-    const res = await arcidFetch<{ success: boolean; data: LoginResult }>(
+    const res = await sgFetch<{ success: boolean; data: LoginResult }>(
       "/auth/login",
       { method: "POST", body: { email, password } }
     );
@@ -107,7 +107,7 @@ export const arcid = {
   // ── MFA ──────────────────────────────────────────────────────────────────
 
   async verifyMfa(sessionId: string, code: string): Promise<LoginResult> {
-    const res = await arcidFetch<{ success: boolean; data: LoginResult }>(
+    const res = await sgFetch<{ success: boolean; data: LoginResult }>(
       "/auth/mfa/verify",
       { method: "POST", body: { sessionId, code } }
     );
@@ -117,18 +117,18 @@ export const arcid = {
   // ── Token operations ─────────────────────────────────────────────────────
 
   async refreshToken(refreshToken: string): Promise<TokenBundle> {
-    return arcidFetch<TokenBundle>("/oauth/token", {
+    return sgFetch<TokenBundle>("/oauth/token", {
       method: "POST",
       body: {
         grant_type: "refresh_token",
         refresh_token: refreshToken,
-        client_id: process.env.ARCID_CLIENT_ID!,
+        client_id: process.env.SG_CLIENT_ID!,
       },
     });
   },
 
   async logout(sessionId: string, accessToken: string): Promise<void> {
-    await arcidFetch("/auth/logout", {
+    await sgFetch("/auth/logout", {
       method: "POST",
       body: { sessionId },
       token: accessToken,
@@ -136,19 +136,19 @@ export const arcid = {
   },
 
   async revokeToken(token: string): Promise<void> {
-    await arcidFetch("/oauth/revoke", {
+    await sgFetch("/oauth/revoke", {
       method: "POST",
       body: {
         token,
-        client_id: process.env.ARCID_CLIENT_ID!,
+        client_id: process.env.SG_CLIENT_ID!,
       },
     });
   },
 
   // ── Identity profile ─────────────────────────────────────────────────────
 
-  async getIdentity(accessToken: string): Promise<ArcIDIdentity> {
-    const res = await arcidFetch<{ success: boolean; data: ArcIDIdentity }>(
+  async getIdentity(accessToken: string): Promise<SgIdentity> {
+    const res = await sgFetch<{ success: boolean; data: SgIdentity }>(
       "/identity/profile",
       { token: accessToken }
     );
@@ -158,8 +158,8 @@ export const arcid = {
   async updateIdentity(
     accessToken: string,
     data: { name?: string; picture?: string; metadata?: Record<string, unknown> }
-  ): Promise<ArcIDIdentity> {
-    const res = await arcidFetch<{ success: boolean; data: ArcIDIdentity }>(
+  ): Promise<SgIdentity> {
+    const res = await sgFetch<{ success: boolean; data: SgIdentity }>(
       "/identity/profile",
       { method: "PATCH", body: data, token: accessToken }
     );
@@ -169,14 +169,14 @@ export const arcid = {
   // ── Password ─────────────────────────────────────────────────────────────
 
   async requestPasswordReset(email: string): Promise<void> {
-    await arcidFetch("/auth/password/reset", {
+    await sgFetch("/auth/password/reset", {
       method: "POST",
       body: { email },
     });
   },
 
   async confirmPasswordReset(token: string, newPassword: string): Promise<void> {
-    await arcidFetch("/auth/password/reset/confirm", {
+    await sgFetch("/auth/password/reset/confirm", {
       method: "POST",
       body: { token, newPassword },
     });
@@ -185,7 +185,7 @@ export const arcid = {
   // ── Email verification ────────────────────────────────────────────────────
 
   async verifyEmail(token: string): Promise<void> {
-    await arcidFetch("/auth/email/verify", {
+    await sgFetch("/auth/email/verify", {
       method: "POST",
       body: { token },
     });
@@ -194,7 +194,7 @@ export const arcid = {
   // ── Token introspection (server-to-server) ────────────────────────────────
 
   async introspect(token: string): Promise<{ active: boolean; sub?: string; scope?: string }> {
-    return arcidFetch("/oauth/introspect", {
+    return sgFetch("/oauth/introspect", {
       method: "POST",
       body: { token },
     });

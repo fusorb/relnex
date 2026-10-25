@@ -4,8 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireAuth } from "@/core/auth";
-import { UserService } from "@/domains/users/user.service";
-import { prisma } from "@/core/db";
+import { UserService } from "@/domains/users";
 
 interface RouteParams { params: { username: string } }
 
@@ -14,7 +13,6 @@ const userService = new UserService();
 export const GET = handleApiRoute(async (req: NextRequest, { params }: RouteParams) => {
   const session = await requireAuth(req);
   const saved = await userService.getUserNestedSaved(
-    prisma,
     params.username,
     session.userId,
   );

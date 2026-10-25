@@ -10,7 +10,7 @@ const Input = z.object({
   parentId:   z.string().optional(),
 });
 
-export const addCommentFlow: Flow<z.infer<typeof Input>> = {
+export const addCommentFlow: Flow<z.infer<typeof Input>, { comment: unknown }> = {
   name:        "resource:add-comment",
   inputSchema: Input,
 

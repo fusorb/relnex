@@ -45,4 +45,19 @@ export class CollectionRepository {
     });
     return last?.orderIndex ?? -1;
   }
+
+  async removeResourceFromCollection(collectionId: string, resourceId: string) {
+    await this.db.collectionResource.deleteMany({
+      where: { collectionId, resourceId },
+    });
+  }
+
+  async reorderResources(collectionId: string, orderedResourceIds: string[]) {
+    for (let i = 0; i < orderedResourceIds.length; i++) {
+      await this.db.collectionResource.updateMany({
+        where: { collectionId, resourceId: orderedResourceIds[i] },
+        data: { orderIndex: i },
+      });
+    }
+  }
 }

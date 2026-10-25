@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 
-const ACCESS_TOKEN_COOKIE  = "arcid_at";
-const REFRESH_TOKEN_COOKIE = "arcid_rt";
-const SESSION_COOKIE       = "arcid_sid";
+const ACCESS_TOKEN_COOKIE  = "sg_at";
+const REFRESH_TOKEN_COOKIE = "sg_rt";
+const SESSION_COOKIE       = "sg_sid";
 
 const IS_PROD = process.env.NODE_ENV === "production";
 

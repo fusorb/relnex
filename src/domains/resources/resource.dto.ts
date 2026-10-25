@@ -52,10 +52,12 @@ export const updateResourceSchema = UpdateResourceDto;
 
 // Presenters
 export function toSafeResourceDTO(resource: {
-  id: string; slug: string | null; title: string; description: string | null;
-  excerpt: string | null; coverImageUrl: string | null; thumbnailUrl: string | null;
-  category: string | null; visibility: string; contentType: string;
-  version: number; viewCount: number; saveCount: number;
+  id: string; slug: string | null; title: string | null;
+  description: string | null; excerpt: string | null;
+  coverImageUrl: string | null; thumbnailUrl: string | null;
+  category: string | null; visibility: string; type: string;
+  wordCount: number | null; estimatedTime: number | null;
+  metrics: { views: number; bookmarks: number } | null;
   createdAt: Date; updatedAt: Date;
 }) {
   return {
@@ -63,8 +65,12 @@ export function toSafeResourceDTO(resource: {
     description: resource.description, excerpt: resource.excerpt,
     coverImageUrl: resource.coverImageUrl, thumbnailUrl: resource.thumbnailUrl,
     category: resource.category, visibility: resource.visibility,
-    contentType: resource.contentType, version: resource.version,
-    viewCount: resource.viewCount, saveCount: resource.saveCount,
-    createdAt: resource.createdAt.toISOString(), updatedAt: resource.updatedAt.toISOString(),
+    contentType: resource.type, version: 1,
+    viewCount: resource.metrics?.views ?? 0,
+    saveCount: resource.metrics?.bookmarks ?? 0,
+    wordCount: resource.wordCount ?? 0,
+    estimatedTime: resource.estimatedTime ?? 0,
+    createdAt: resource.createdAt.toISOString(),
+    updatedAt: resource.updatedAt.toISOString(),
   };
 }

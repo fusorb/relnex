@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
-import { CollectionService } from "@/domains/collections/collection.service";
-import { createCollectionSchema, presentCollectionListItem } from "@/domains/collections";
-import { prisma } from "@/core/db";
+import { CollectionService, createCollectionSchema, presentCollectionListItem, toSafeCollectionDTO } from "@/domains/collections";
 import { ApiError } from "@/lib/errors";
 
 export const GET = handleApiRoute(async (req: NextRequest) => {
   const session = await requireOnboarded(req);
-  const tenantId = null;
+  const tenantId = req.headers.get("x-tenant-id") ?? null;
 
-  const collectionService = new CollectionService(prisma);
+  const collectionService = new CollectionService();
   const collections = await collectionService.getUserCollections(
     session.userId,
     tenantId,
@@ -25,7 +23,7 @@ export const GET = handleApiRoute(async (req: NextRequest) => {
 
 export const POST = handleApiRoute(async (req: NextRequest) => {
   const session = await requireOnboarded(req);
-  const tenantId = null;
+  const tenantId = req.headers.get("x-tenant-id") ?? null;
 
   const body = await req.json();
   const parsed = createCollectionSchema.safeParse(body);
@@ -33,7 +31,7 @@ export const POST = handleApiRoute(async (req: NextRequest) => {
     throw ApiError.badRequest(parsed.error.issues[0].message);
   }
 
-  const collectionService = new CollectionService(prisma);
+  const collectionService = new CollectionService();
   const created = await collectionService.createCollection(
     session.userId,
     parsed.data,

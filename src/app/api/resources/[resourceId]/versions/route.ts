@@ -2,8 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
-import { FlowExecutor } from "@/core/flows/flow-executor";
-import { CreateVersionFlow } from "@/domains/resources/flows/create-version.flow";
+import { flowExecutor } from "@/core/flows";
+import { createVersionFlow } from "@/domains/resources";
 import { ResourceService } from "@/domains/resources/resource.service";
 
 interface RouteParams {
@@ -11,7 +11,6 @@ interface RouteParams {
 }
 
 const resourceService = new ResourceService();
-const executor = new FlowExecutor();
 
 // GET — list version history (read: direct service call, no transaction overhead)
 export const GET = handleApiRoute(

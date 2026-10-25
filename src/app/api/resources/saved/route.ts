@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
-import { ResourceService } from "@/domains/resources/resource.service";
+import { ResourceService } from "@/domains/resources";
 
 const resourceService = new ResourceService();
 

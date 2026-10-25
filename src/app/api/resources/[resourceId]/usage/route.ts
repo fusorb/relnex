@@ -1,8 +1,8 @@
 // src/app/api/resources/[resourceId]/usage/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
-import { flowExecutor } from "@/core/flows/flow-executor";
-import { trackUsageFlow } from "@/domains/resources/flows/track-usage.flow";
+import { flowExecutor } from "@/core/flows";
+import { trackUsageFlow } from "@/domains/resources";
 
 interface RouteParams {
   params: { resourceId: string };
@@ -18,8 +18,8 @@ export const POST = handleApiRoute(
     const tenantId = req.headers.get("x-tenant-id") ?? null;
     const userId = req.headers.get("x-user-id") ?? undefined;
     const body = await req.json();
-    await executor.run(
-      new TrackResourceUsageFlow(),
+    await flowExecutor.run(
+      trackUsageFlow,
       { resourceId: params.resourceId, ...body },
       { userId, tenantId },
     );

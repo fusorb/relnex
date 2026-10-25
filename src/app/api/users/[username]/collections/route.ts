@@ -3,8 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { getSession } from "@/core/auth";
-import { UserService } from "@/domains/users/user.service";
-import { prisma } from "@/core/db";
+import { UserService } from "@/domains/users";
 
 interface RouteParams { params: { username: string } }
 
@@ -13,7 +12,6 @@ const userService = new UserService();
 export const GET = handleApiRoute(async (req: NextRequest, { params }: RouteParams) => {
   const session = await getSession(req);
   const collections = await userService.getUserNestedCollections(
-    prisma,
     params.username,
     session?.userId ?? null,
   );

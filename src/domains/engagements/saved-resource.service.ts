@@ -1,6 +1,6 @@
 import type { DbClient } from "@/core/flows/flow-context";
 import { SavedResourceRepository } from "./saved-resource.repository";
-import { ApiError } from "@/lib/errors/api-error";
+import { ApiError } from "@/lib/errors";
 
 export class SavedResourceService {
   private repo: SavedResourceRepository;

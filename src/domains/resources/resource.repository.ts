@@ -64,4 +64,35 @@ export class ResourceRepository {
       update: { [field]: { increment: 1 } },
     });
   }
+
+  async attachTags(resourceId: string, tagIds: string[]) {
+    await this.db.resourceTag.createMany({
+      data: tagIds.map((tagId) => ({ resourceId, tagId })),
+      skipDuplicates: true,
+    });
+  }
+
+  async detachTags(resourceId: string, tagIds: string[]) {
+    await this.db.resourceTag.deleteMany({
+      where: { resourceId, tagId: { in: tagIds } },
+    });
+  }
+
+  async listVersions(resourceId: string, tenantId?: string | null) {
+    return this.db.resourceVersion.findMany({
+      where: { resource: { id: resourceId, deletedAt: null, ...(tenantId && { tenantId }) } },
+      orderBy: { versionNumber: "desc" },
+    });
+  }
+
+  async listSavedResources(userId: string, tenantId?: string | null) {
+    return this.db.savedResource.findMany({
+      where: {
+        userId,
+        resource: { deletedAt: null, ...(tenantId && { tenantId }) },
+      },
+      include: { resource: true },
+      orderBy: { createdAt: "desc" },
+    });
+  }
 }

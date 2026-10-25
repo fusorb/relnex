@@ -1,6 +1,6 @@
 import type { DbClient } from "@/core/flows/flow-context";
 import { FollowRepository } from "./follow.repository";
-import { ApiError } from "@/lib/errors/api-error";
+import { ApiError } from "@/lib/errors";
 
 export class FollowService {
   private repo: FollowRepository;

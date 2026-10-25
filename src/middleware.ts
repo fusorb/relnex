@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyArcIDToken }          from "@/core/auth/jwt";
+import { verifySgToken } from "@/core/auth";
 
 const PROTECTED_PREFIXES = [
   "/dashboard", "/settings", "/editor", "/profile",
@@ -27,7 +27,7 @@ export async function middleware(req: NextRequest) {
 
   // Protected pages — redirect to login if unauthenticated
   if (isProtectedPage(pathname)) {
-    const token = req.cookies.get("arcid_at")?.value;
+    const token = req.cookies.get("sg_at")?.value;
     if (!token) {
       const url = req.nextUrl.clone();
       url.pathname = "/login";
@@ -35,7 +35,7 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(url);
     }
     try {
-      await verifyArcIDToken(token);
+      await verifySgToken(token);
     } catch {
       const url = req.nextUrl.clone();
       url.pathname = "/login";

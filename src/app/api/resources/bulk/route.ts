@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
-import { ResourceService } from "@/domains/resources/resource.service";
+import { ResourceService } from "@/domains/resources";
 import { ApiError } from "@/lib/errors";
 import { z } from "zod";
 
@@ -11,12 +11,10 @@ const bulkOperationSchema = z
     ids: z
       .array(z.string().uuid("Each resource ID must be a valid UUID"))
       .min(1, "Provide at least one resource ID"),
-    // FIX: aligned with the BulkActionInput enum in resource.dto.ts
     action: z.enum(["DELETE", "ARCHIVE"]),
   })
   .strict();
 
-// FIX: moved to module scope — was being re-instantiated on every request
 const resourceService = new ResourceService();
 
 export const POST = handleApiRoute(async (req: NextRequest) => {

@@ -3,14 +3,14 @@ import type { Flow }     from "@/core/flows/flow";
 import type { FlowContext } from "@/core/flows/flow-context";
 import { ResourceService }   from "../resource.service";
 import { ResourceRepository } from "../resource.repository";
-import { ApiError } from "@/lib/errors/api-error";
+import { ApiError } from "@/lib/errors";
 
 const Input = z.object({
   resourceId:           z.string(),
   publishedContentJson: z.record(z.string(), z.any()).optional(),
 });
 
-export const publishResourceFlow: Flow<z.infer<typeof Input>> = {
+export const publishResourceFlow: Flow<z.infer<typeof Input>, { resource: unknown }> = {
   name:        "resource:publish",
   inputSchema: Input,
 

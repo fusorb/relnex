@@ -8,7 +8,7 @@ type RouteHandler<T = unknown> = (
 
 /**
  * Wraps an API route handler with error handling.
- * Catches ApiError, ZodError, ArcIDError, and generic errors
+ * Catches ApiError, ZodError, SgError, and generic errors
  * and returns properly formatted JSON error responses.
  *
  * Usage:

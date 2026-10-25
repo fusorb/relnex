@@ -7,7 +7,7 @@ import { CollectionRepository } from "../collection.repository";
 
 const Input = UpdateCollectionDto.extend({ collectionId: z.string() });
 
-export const updateCollectionFlow: Flow<z.infer<typeof Input>> = {
+export const updateCollectionFlow: Flow<z.infer<typeof Input>, { collection: unknown }> = {
   name: "collection:update", inputSchema: Input,
   async execute(input, ctx) {
     const { collectionId, ...data } = input;

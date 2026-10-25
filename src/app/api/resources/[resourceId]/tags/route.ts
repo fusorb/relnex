@@ -1,13 +1,8 @@
 // src/app/api/resources/[resourceId]/tags/route.ts
-// ResourceService carries tenantId through the full pipeline and uses
-// ResourceRepository.attachTagsToResource which writes to the explicit
-// ResourceTag join table correctly. TagService.linkTagsToResource was
-// removed because it was tenantId-agnostic and duplicated this logic.
-
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
-import { ResourceService } from "@/domains/resources/resource.service";
+import { ResourceService } from "@/domains/resources";
 import { associateTagsSchema } from "@/domains/tags/tag.dto";
 import { ApiError } from "@/lib/errors";
 

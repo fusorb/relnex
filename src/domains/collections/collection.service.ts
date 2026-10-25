@@ -2,7 +2,7 @@ import { prisma } from "@/core/db";
 import type { DbClient } from "@/core/flows/flow-context";
 import { CollectionRepository } from "./collection.repository";
 import type { CreateCollectionInput } from "./collection.dto";
-import { ApiError } from "@/lib/errors/api-error";
+import { ApiError } from "@/lib/errors";
 
 export class CollectionService {
   private repo: CollectionRepository;
@@ -59,5 +59,15 @@ export class CollectionService {
     if (!c) throw ApiError.notFound("Collection not found");
     if (c.authorId !== userId) throw ApiError.forbidden("You do not own this collection");
     return c;
+  }
+
+  async removeResource(collectionId: string, userId: string, resourceId: string, tenantId?: string | null) {
+    await this.assertOwnership(collectionId, userId, tenantId);
+    await this.repo.removeResourceFromCollection(collectionId, resourceId);
+  }
+
+  async reorderCollectionItems(collectionId: string, userId: string, orderedItemIds: string[], tenantId?: string | null) {
+    await this.assertOwnership(collectionId, userId, tenantId);
+    await this.repo.reorderResources(collectionId, orderedItemIds);
   }
 }

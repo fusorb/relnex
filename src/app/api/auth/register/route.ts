@@ -1,11 +1,11 @@
 // src/app/api/auth/register/route.ts
 //
-// Auth is delegated to arc-id. arcbase provisions the User record after identity creation.
+// Auth is delegated to Sg. Relnex provisions the User record after identity creation.
 
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { flowExecutor } from "@/core/flows";
-import { registerFlow } from "@/domains/auth/flows/register.flow";
+import { registerFlow } from "@/domains/auth";
 
 export const POST = handleApiRoute(async (req: NextRequest) => {
   const body = await req.json();

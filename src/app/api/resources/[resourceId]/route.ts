@@ -2,10 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute }     from "@/lib/errors";
 import { requireOnboarded }    from "@/core/auth";
-import { flowExecutor }        from "@/core/flows";
-import { updateResourceFlow }  from "@/domains/resources/flows/update-resource.flow";
-import { deleteResourceFlow }  from "@/domains/resources/flows/delete-resource.flow";
-import { ResourceService }     from "@/domains/resources/resource.service";
+import { flowExecutor } from "@/core/flows";
+import { updateResourceFlow, deleteResourceFlow, ResourceService } from "@/domains/resources";
 
 interface RouteParams {
   params: { resourceId: string };
@@ -42,7 +40,7 @@ export const DELETE = handleApiRoute(
     const tenantId = req.headers.get("x-tenant-id") ?? null;
     const result = await flowExecutor.run(
       deleteResourceFlow,
-      { id: params.resourceId },
+      { resourceId: params.resourceId },
       { userId: session.userId, identityId: session.identityId, tenantId },
     );
     return NextResponse.json({ success: true, data: result });

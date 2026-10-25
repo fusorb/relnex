@@ -8,6 +8,7 @@ export {
   createResourceSchema,
   updateResourceSchema,
   listResourcesSchema,
+  toSafeResourceDTO,
 } from "./resource.dto";
 export type {
   CreateResourceInput,
@@ -37,3 +38,4 @@ export { getChildrenFlow } from "./flows/get-children.flow";
 export { createVersionFlow } from "./flows/create-version.flow";
 export { trackUsageFlow } from "./flows/track-usage.flow";
 export { updateCommentStatusFlow } from "./flows/update-comment-status.flow";
+export { addCommentFlow } from "./flows/add-comment.flow";

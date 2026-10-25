@@ -2,8 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
-import { flowExecutor } from "@/core/flows/flow-executor";
-import { createResourceFlow } from "@/domains/resources/flows/create-resource.flow";
+import { flowExecutor } from "@/core/flows";
+import { createResourceFlow } from "@/domains/resources";
 import { ResourceService } from "@/domains/resources/resource.service";
 import { listResourcesSchema } from "@/domains/resources";
 import { prisma } from "@/core/db";

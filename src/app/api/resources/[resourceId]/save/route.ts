@@ -2,9 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
-import { flowExecutor } from "@/core/flows/flow-executor";
-import { saveResourceFlow } from "@/domains/resources/flows/save-resource.flow";
-import { unsaveResourceFlow } from "@/domains/resources/flows/unsave-resource.flow";
+import { flowExecutor } from "@/core/flows";
+import { saveResourceFlow, unsaveResourceFlow } from "@/domains/resources";
 
 interface RouteParams {
   params: { resourceId: string };

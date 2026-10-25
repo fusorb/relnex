@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute }    from "@/lib/errors";
 import { requireOnboarded }   from "@/core/auth";
 import { flowExecutor }       from "@/core/flows";
-import { publishResourceFlow } from "@/domains/resources/flows/publish-resource.flow";
+import { publishResourceFlow } from "@/domains/resources";
 
 interface RouteParams {
   params: { resourceId: string };

@@ -3,9 +3,9 @@ import type { Flow }     from "@/core/flows/flow";
 import type { FlowContext } from "@/core/flows/flow-context";
 import { CreateResourceDto } from "../resource.dto";
 import { ResourceRepository } from "../resource.repository";
-import { ApiError } from "@/lib/errors/api-error";
+import { ApiError } from "@/lib/errors";
 
-export const createResourceFlow: Flow<z.infer<typeof CreateResourceDto>> = {
+export const createResourceFlow: Flow<z.infer<typeof CreateResourceDto>, { resource: unknown }> = {
   name:        "resource:create",
   inputSchema: CreateResourceDto,
 
@@ -40,8 +40,8 @@ export const createResourceFlow: Flow<z.infer<typeof CreateResourceDto>> = {
           create: input.tags.map((name) => ({
             tag: {
               connectOrCreate: {
-                where:  { "tenantId_slug": { tenantId: ctx.tenantId, slug: name.toLowerCase().replace(/s+/g, "-") } },
-                create: { tenantId: ctx.tenantId, name, slug: name.toLowerCase().replace(/s+/g, "-") },
+                where:  { "tenantId_slug": { tenantId: ctx.tenantId, slug: name.toLowerCase().replace(/\s+/g, "-") } },
+                create: { tenantId: ctx.tenantId, name, slug: name.toLowerCase().replace(/\s+/g, "-") },
               },
             },
           })),

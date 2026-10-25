@@ -1,18 +1,19 @@
 // src/app/api/auth/login/route.ts
 //
-// arc-id issues the tokens. arcbase just passes them through to the client.
-// Auth is delegated to arc-id via flows (matching arc-id's module pattern).
+// Sg issues the tokens. Relnex just passes them through to the client.
+// Auth is delegated to Sg via flows (matching Sg's module pattern).
 
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { flowExecutor } from "@/core/flows";
-import { loginFlow } from "@/domains/auth/flows/login.flow";
+import { loginFlow } from "@/domains/auth";
 import { LoginDto } from "@/domains/auth/auth.dto";
+import { setAuthCookies } from "@/core/auth";
 
 export const POST = handleApiRoute(async (req: NextRequest) => {
   const body = await req.json();
 
-  // Auth flows make external HTTP calls to arc-id — no DB transaction needed
+  // Auth flows make external HTTP calls to Sg — no DB transaction needed
   const result = await flowExecutor.run(loginFlow, body, {
     userId: null,
     identityId: null,
@@ -31,6 +32,13 @@ export const POST = handleApiRoute(async (req: NextRequest) => {
       },
     });
   }
+
+  await setAuthCookies({
+    accessToken: result.accessToken!,
+    refreshToken: result.refreshToken!,
+    sessionId: result.sessionId!,
+    expiresIn: result.expiresIn!,
+  });
 
   return NextResponse.json({
     success: true,

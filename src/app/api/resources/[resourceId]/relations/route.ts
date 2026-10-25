@@ -2,15 +2,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
-import { flowExecutor } from "@/core/flows/flow-executor";
-import { connectResourcesFlow } from "@/domains/resources/flows/connect-resources.flow";
-import { disconnectResourcesFlow } from "@/domains/resources/flows/disconnect-resources.flow";
+import { flowExecutor } from "@/core/flows";
+import { connectResourcesFlow, disconnectResourcesFlow, type ConnectResourcesInput } from "@/domains/resources";
 
 interface RouteParams {
   params: { resourceId: string };
 }
 
-// POST — add a directed graph edge from [resourceId] → body.toId
+// POST — add a directed relation from [resourceId] to body.targetId
 export const POST = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);
@@ -18,17 +17,17 @@ export const POST = handleApiRoute(
     const body = await req.json();
     const result = await flowExecutor.run(
       connectResourcesFlow,
-      { fromId: params.resourceId, relation: body },
+      { resourceId: params.resourceId, ...body },
       { userId: session.userId, identityId: session.identityId, tenantId },
     );
     return NextResponse.json(
-      { success: true, data: result.edge },
+      { success: true, data: result.relation },
       { status: 201 },
     );
   },
 );
 
-// DELETE — remove a specific typed edge; body carries { toId, type }
+// DELETE — remove a specific typed relation; body carries { targetId, type }
 export const DELETE = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);
@@ -36,7 +35,7 @@ export const DELETE = handleApiRoute(
     const body = await req.json();
     const result = await flowExecutor.run(
       disconnectResourcesFlow,
-      { fromId: params.resourceId, toId: body.toId, type: body.type },
+      { resourceId: params.resourceId, targetId: body.targetId ?? body.toId, type: body.type },
       { userId: session.userId, identityId: session.identityId, tenantId },
     );
     return NextResponse.json({ success: true, data: result });

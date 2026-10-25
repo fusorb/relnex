@@ -25,7 +25,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             className="flex items-center gap-2 font-bold text-lg text-primary tracking-tight"
           >
             <div className="h-7 w-7 bg-primary rounded-md flex items-center justify-center text-primary-foreground font-black text-sm">
-              A
+              R
             </div>
             {siteConfig.name}{" "}
             <span className="text-xs text-muted-foreground font-normal px-1.5 py-0.5 rounded bg-muted border border-border">

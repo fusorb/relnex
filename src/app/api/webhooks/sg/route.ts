@@ -3,16 +3,16 @@ import { prisma } from "@/core/db";
 import { createHmac, timingSafeEqual } from "crypto";
 
 /**
- * Arc-id → Arcbase webhook handler.
- * Mounted at: POST /api/webhooks/arcid
+ * Sg → Relnex webhook handler.
+ * Mounted at: POST /api/webhooks/sg
  *
- * Arc-id sends lifecycle events (IDENTITY_SUSPENDED, IDENTITY_DELETED etc.)
- * via its WebhookEvent outbox. This handler keeps arcbase User in sync.
+ * Sg sends lifecycle events (IDENTITY_SUSPENDED, IDENTITY_DELETED etc.)
+ * via its WebhookEvent outbox. This handler keeps the Relnex User in sync.
  *
  * Secured by HMAC-SHA256 signature verification.
  */
 
-const WEBHOOK_SECRET = process.env.ARCID_WEBHOOK_SECRET!;
+const WEBHOOK_SECRET = process.env.SG_WEBHOOK_SECRET!;
 
 function verifySignature(body: string, signature: string): boolean {
   const expected = createHmac("sha256", WEBHOOK_SECRET)
@@ -30,7 +30,7 @@ function verifySignature(body: string, signature: string): boolean {
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
-  const signature = req.headers.get("x-arcid-signature") ?? "";
+  const signature = req.headers.get("x-sg-signature") ?? "";
 
   if (!verifySignature(rawBody, signature)) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     }
 
     case "USER_REGISTERED": {
-      // arc-id notifies us of new registrations so we can pre-provision User
+      // Sg notifies us of new registrations so we can pre-provision User
       // This is optional — withUser() above also handles lazy provisioning
       if (event.identityId) {
         const existing = await prisma.user.findUnique({
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
     }
 
     default:
-      // Unknown event — ignore, return 200 so arc-id doesn't retry
+      // Unknown event — ignore, return 200 so Sg doesn't retry
       break;
   }
 

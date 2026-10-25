@@ -1,18 +1,19 @@
+// src/app/api/collections/[collectionId]/reorder/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
-import { CollectionService } from "@/domains/collections/collection.service";
-import { reorderCollectionSchema } from "@/domains/collections/collection.dto";
+import { CollectionService, reorderCollectionSchema } from "@/domains/collections";
 import { ApiError } from "@/lib/errors";
 
 interface RouteParams {
   params: { collectionId: string };
 }
 
-// POST: Commit sequential index modification across rows inside a single execution block
+// POST: Update the order of resources in the collection
 export const POST = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);
+    const tenantId = req.headers.get("x-tenant-id") ?? null;
     const { collectionId } = params;
 
     const body = await req.json();
@@ -26,12 +27,12 @@ export const POST = handleApiRoute(
       collectionId,
       session.userId,
       parsed.data.orderedItemIds,
+      tenantId,
     );
 
     return NextResponse.json({
       success: true,
-      message:
-        "Curriculum tracking order indexes compiled and rewritten successfully.",
+      message: "Collection order updated.",
     });
   },
 );

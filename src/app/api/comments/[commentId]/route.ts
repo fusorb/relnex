@@ -2,8 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
-import { flowExecutor } from "@/core/flows/flow-executor";
-import { addCommentFlow } from "@/domains/resources/flows/add-comment.flow";
+import { flowExecutor } from "@/core/flows";
+import { addCommentFlow } from "@/domains/resources";
 import { CommentService } from "@/domains/comments/comment.service";
 
 interface RouteParams {
@@ -12,17 +12,19 @@ interface RouteParams {
 
 const commentService = new CommentService();
 
-// GET — root-level comments only (replies are via /comments/[commentId]/replies)
+// GET — fetch a single comment by ID
 export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     await requireOnboarded(req);
-    const comments = await commentService.getRootComments(params.resourceId);
-    return NextResponse.json({ success: true, data: comments });
+    const comment = await commentService.findById(params.commentId);
+    if (!comment) {
+      return NextResponse.json({ success: false, error: "Comment not found" }, { status: 404 });
+    }
+    return NextResponse.json({ success: true, data: comment });
   },
 );
 
-// POST — create a comment or reply.
-// parentId in body creates a reply; omit for a root comment.
+// POST — create a reply to this comment
 export const POST = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);
@@ -30,7 +32,7 @@ export const POST = handleApiRoute(
     const body = await req.json();
     const result = await flowExecutor.run(
       addCommentFlow,
-      { resourceId: params.resourceId, data: body },
+      { ...body, parentId: params.commentId },
       { userId: session.userId, identityId: session.identityId, tenantId },
     );
     return NextResponse.json(

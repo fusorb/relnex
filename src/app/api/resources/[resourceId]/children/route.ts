@@ -1,15 +1,14 @@
 // src/app/api/resources/[resourceId]/children/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
-import { flowExecutor } from "@/core/flows/flow-executor";
-import { getChildrenFlow } from "@/domains/resources/flows/get-children.flow";
+import { flowExecutor } from "@/core/flows";
+import { getChildrenFlow } from "@/domains/resources";
 
 interface RouteParams {
   params: { resourceId: string };
 }
 
-// Public — children are scoped by tenantId only; no auth required.
-// Anonymous readers can traverse public knowledge graph hierarchies.
+// Public — resource children are scoped by tenantId only; no auth required.
 export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const tenantId = req.headers.get("x-tenant-id") ?? null;
