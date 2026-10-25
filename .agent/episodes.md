@@ -1,0 +1,178 @@
+# Relnex: Episodic Canon
+
+> (what changed, how it evolved, what survived) — local tracker
+
+Purpose: a living narrative of how this repo reached its current state.
+Canonical facts live in README/CLAUDE.md/docs; this file lives in the
+head between sessions. Mantra: evolution is the only option.
+
+================================================================================
+
+EP 01 -- Create Next App → NexaShelf
+--------------------------------------------------------------------------------
+What happened:
+  `ac2d020` scaffolds the repo from Create Next App. `429bc55` names the
+  first prototype "NexaShelf" and adds pnpm + Tailwind + shadcn/ui. The
+  product concept — a knowledge graph content engine — is present from
+  the first commit, but the brand churns through several names before
+  settling.
+
+What survived:
+  The stack never changes after this: Next.js (App Router), pnpm,
+  TypeScript strict, Prisma/PostgreSQL, Tailwind. Every later rename is
+  a namespace problem, not an architecture problem.
+
+================================================================================
+
+EP 02 -- The Arcbase Build-Out
+--------------------------------------------------------------------------------
+What happened:
+  Commits `611164a` → `b91411f` + `a58ef5e` build the domain backbone:
+  14 resource flows, collections, users, auth, comments, tags. The app
+  is branded "Arcbase" and auth is delegated to a sibling service named
+  "arc-id" (later SovGrant). `User.identityId` becomes the permanent
+  bridge — a string reference to the identity service with no FK.
+
+What changed (the evolution):
+  - Routes are pulled out of business logic; domains own DTO/service/
+    repository/flows.
+  - The Flow system lands as **objects, not classes** — `Flow<I, O>`
+    with `flowExecutor.run(flow, input, ctx)`.
+  - Error handling centralizes on `ApiError` static factories +
+    `handleApiRoute`.
+
+What survived:
+  `User.identityId`, the JWT `sub` claim, the flow-object shape, and the
+  route-handler wrapper are all still load-bearing today.
+
+================================================================================
+
+EP 03 -- The Facet SDK Integration (arc-ui → facet)
+--------------------------------------------------------------------------------
+What happened:
+  `7cd8d69` "repo update with facet integration" pulls in the shared UI/
+  SDK packages — at that point published under `@arcevo/facet-*`. The
+  repo gains wrappers under `src/lib/facet/` (SDK factories, client
+  factory) and `src/lib/arcid/` (a hand-written HTTP client for the
+  identity service).
+
+What changed:
+  - `@/lib/facet` wraps the typed SDKs (`AuthSdk`, `TenantSdk`, ...).
+  - `@/lib/arcid` remains a parallel, hand-rolled client — the seed of
+    the later "two competing auth systems" problem.
+  - UI primitives start importing from the shared components package.
+
+What survived:
+  The wrapper pattern (`src/lib/facet` → typed SDKs) survives. The
+  duplicate hand-written `arcid` client does not (see EP 06).
+
+================================================================================
+
+EP 04 -- The Great Cleanup
+--------------------------------------------------------------------------------
+What happened:
+  `fa746fc` "chore: clean codebase" mass-deletes 38 shadcn/ui component
+  files under `src/components/ui/` plus `GraphVisualizerPreview.tsx`.
+  The hand-rolled UI layer is replaced by `@fusorb/facet-components`.
+
+What changed:
+  - The repo stops owning UI primitives; the shared package owns them.
+  - `src/components/ui/` is emptied; shared/layout/home components remain.
+
+What survived:
+  `@fusorb/facet-components` becomes the single source of UI truth.
+  This is the first namespace-driven deletion — a pattern repeated in
+  the full migration (EP 06).
+
+================================================================================
+
+EP 05 -- The Fusorb Namespace (arcevo → fusorb)
+--------------------------------------------------------------------------------
+What happened:
+  `package.json` moved the facet packages from `@arcevo/facet-*` to
+  `@fusorb/facet-*` and bumped them (`facet-auth` 2.0.0, `facet-components`
+  3.1.0, `facet-layout` 1.6.0, `facet-sdk` 2.0.0, `facet-store` 1.0.2,
+  `facet-tokens` 1.5.0). But the source code still imported
+  `@arcevo/facet-*` — the classic half-migration: dependency manifest
+  updated, import sites not.
+
+What changed (this migration):
+  Every `@arcevo/facet-*` import across `src/` was rewritten to
+  `@fusorb/facet-*`. The installed SDK also renamed its public surface:
+  `ArcIdClient` → `SgClient`, `ArcProvider` → `SgProvider`,
+  `WebhookSdk` → `WebhooksSdk`. All call sites followed.
+
+What survived:
+  The facet package *names* survive (`facet-components`, `facet-sdk`,
+  etc.) — only the scope and the SovGrant-facing identifiers changed.
+
+Lesson: a dependency manifest that moves before its import sites is a
+half-migration. When a package renames its exports, grep the whole tree,
+not just the package that introduced the name.
+
+================================================================================
+
+EP 06 -- arc-id → SovGrant, the `sg` Prefix, and Dead-Code Deletion
+--------------------------------------------------------------------------------
+What happened:
+  The identity service was de-branded from "arc-id" to **SovGrant**, and
+  the repo-wide code prefix standardized on `sg` (SovGrant's internal
+  two-letter code — easier to type and remember than spelling it out).
+
+  Files and folders were renamed with git history preserved:
+  - `src/lib/arcid/` → `src/lib/sg/`
+  - `src/app/api/webhooks/arcid/` → `src/app/api/webhooks/sg/`
+  - `.env.arcid.example` → `.env.sg.example`
+
+  Symbols and identifiers were migrated:
+  - `arcid` / `sovgrant` client object → `sg`
+  - `ArcIDError` / `SovGrantError` → `SgError`
+  - `ArcIDIdentity` / `SovGrantIdentity` → `SgIdentity`
+  - `verifyArcIDToken` / `verifySovGrantToken` → `verifySgToken`
+  - `ArcIDTokenPayload` / `SovGrantTokenPayload` → `SgTokenPayload`
+  - cookies `arcid_at/rt/sid` → `sg_at/rt/sid`
+  - env `ARCID_*` / `SOVGRANT_*` → `SG_*`
+  - webhook signature header `x-arcid-signature` → `x-sovgrant-signature`
+
+  Dead code verified unused and deleted:
+  - `src/stores/` (old Zustand wrappers)
+  - `src/components/auth/` (unused facet-auth wrappers)
+  - `src/components/layout/{FacetLayout,index,protected-route}`
+  - `src/jobs/` (empty stubs)
+  - `src/lib/activity/` (unreferenced logger)
+  - `scaffold.js`, `gen-snapshot.js` (one-off scaffold/snapshot scripts)
+
+What changed (brand):
+  - App name: Arcbase → **Relnex** (everywhere: docs, config, UI copy).
+  - Ecosystem: Arcevo → **Fusorb**.
+  - Identity service: arc-id → **SovGrant** in prose, `sg` in code.
+  - Docs renamed: `docs/arcbase-roadmap.md` → `docs/relnex-roadmap.md`.
+
+What survived:
+  The app name "Relnex" and the `sg` code prefix are now canonical.
+  `src/lib/sg` is the single identity-service HTTP client; the facet SDK
+  wrappers (`src/lib/facet`) remain the typed-SDK layer on top.
+
+Rule: prose says SovGrant, code says `sg`/`Sg`/`SG_`. If a consumer sees
+"arc-id" or "ArcID" anywhere in this tree, the migration is incomplete.
+
+================================================================================
+
+EP 07 -- The Naming Canon (reflection)
+--------------------------------------------------------------------------------
+The arc of this repo's names:
+
+  repo/product:  Create Next App → NexaShelf → Arcbase → **Relnex**
+  identity:      (unnamed) → arc-id → SovGrant (code prefix `sg`)
+  UI/SDK:        (hand-rolled shadcn) → arc-ui → facet (`@fusorb/facet-*`)
+  wallet:        arc-wallet → **SovPort** (sibling repo, not this one)
+
+Every rename followed the same rule: update the manifest AND the import
+sites AND the docs AND the env templates in one sweep, then delete the
+dead wrappers the rename left behind. A rename is never just a string
+replace — it is the moment to delete the code that only existed to wrap
+the old name.
+
+State: namespace migration complete. Source grep returns zero `arcbase`,
+`arc-id`, `ArcID`, `ARCID`, or `@arcevo` references outside `.agent/`
+history and generated Prisma artifacts.

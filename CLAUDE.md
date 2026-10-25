@@ -1,15 +1,15 @@
-# Arcbase — AI Agent Handbook
+# Relnex — AI Agent Handbook
 
 > Version 0.1.0 — Next.js 15 App Router + Prisma/PostgreSQL + TailwindCSS v4
-> Auth delegated to Arc-ID. See `docs/architecture.md` for full documentation.
+> Auth delegated to SovGrant (SG). See `docs/architecture.md` for full documentation.
 
 ---
 
-## What Arcbase Is
+## What Relnex Is
 
-Arcbase is the **knowledge graph content engine** for the Arcevo ecosystem. It's a Next.js 15 app (pnpm, TypeScript strict) where users create, organize, and discover resources (articles, notes, videos, etc.) connected by typed relations. Auth is fully delegated to **Arc-ID** — a separate Fastify identity service that owns passwords, MFA, sessions, and OAuth. Arcbase bridges via `User.identityId`.
+Relnex is the **knowledge graph content engine** for the Fusorb ecosystem. It's a Next.js 15 app (pnpm, TypeScript strict) where users create, organize, and discover resources (articles, notes, videos, etc.) connected by typed relations. Auth is fully delegated to **SovGrant** — a separate Fastify identity service that owns passwords, MFA, sessions, and OAuth. Relnex bridges via `User.identityId`.
 
-**Current state:** 37/39 route files have broken imports from incomplete auth infrastructure. Core guard functions missing. See `docs/arcbase-roadmap.md` for the rebuild status.
+**Current state:** 37/39 route files have broken imports from incomplete auth infrastructure. Core guard functions missing. See `docs/relnex-roadmap.md` for the rebuild status.
 
 ---
 
@@ -27,7 +27,7 @@ export const GET = handleApiRoute(async (req, { params }) => {
 
 - ALWAYS use `handleApiRoute` from `@/lib/errors`
 - ALWAYS use `requireAuth` or `requireOnboarded` from `@/core/auth`
-- NEVER import from `@/lib/arcid/middleware` (deprecated)
+- NEVER import from `@/lib/sg/middleware` (deprecated)
 - NEVER import from `@/domains/auth/` (auth domain was scaffold, now handled by core/auth)
 
 ### Import Locations
@@ -36,13 +36,13 @@ export const GET = handleApiRoute(async (req, { params }) => {
 |---|---|---|
 | Auth guards (requireAuth, requireOnboarded) | `@/core/auth` | Inline functions, not HOF |
 | Auth session (getSession, AuthSession) | `@/core/auth` | |
-| JWT verify (verifyArcIDToken) | `@/core/auth` | |
+| JWT verify (verifySgToken) | `@/core/auth` | |
 | Auth cookies (setAuthCookies, clearAuthCookies) | `@/core/auth` | |
 | Prisma client | `@/core/db` | Singleton, not from @/lib/prisma |
 | Prisma helpers (resourceWithRelations) | `@/core/db` | |
 | FlowExecutor, Flow, FlowContext | `@/core/flows` | |
 | ApiError, handleApiRoute, handleError | `@/lib/errors` | Barrel — not individual files |
-| Arc-ID HTTP client (arcid.register, etc.) | `@/lib/arcid` | Only for SDK calls to arc-id |
+| SG HTTP client (sg.register, etc.) | `@/lib/sg` | Only for SDK calls to SovGrant |
 
 ### Flow Pattern — Object Style
 
@@ -104,9 +104,9 @@ Every domain in `src/domains/<n>/` owns:
 
 ### What Never Changes
 
-- `User.identityId` — permanent bridge to arc-id Identity.id
-- JWT `sub` claim = arc-id `Identity.id` — all middleware depends on this
-- `ARCID_JWT_SECRET` must match between arcbase and arc-id `.env` files
+- `User.identityId` — permanent bridge to SovGrant Identity.id
+- JWT `sub` claim = SovGrant `Identity.id` — all middleware depends on this
+- `SG_JWT_SECRET` must match between Relnex and SovGrant `.env` files
 - `requireAuth`/`requireOnboarded` are the ONLY valid guard patterns
 
 ---
@@ -124,6 +124,6 @@ pnpm lint         # ESLint
 
 ## Current Status
 
-See `docs/arcbase-roadmap.md` for the live rebuild status. This file is the compressed rules copy — keep it in sync with the roadmap.
+See `docs/relnex-roadmap.md` for the live rebuild status. This file is the compressed rules copy — keep it in sync with the roadmap.
 
-_Last updated: 2026-07-27_
+_Last updated: 2026-10-25_

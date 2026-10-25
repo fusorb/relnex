@@ -1,6 +1,6 @@
-# Arcbase
+# Relnex
 
-Next.js 15 knowledge-graph application. Auth delegated to [arc-id](https://github.com/ArcevoDev/arc-id) (Fastify identity service).
+Next.js 15 knowledge-graph application. Auth delegated to [SovGrant](https://github.com/fusorb/sovgrant) (Fastify identity service, code prefix `sg`).
 
 ## Stack
 
@@ -8,9 +8,9 @@ Next.js 15 knowledge-graph application. Auth delegated to [arc-id](https://githu
 - **Language**: TypeScript (strict mode)
 - **Package manager**: pnpm
 - **Database**: PostgreSQL via Prisma ORM
-- **Auth**: arc-id (external identity service)
+- **Auth**: SovGrant (external identity service)
 - **Storage**: S3-compatible (AWS S3 / Cloudflare R2)
-- **UI**: shadcn/ui + Tailwind CSS v4
+- **UI**: `@fusorb/facet-components` + Tailwind CSS v4
 
 ## Getting Started
 
@@ -23,7 +23,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Architecture
 
-See [docs/architecture.md](./docs/architecture.md) and [docs/arcbase-roadmap.md](./docs/arcbase-roadmap.md) for the full architecture and rebuild plan.
+See [docs/architecture.md](./docs/architecture.md) and [docs/relnex-roadmap.md](./docs/relnex-roadmap.md) for the full architecture and rebuild plan.
 
 ### Route Handler Pattern
 
@@ -57,11 +57,11 @@ domains/{name}/
 
 | Import | Must be from | Never from |
 |--------|-------------|------------|
-| Auth guards | `@/core/auth` | `@/lib/arcid/middleware` |
+| Auth guards | `@/core/auth` | `@/lib/sg/middleware` |
 | Error handling | `@/lib/errors` | individual files |
 | Prisma | `@/core/db` | relative paths |
 | Flows | `@/core/flows` | individual flow files |
-| arc-id SDK | `@/lib/arcid` | individual client files |
+| SG SDK | `@/lib/sg` | individual client files |
 
 ## Scripts
 

@@ -1,43 +1,43 @@
-# Arcbase v0.1.0 Roadmap — Architecture Alignment
+# Relnex v0.1.0 Roadmap — Architecture Alignment
 
-> Arcbase is the knowledge-graph content management layer of the Arcevo ecosystem.
-> Auth is fully delegated to **Arc-ID** (separate Fastify service). arcbase owns User
-> profile, Resources, Collections, Comments, Tags, Search, and Activity.
+> Relnex is the knowledge-graph content management layer of the Fusorb ecosystem.
+> Auth is fully delegated to **SovGrant** (separate Fastify service, code prefix `sg`).
+> Relnex owns User profile, Resources, Collections, Comments, Tags, Search, and Activity.
 
 ---
 
-## Current State (2026-07-27)
+## Current State (2026-10-25)
 
 ### What Works
 
 | Layer | Status | Details |
 |-------|--------|---------|
-| Prisma schema | ✅ **Final** | 16 models, 10 enums, `User.identityId` bridge to arc-id. No schema changes needed. |
+| Prisma schema | ✅ **Final** | 16 models, 10 enums, `User.identityId` bridge to SovGrant. No schema changes needed. |
 | Domain layers | ✅ **Functional** | Resources (14 flows), Collections (4 flows), Users (3 flows), Auth (2 flows), Search, Uploads, Tags, Comments (partial), Activity (types) |
 | Auth infrastructure | ⚠️ **Partial** | `core/auth/` has JWT verify, session, cookies, guards — but routing layer never wired correctly |
 | API routes | 🔴 **37/39 broken** | Missing `requireAuth`, `requireOnboarded`, `handleApiRoute` — every guarded route will fail at import time |
 | Frontend pages | ⚠️ **Partial** | Login/Register complete. Landing (empty), Onboarding (empty), Dashboard (missing). |
 | Auth context/providers | ✅ **Complete** | AuthProvider, QueryClient, Theme, Toaster all wired. |
-| Documentation | 🔴 **None** | No CLAUDE.md, AGENTS.md, or architecture docs matching arc-id/arc-wallet patterns |
+| Documentation | ✅ **Present** | CLAUDE.md, AGENTS.md, architecture docs, and episode tracker all migrated to the Relnex/SovGrant/Facet namespace |
 
 ### Auth Architecture
 
 ```
-Arc-ID (Fastify :4000)              Arcbase (Next.js :3000)
+SovGrant (Fastify :4000)              Relnex (Next.js :3000)
 ┌──────────────────────┐           ┌──────────────────────────┐
 │  Owns: Identity,     │  JWT      │  Owns: User, Resource,   │
 │  LocalAccount,       │  ◄─────── │  Collection, Comment,    │
 │  Session, MFA,       │  shared   │  Tag, Activity           │
 │  Passkey, OAuth      │  secret   │                           │
 │                      │           │  Bridge: User.identityId │
-│  arc-id Identity     │           │  = arc-id Identity.id    │
+│  SovGrant Identity   │           │  = SovGrant Identity.id  │
 │  (id, primaryEmail,  │           │  (string ref, no FK)     │
 │   status, mfa, ...)  │  Webhook  │                           │
 │                      │  ──────►  │  Webhook: identity sync  │
 └──────────────────────┘           └──────────────────────────┘
 ```
 
-JWTs issued by arc-id → verified locally in arcbase via `jose` + shared `ARCID_JWT_SECRET` → no network call on every request. This is **identical to Clerk's model**.
+JWTs issued by SovGrant → verified locally in Relnex via `jose` + shared `SG_JWT_SECRET` → no network call on every request. This is **identical to Clerk's model**.
 
 ---
 
@@ -45,14 +45,14 @@ JWTs issued by arc-id → verified locally in arcbase via `jose` + shared `ARCID
 
 | # | Workstream | Phase | Why This Order |
 |---|---|---|---|
-| 0 | **Documentation** | Phase 0 | Define the contract before changing anything |
+| 0 | **Documentation** | ✅ Phase 0 | Define the contract before changing anything |
 | 1 | **Core Infrastructure** | ✅ Phase 1 | `requireAuth`, `requireOnboarded`, `handleApiRoute` created |
 | 2 | **Flow Unification** | ✅ Phase 2 | All 13 flow-using routes use object-style flows |
 | 3 | **Auth Consolidation** | 🔲 Phase 3 | Delete duplicate auth code, single source of truth |
 | 4 | **Route Fix Pass** | ✅ Phase 4 | All 39 route files fixed — imports, guards, patterns unified |
-| 5 | **Edge Middleware** | Phase 5 | Tenant header forwarding |
-| 6 | **Pages** | Phase 6 | Landing, Onboarding, Dashboard |
-| 7 | **Polish & Verify** | Phase 7 | Build check, typecheck, lint, end-to-end auth test |
+| 5 | **Edge Middleware** | 🔲 Phase 5 | Tenant header forwarding |
+| 6 | **Pages** | 🔲 Phase 6 | Landing, Onboarding, Dashboard |
+| 7 | **Polish & Verify** | 🔲 Phase 7 | Build check, typecheck, lint, end-to-end auth test |
 
 ---
 

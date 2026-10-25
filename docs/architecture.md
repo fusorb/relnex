@@ -1,7 +1,7 @@
-# Arcbase Architecture
+# Relnex Architecture
 
 > Version 0.1.0 — Next.js 15 App Router + Prisma/PostgreSQL + TailwindCSS v4
-> Auth delegated to **Arc-ID** (identity microservice)
+> Auth delegated to **SovGrant** (identity microservice, code prefix `sg`)
 
 ---
 
@@ -24,7 +24,7 @@ src/
 │       ├── tags/           # list, create
 │       ├── search/         # unified search across entities
 │       ├── uploads/        # presigned upload URLs
-│       └── webhooks/       # arc-id identity lifecycle sync
+│       └── webhooks/       # SG identity lifecycle sync
 │
 ├── core/                   # Infrastructure (no business logic)
 │   ├── auth/               # JWT verify, guards, cookies, session
@@ -43,22 +43,20 @@ src/
 │   └── activity/           # Activity type constants + fire-and-forget logger
 │
 ├── lib/                    # Third-party clients & utilities
-│   ├── arcid/              # Arc-ID HTTP SDK client (only client.ts + barrel)
+│   ├── sg/                 # SovGrant HTTP SDK client (only client.ts + barrel)
 │   ├── errors/             # ApiError, handleError, handleApiRoute
 │   ├── storage/            # S3/R2 client
-│   ├── useful/             # api-client, openapi spec, logger, metadata
-│   └── activity/           # Fire-and-forget activity logger
+│   └── useful/             # api-client, openapi spec, logger, metadata
 │
 ├── components/             # UI components
-│   ├── ui/                 # shadcn/ui primitives (~50)
 │   ├── shared/             # Navbar, Sidebar, Footer
-│   ├── layout/             # DashboardLayout, MarketingLayout, ProtectedRoute
-│   └── home/               # Hero, Features, GraphVisualizerPreview
+│   ├── layout/             # DashboardLayout, MarketingLayout
+│   └── home/               # Hero, Features
 │
 ├── context/                # React providers (Auth, QueryClient, Theme)
 ├── hooks/                  # useAuth, useApiQuery, useDebounce, useTheme, useMobile
 ├── config/                 # Site configuration (navigation, features)
-└── middleware.ts            # Edge middleware (tenant forwarding)
+└── middleware.ts           # Edge middleware (tenant forwarding)
 ```
 
 ---
@@ -68,25 +66,25 @@ src/
 ```
 1. REGISTER
    Browser → POST /api/auth/register
-     → arcid.register(email, password, name)  [HTTP to arc-id]
-     → arc-id creates Identity, returns { identity.id }
-     → arcbase creates User { identityId: identity.id, username }
+     → sg.register(email, password, name)  [HTTP to SovGrant]
+     → SovGrant creates Identity, returns { identity.id }
+     → Relnex creates User { identityId: identity.id, username }
      ← 201 { userId, identityId }
 
 2. LOGIN
    Browser → POST /api/auth/login
-     → arcid.login(email, password)  [HTTP to arc-id]
-     → arc-id verifies credentials, issues JWT
-     → arcbase sets HttpOnly cookies: arcid_at, arcid_rt, arcid_sid
+     → sg.login(email, password)  [HTTP to SovGrant]
+     → SovGrant verifies credentials, issues JWT
+     → Relnex sets HttpOnly cookies: sg_at, sg_rt, sg_sid
      ← 200 { accessToken, refreshToken, sessionId }
 
 3. AUTHENTICATED REQUEST
    Browser → GET /api/users/me/profile
-     → Cookie: arcid_at=<JWT>  (or Authorization: Bearer <JWT>)
+     → Cookie: sg_at=<JWT>  (or Authorization: Bearer <JWT>)
      → middleware forwards tenant headers
      → route handler: const session = await requireAuth(req)
        → getSession(req) extracts JWT from header/cookie
-       → verifyArcIDToken(token) — local jose verify (no network call)
+       → verifySgToken(token) — local jose verify (no network call)
        → prisma.user.findUnique({ where: { identityId: payload.sub } })
      ← 200 { user }
 
@@ -96,9 +94,9 @@ src/
      ← 200
 
 5. WEBHOOK SYNC (identity lifecycle)
-   arc-id → POST /api/webhooks/arcid (HMAC-signed)
-     → IDENTITY_SUSPENDED/DELETED: soft-deletes arcbase User
-     → USER_REGISTERED: pre-provisions arcbase User
+   SovGrant → POST /api/webhooks/sg (HMAC-signed)
+     → IDENTITY_SUSPENDED/DELETED: soft-deletes Relnex User
+     → USER_REGISTERED: pre-provisions Relnex User
      ← 200
 ```
 
@@ -125,7 +123,7 @@ Key rules:
 - Always wrap in `handleApiRoute` (catches all error types)
 - Use `requireAuth` for routes that need any authentication
 - Use `requireOnboarded` for routes that need a fully-provisioned user
-- Never import from `@/lib/arcid/middleware` (deprecated)
+- Never import from `@/lib/sg/middleware` (deprecated)
 - Never import from `@/domains/auth/require-auth` (removed)
 
 ---
@@ -184,11 +182,11 @@ Available static factories: `badRequest(400)`, `unauthorized(401)`, `forbidden(4
 
 | Import Path | Exports | Used For |
 |---|---|---|
-| `@/core/auth` | `requireAuth`, `requireOnboarded`, `getSession`, `verifyArcIDToken`, `setAuthCookies`, `clearAuthCookies` | Auth guards, JWT, cookies |
+| `@/core/auth` | `requireAuth`, `requireOnboarded`, `getSession`, `verifySgToken`, `setAuthCookies`, `clearAuthCookies` | Auth guards, JWT, cookies |
 | `@/core/db` | `prisma`, `resourceWithRelations`, `collectionWithResources`, `commentWithAuthor` | Database access |
 | `@/core/flows` | `flowExecutor`, `Flow`, `FlowContext`, `FlowError` | Write operation flows |
 | `@/lib/errors` | `ApiError`, `handleError`, `handleApiRoute` | Error handling |
-| `@/lib/arcid` | `arcid`, `ArcIDError` | Arc-ID HTTP client (register, login, etc.) |
+| `@/lib/sg` | `sg`, `SgError` | SovGrant HTTP client (register, login, etc.) |
 | `@/lib/storage/s3` | `s3Client` | S3 uploads |
 | `@/config/site` | `siteConfig` | Navigation, features, validation |
 

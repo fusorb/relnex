@@ -1,13 +1,13 @@
-# Arcbase — Agent Instructions
+# Relnex — Agent Instructions
 
 > Loaded automatically every session. For the full handbook — architecture,
 > patterns, and rules — see `CLAUDE.md` and `docs/architecture.md` in this root.
 
 ---
 
-## What Arcbase Is
+## What Relnex Is
 
-Next.js 15 knowledge-graph app. Auth delegated to `arc-id` (Fastify identity service).
+Next.js 15 knowledge-graph app. Auth delegated to `sovgrant` (Fastify identity service, code prefix `sg`).
 Package manager: **pnpm**. TypeScript strict mode.
 
 ## Route Handler Pattern (MANDATORY)
@@ -27,11 +27,11 @@ export const GET = handleApiRoute(async (req, { params }) => {
 
 | Import | Must be from | Never from |
 |--------|-------------|------------|
-| Auth guards | `@/core/auth` | `@/lib/arcid/middleware`, `@/domains/auth/` |
+| Auth guards | `@/core/auth` | `@/lib/sg/middleware`, `@/domains/auth/` |
 | Error handling | `@/lib/errors` | `@/lib/errors/handle-error` (individual file) |
 | Prisma | `@/core/db` | `@/lib/prisma` (doesn't exist) |
 | Flows | `@/core/flows` | individual flow files directly |
-| arc-id SDK | `@/lib/arcid` | only for HTTP client calls |
+| SG SDK | `@/lib/sg` | only for HTTP client calls |
 
 ## Workflow Rules
 
@@ -44,7 +44,7 @@ export const GET = handleApiRoute(async (req, { params }) => {
 
 ## Current Rebuild Status
 
-See `docs/arcbase-roadmap.md` for the phased rebuild plan. Work is ordered by dependency:
+See `docs/relnex-roadmap.md` for the phased rebuild plan. Work is ordered by dependency:
 
 - Phase 0 ✅ — Documentation (this file + CLAUDE.md + docs/)
 - Phase 1 ✅ — Core infrastructure (requireAuth, handleApiRoute)
