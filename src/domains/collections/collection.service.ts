@@ -13,16 +13,20 @@ export class CollectionService {
   }
 
   async createCollection(userId: string, input: CreateCollectionInput, tenantId?: string | null) {
-    return this.repo.create({
+    const created = await this.repo.create({
       author: { connect: { id: userId } },
       slug: input.slug,
       title: input.title,
       description: input.description,
       visibility: input.visibility ?? "PUBLIC",
       metadata: input.metadata,
-      parentId: input.parentId,
+      parent: input.parentId ? { connect: { id: input.parentId } } : undefined,
       tenantId: tenantId ?? null,
     });
+
+    const full = await this.repo.findById(created.id, tenantId);
+    if (!full) throw ApiError.internal("Failed to load created collection");
+    return full;
   }
 
   async getCollection(id: string, tenantId?: string | null) {

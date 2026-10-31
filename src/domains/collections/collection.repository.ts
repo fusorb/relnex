@@ -1,13 +1,31 @@
 import type { DbClient } from "@/core/flows/flow-context";
 import type { Prisma }   from "@prisma-client";
 
+const authorSelect = {
+  id: true,
+  username: true,
+  displayName: true,
+  avatarUrl: true,
+  bio: true,
+  archetype: true,
+  createdAt: true,
+} as const;
+
 export class CollectionRepository {
   constructor(private db: DbClient) {}
 
   async findById(id: string, tenantId?: string | null) {
     return this.db.collection.findFirst({
       where:   { id, tenantId, deletedAt: null },
-      include: { author: true, resources: { include: { resource: true }, orderBy: { orderIndex: "asc" } } },
+      include: {
+        author: true,
+        resources: {
+          include: {
+            resource: { include: { author: { select: authorSelect }, metrics: true } },
+          },
+          orderBy: { orderIndex: "asc" },
+        },
+      },
     });
   }
 
