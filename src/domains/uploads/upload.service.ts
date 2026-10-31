@@ -52,7 +52,7 @@ export class UploadService {
         fileKey,
       };
     } catch (error) {
-      logger.error("Upload signature generation failed", error);
+       logger.error("Upload signature generation failed", { error });
       throw ApiError.internal("Failed to generate upload URL");
     }
   }

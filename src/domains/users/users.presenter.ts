@@ -16,7 +16,17 @@ export interface PublicUser {
   createdAt: string;
 }
 
-export function presentPublicUser(user: User): PublicUser {
+type PublicUserInput = {
+  id: string;
+  username: string;
+  displayName: string | null;
+  avatarUrl: string | null;
+  bio: string | null;
+  archetype: string;
+  createdAt: Date;
+};
+
+export function presentPublicUser(user: PublicUserInput): PublicUser {
   return {
     id: user.id,
     username: user.username,

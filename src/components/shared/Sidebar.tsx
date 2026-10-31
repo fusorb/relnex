@@ -1,7 +1,6 @@
 // src/components/shared/Sidebar.tsx
 "use client";
 
-import type { ComponentType } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
@@ -20,8 +19,8 @@ export function Sidebar() {
           </div>
           <nav className="space-y-1">
             {siteConfig.dashboardNavItems.map((item) => {
-              const IconComponent =
-                (Icons as Record<string, ComponentType>)[item.icon] ?? Icons.HelpCircle;
+              const IconComponent: typeof Icons.HelpCircle =
+                (Icons as unknown as Record<string, typeof Icons.HelpCircle>)[item.icon] ?? Icons.HelpCircle;
               const isActive = pathname === item.href;
               return (
                 <Link
