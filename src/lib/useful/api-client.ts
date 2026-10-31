@@ -1,4 +1,7 @@
-import { ApiError } from "@/lib/errors";
+// Import the leaf module, not the `@/lib/errors` barrel: the barrel also
+// re-exports handleError/handleApiRoute, which pull @/core/flows -> prisma -> pg
+// into the client bundle and break the browser build.
+import { ApiError } from "@/lib/errors/api-error";
 
 export interface FetchOptions extends Omit<RequestInit, 'credentials'> {
   bodyData?: Record<string, unknown>;
