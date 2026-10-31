@@ -1,13 +1,16 @@
-import { sg } from "@/lib/sg/client";
 import { prisma } from "@/core/db/prisma";
 import { ApiError } from "@/lib/errors";
+import { AuthSdk, createServerSgClient, unwrap } from "@/lib/sg";
 import type { DbClient } from "@/core/flows/flow-context";
 import type { RegisterInput, LoginInput } from "./auth.dto";
 
 export const authService = {
   async register(input: RegisterInput, db: DbClient = prisma) {
     // 1. Create Identity in Sg
-    const { identity } = await sg.register(input.email, input.password, input.displayName);
+    const sdk = new AuthSdk(createServerSgClient());
+    const { identity } = await unwrap(
+      sdk.register(input.displayName ?? input.username, input.email, input.password)
+    );
 
     // 2. Check username availability in Relnex
     const existing = await db.user.findUnique({ where: { username: input.username } });
@@ -28,27 +31,8 @@ export const authService = {
   },
 
   async login(input: LoginInput) {
-    return sg.login(input.email, input.password);
-  },
-
-  async verifyMfa(sessionId: string, code: string) {
-    return sg.verifyMfa(sessionId, code);
-  },
-
-  async logout(sessionId: string, accessToken: string) {
-    return sg.logout(sessionId, accessToken);
-  },
-
-  async refreshToken(refreshToken: string) {
-    return sg.refreshToken(refreshToken);
-  },
-
-  async requestPasswordReset(email: string) {
-    return sg.requestPasswordReset(email);
-  },
-
-  async confirmPasswordReset(token: string, newPassword: string) {
-    return sg.confirmPasswordReset(token, newPassword);
+    const sdk = new AuthSdk(createServerSgClient());
+    return unwrap(sdk.login(input.email, input.password));
   },
 
   async getProfile(db: DbClient = prisma, userId: string) {

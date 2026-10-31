@@ -30,7 +30,7 @@ export const loginFlow: Flow<z.infer<typeof LoginDto>, LoginFlowOutput> = {
       accessToken:  result.accessToken,
       refreshToken: result.refreshToken,
       sessionId:    result.sessionId,
-      expiresIn:    900,
+      expiresIn:    result.expiresIn ?? 900,
     };
   },
 };
