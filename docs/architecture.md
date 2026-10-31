@@ -64,6 +64,9 @@ src/
 
 ## Auth Flow
 
+See [identity-model.md](./identity-model.md) for the canonical-identity decision
+(SovGrant is the IdP; Relnex is a relying party keyed by `User.identityId`).
+
 ```
 1. REGISTER
    Browser → POST /api/auth/register

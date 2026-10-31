@@ -28,8 +28,9 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Architecture
 
-See [docs/architecture.md](./docs/architecture.md) and
-[docs/relnex-roadmap.md](./docs/relnex-roadmap.md). The AI handbook lives in
+See [docs/architecture.md](./docs/architecture.md),
+[docs/identity-model.md](./docs/identity-model.md) (SovGrant as the canonical IdP),
+and [docs/relnex-roadmap.md](./docs/relnex-roadmap.md). The AI handbook lives in
 [CLAUDE.md](./CLAUDE.md) and [AGENTS.md](./AGENTS.md).
 
 ### Route Handler Pattern

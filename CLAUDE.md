@@ -130,6 +130,13 @@ pnpm typecheck    # tsc --noEmit
 
 ---
 
+## Identity Model (canonical)
+
+SovGrant is the single IdP; Relnex is a relying party keyed by `User.identityId`.
+Identity-level account management (email, password, MFA, passkeys, sessions, connected
+OAuth, deletion) routes through SovGrant only. Relnex owns its product profile/preferences.
+Full decision: [docs/identity-model.md](./docs/identity-model.md).
+
 ## Auth Verification Direction
 
 `verifySgToken` (`src/core/auth/jwt.ts`) currently verifies with the shared `SG_JWT_SECRET`.

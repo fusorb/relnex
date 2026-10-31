@@ -55,6 +55,12 @@ export const GET = handleApiRoute(async (req, { params }) => {
 5. **handleApiRoute wraps every API route.** Always.
 6. **requireAuth for authenticated routes. requireOnboarded for provisioned-user routes.** Never skip guards.
 
+## Identity Model
+
+SovGrant is the canonical IdP; Relnex is a relying party keyed by `User.identityId`.
+Identity-level account management routes through SovGrant; product profile/preferences
+stay in Relnex. See `docs/identity-model.md`.
+
 ## Auth Notes
 
 - JWT verification currently uses the shared `SG_JWT_SECRET`. The direction is to
