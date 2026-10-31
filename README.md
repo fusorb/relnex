@@ -1,10 +1,15 @@
 # Relnex
 
-Next.js 15 knowledge-graph application. Auth delegated to [SovGrant](https://github.com/fusorb/sovgrant) (Fastify identity service, code prefix `sg`).
+Next.js 16 knowledge-graph application. Auth is delegated to [SovGrant](https://github.com/fusorb/sovgrant)
+(a Fastify identity service, code prefix `sg`).
+
+> **Status: paused (2026-10-31).** Backend is stabilized and the app builds clean; the
+> frontend page build-out (Phase 6) is deferred until SovGrant is stable. See
+> [docs/relnex-roadmap.md](./docs/relnex-roadmap.md) for the live plan.
 
 ## Stack
 
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 16 (App Router, Turbopack)
 - **Language**: TypeScript (strict mode)
 - **Package manager**: pnpm
 - **Database**: PostgreSQL via Prisma ORM
@@ -23,7 +28,9 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Architecture
 
-See [docs/architecture.md](./docs/architecture.md) and [docs/relnex-roadmap.md](./docs/relnex-roadmap.md) for the full architecture and rebuild plan.
+See [docs/architecture.md](./docs/architecture.md) and
+[docs/relnex-roadmap.md](./docs/relnex-roadmap.md). The AI handbook lives in
+[CLAUDE.md](./CLAUDE.md) and [AGENTS.md](./AGENTS.md).
 
 ### Route Handler Pattern
 
@@ -40,28 +47,31 @@ export const GET = handleApiRoute(async (req, { params }) => {
 });
 ```
 
+`handleApiRoute` awaits Next 16's async `params` and centralizes error handling, so
+handlers keep synchronous `params` access.
+
 ### Domain Structure
 
 Business logic lives in `src/domains/` following a flows/services/repositories pattern:
 
 ```
 domains/{name}/
-  {name}.dto.ts          — Zod schemas + types
-  {name}.service.ts      — Business logic / orchestration
-  {name}.repository.ts   — Database access
+  {name}.dto.ts          - Zod schemas + types
+  {name}.service.ts      - Business logic / orchestration
+  {name}.repository.ts   - Database access
   flows/
-    {action}.flow.ts     — Composable action flows
+    {action}.flow.ts     - Composable action flows
 ```
 
 ### Import Rules
 
 | Import | Must be from | Never from |
 |--------|-------------|------------|
-| Auth guards | `@/core/auth` | `@/lib/sg/middleware` |
-| Error handling | `@/lib/errors` | individual files |
-| Prisma | `@/core/db` | relative paths |
+| Auth guards | `@/core/auth` | `@/domains/auth/` |
+| Error handling | `@/lib/errors` | individual files (except the client leaf `@/lib/errors/api-error`) |
+| Prisma | `@/core/db` | `@/lib/useful/db-client` |
 | Flows | `@/core/flows` | individual flow files |
-| SG SDK | `@/lib/sg` | individual client files |
+| Sg SDK | `@/lib/sg` | individual client files |
 
 ## Scripts
 
@@ -69,8 +79,11 @@ domains/{name}/
 |---------|---------|
 | `pnpm dev` | Development server (Turbopack) |
 | `pnpm build` | Production build |
-| `pnpm lint` | ESLint |
 | `pnpm typecheck` | TypeScript type checking |
 | `pnpm format` | Prettier formatting |
 | `pnpm prisma:generate` | Generate Prisma client |
 | `pnpm prisma:migrate` | Run database migrations |
+
+> **Note:** `pnpm lint` currently points at `next lint`, which Next.js 16 removed.
+> Moving lint to the ESLint CLI is tracked in Phase 7. Use `pnpm typecheck` as the
+> current green gate.

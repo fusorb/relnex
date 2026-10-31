@@ -1,15 +1,21 @@
-# Relnex — AI Agent Handbook
+# Relnex - AI Agent Handbook
 
-> Version 0.1.0 — Next.js 15 App Router + Prisma/PostgreSQL + TailwindCSS v4
+> Version 0.1.0 - Next.js 16 App Router + Prisma/PostgreSQL + TailwindCSS v4
 > Auth delegated to SovGrant (SG). See `docs/architecture.md` for full documentation.
 
 ---
 
 ## What Relnex Is
 
-Relnex is the **knowledge graph content engine** for the Fusorb ecosystem. It's a Next.js 15 app (pnpm, TypeScript strict) where users create, organize, and discover resources (articles, notes, videos, etc.) connected by typed relations. Auth is fully delegated to **SovGrant** — a separate Fastify identity service that owns passwords, MFA, sessions, and OAuth. Relnex bridges via `User.identityId`.
+Relnex is the **knowledge graph content engine** for the Fusorb ecosystem. It's a Next.js 16 app
+(pnpm, TypeScript strict) where users create, organize, and discover resources (articles, notes,
+videos, etc.) connected by typed relations. Auth is fully delegated to **SovGrant** - a separate
+Fastify identity service that owns passwords, MFA, sessions, and OAuth. Relnex bridges via
+`User.identityId`.
 
-**Current state:** 37/39 route files have broken imports from incomplete auth infrastructure. Core guard functions missing. See `docs/relnex-roadmap.md` for the rebuild status.
+**Current state:** backend stabilized - all 40 API route files follow the standard pattern,
+`pnpm typecheck` and `pnpm build` are green. Development is **paused** until SovGrant is stable;
+the frontend page build-out (Phase 6) remains. See `docs/relnex-roadmap.md`.
 
 ---
 
@@ -27,8 +33,8 @@ export const GET = handleApiRoute(async (req, { params }) => {
 
 - ALWAYS use `handleApiRoute` from `@/lib/errors`
 - ALWAYS use `requireAuth` or `requireOnboarded` from `@/core/auth`
-- NEVER import from `@/lib/sg/middleware` (deprecated)
-- NEVER import from `@/domains/auth/` (auth domain was scaffold, now handled by core/auth)
+- NEVER import from `@/lib/sg/middleware` (removed)
+- `handleApiRoute` awaits Next 16's async `params`; keep synchronous `params` access inside handlers
 
 ### Import Locations
 
@@ -36,15 +42,15 @@ export const GET = handleApiRoute(async (req, { params }) => {
 |---|---|---|
 | Auth guards (requireAuth, requireOnboarded) | `@/core/auth` | Inline functions, not HOF |
 | Auth session (getSession, AuthSession) | `@/core/auth` | |
-| JWT verify (verifySgToken) | `@/core/auth` | |
+| JWT verify (verifySgToken) | `@/core/auth` (leaf `@/core/auth/jwt` in edge code) | |
 | Auth cookies (setAuthCookies, clearAuthCookies) | `@/core/auth` | |
-| Prisma client | `@/core/db` | Singleton, not from @/lib/prisma |
-| Prisma helpers (resourceWithRelations) | `@/core/db` | |
+| Prisma client | `@/core/db` | Singleton, not from `@/lib/useful/db-client` |
+| Prisma helpers (resourceWithRelations, ...) | `@/core/db` | |
 | FlowExecutor, Flow, FlowContext | `@/core/flows` | |
-| ApiError, handleApiRoute, handleError | `@/lib/errors` | Barrel — not individual files |
-| SG HTTP client (sg.register, etc.) | `@/lib/sg` | Only for SDK calls to SovGrant |
+| ApiError, handleApiRoute, handleError | `@/lib/errors` | Barrel is server-only; client code imports `@/lib/errors/api-error` |
+| Sg SDK (SgClient, AuthSdk, unwrap) | `@/lib/sg` | Only for SDK calls to SovGrant |
 
-### Flow Pattern — Object Style
+### Flow Pattern - Object Style
 
 All flows export as **objects**, not classes:
 
@@ -61,7 +67,7 @@ Execute via:
 const result = await flowExecutor.run(flowObject, input, context);
 ```
 
-Never use `new FlowObject()` — flows are plain objects, not constructors.
+Never use `new FlowObject()` - flows are plain objects, not constructors.
 
 ### Service Construction
 
@@ -83,7 +89,7 @@ throw ApiError.unauthorized("Authentication required");
 // Available: badRequest, unauthorized, forbidden, notFound, conflict, unprocessable, internal
 ```
 
-Never `throw new Error("message")` — always use `ApiError` static factories.
+Never `throw new Error("message")` - always use `ApiError` static factories.
 
 ### File Naming
 
@@ -104,9 +110,9 @@ Every domain in `src/domains/<n>/` owns:
 
 ### What Never Changes
 
-- `User.identityId` — permanent bridge to SovGrant Identity.id
-- JWT `sub` claim = SovGrant `Identity.id` — all middleware depends on this
-- `SG_JWT_SECRET` must match between Relnex and SovGrant `.env` files
+- `User.identityId` - permanent bridge to SovGrant Identity.id
+- JWT `sub` claim = SovGrant `Identity.id` - all middleware depends on this
+- `SG_JWT_SECRET` must match between Relnex and SovGrant `.env` files (until the JWKS migration lands)
 - `requireAuth`/`requireOnboarded` are the ONLY valid guard patterns
 
 ---
@@ -117,13 +123,23 @@ Every domain in `src/domains/<n>/` owns:
 pnpm dev          # Next.js dev server (Turbopack)
 pnpm build        # Production build
 pnpm typecheck    # tsc --noEmit
-pnpm lint         # ESLint
 ```
+
+> `pnpm lint` currently points at `next lint`, removed in Next.js 16. Lint is being
+> migrated to the ESLint CLI (Phase 7). Use `pnpm typecheck` as the green gate today.
+
+---
+
+## Auth Verification Direction
+
+`verifySgToken` (`src/core/auth/jwt.ts`) currently verifies with the shared `SG_JWT_SECRET`.
+The plan is to switch to **JWKS** verification (fetch SovGrant's JWKS, verify via `jose`). This
+is user-owned; `verifySgToken` is the single seam to change.
 
 ---
 
 ## Current Status
 
-See `docs/relnex-roadmap.md` for the live rebuild status. This file is the compressed rules copy — keep it in sync with the roadmap.
+See `docs/relnex-roadmap.md` for the live rebuild status. This file is the compressed rules copy - keep it in sync with the roadmap.
 
-_Last updated: 2026-10-25_
+_Last updated: 2026-10-31_
