@@ -11,6 +11,9 @@ type RouteHandler<T = unknown> = (
  * Catches ApiError, ZodError, SgError, and generic errors
  * and returns properly formatted JSON error responses.
  *
+ * Next.js 15+ passes `params` as a Promise; this wrapper awaits it and hands
+ * the resolved value to the handler so handlers can keep using sync params.
+ *
  * Usage:
  *   export const GET = handleApiRoute(async (req, { params }) => {
  *     const session = await requireAuth(req);
@@ -20,10 +23,11 @@ type RouteHandler<T = unknown> = (
 export function handleApiRoute<T = unknown>(handler: RouteHandler<T>) {
   return async (
     req: NextRequest,
-    context: { params: T }
+    context: { params: T | Promise<T> }
   ): Promise<NextResponse> => {
+    const params = await context.params;
     try {
-      return await handler(req, context);
+      return await handler(req, { params });
     } catch (err) {
       return handleError(err);
     }
