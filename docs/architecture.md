@@ -1,6 +1,6 @@
 # Relnex Architecture
 
-> Version 0.1.0 — Next.js 15 App Router + Prisma/PostgreSQL + TailwindCSS v4
+> Version 0.1.0 - Next.js 16 App Router + Prisma/PostgreSQL + TailwindCSS v4
 > Auth delegated to **SovGrant** (identity microservice, code prefix `sg`)
 
 ---
@@ -12,10 +12,10 @@ src/
 ├── app/                    # Next.js App Router
 │   ├── (auth)/             # Login, Register pages
 │   ├── (public)/           # Marketing landing page
-│   ├── (protected)/        # Dashboard (auth-required)
-│   ├── (onboarding)/       # Onboarding wizard
+│   ├── (protected)/        # Auth-required layout (dashboard pages pending - Phase 6)
+│   ├── (onboarding)/       # Onboarding wizard (placeholder - Phase 6)
 │   ├── api-docs/           # Swagger UI documentation
-│   └── api/                # 39 API route files across 9 domains
+│   └── api/                # 40 API route files across 9 domains
 │       ├── auth/           # login, register, logout, me
 │       ├── users/          # profile, onboarding, admin
 │       ├── resources/      # CRUD, relations, comments, versions, usage
@@ -28,23 +28,24 @@ src/
 │
 ├── core/                   # Infrastructure (no business logic)
 │   ├── auth/               # JWT verify, guards, cookies, session
-│   ├── db/                 # Prisma client singleton + helpers
+│   ├── db/                 # Prisma client singleton + query helpers
 │   └── flows/              # Flow system (executor, context, errors)
 │
-├── domains/                # Business logic (per domain)
+├── domains/                # Business logic (10 domains)
 │   ├── auth/               # Auth service + DTOs (register, login flows)
-│   ├── users/              # User service + repository + flows
+│   ├── users/              # User service + repository + 3 flows
 │   ├── resources/          # 14 flows (CRUD, relations, comments, versions, usage)
 │   ├── collections/        # 4 flows (CRUD, resource management)
 │   ├── comments/           # Repository + service
+│   ├── engagements/        # Reactions, follows, saves (6 flows)
 │   ├── tags/               # Repository + service
 │   ├── search/             # Search service + repository
 │   ├── uploads/            # S3 presigned upload service
 │   └── activity/           # Activity type constants + fire-and-forget logger
 │
 ├── lib/                    # Third-party clients & utilities
-│   ├── sg/                 # SovGrant HTTP SDK client (only client.ts + barrel)
-│   ├── errors/             # ApiError, handleError, handleApiRoute
+│   ├── sg/                 # SovGrant SDK boundary (SgClient/AuthSdk re-export + unwrap)
+│   ├── errors/             # ApiError (leaf), handleError, handleApiRoute
 │   ├── storage/            # S3/R2 client
 │   └── useful/             # api-client, openapi spec, logger, metadata
 │
@@ -53,10 +54,10 @@ src/
 │   ├── layout/             # DashboardLayout, MarketingLayout
 │   └── home/               # Hero, Features
 │
-├── context/                # React providers (Auth, QueryClient, Theme)
-├── hooks/                  # useAuth, useApiQuery, useDebounce, useTheme, useMobile
+├── context/                # React providers (auth-context, provider)
+├── hooks/                  # use-auth, use-api, use-debounce, use-mobile, use-theme
 ├── config/                 # Site configuration (navigation, features)
-└── middleware.ts           # Edge middleware (tenant forwarding)
+└── middleware.ts           # Edge middleware (tenant header forwarding)
 ```
 
 ---
@@ -66,26 +67,26 @@ src/
 ```
 1. REGISTER
    Browser → POST /api/auth/register
-     → sg.register(email, password, name)  [HTTP to SovGrant]
+     → registerFlow → AuthSdk.register(...)  [HTTP to SovGrant via @/lib/sg]
      → SovGrant creates Identity, returns { identity.id }
      → Relnex creates User { identityId: identity.id, username }
-     ← 201 { userId, identityId }
+     ← 201 { userId }
 
 2. LOGIN
    Browser → POST /api/auth/login
-     → sg.login(email, password)  [HTTP to SovGrant]
+     → loginFlow → AuthSdk.login(email, password)  [HTTP to SovGrant]
      → SovGrant verifies credentials, issues JWT
      → Relnex sets HttpOnly cookies: sg_at, sg_rt, sg_sid
-     ← 200 { accessToken, refreshToken, sessionId }
+     ← 200 { accessToken, refreshToken, sessionId, expiresIn }
 
 3. AUTHENTICATED REQUEST
    Browser → GET /api/users/me/profile
      → Cookie: sg_at=<JWT>  (or Authorization: Bearer <JWT>)
-     → middleware forwards tenant headers
+     → middleware verifies the JWT and forwards x-tenant-id / x-identity-id
      → route handler: const session = await requireAuth(req)
-       → getSession(req) extracts JWT from header/cookie
-       → verifySgToken(token) — local jose verify (no network call)
-       → prisma.user.findUnique({ where: { identityId: payload.sub } })
+        → getSession(req) extracts JWT from header/cookie
+        → verifySgToken(token) - local jose verify (shared secret today, JWKS planned)
+        → prisma.user.findUnique({ where: { identityId: payload.sub } })
      ← 200 { user }
 
 4. LOGOUT
@@ -94,7 +95,7 @@ src/
      ← 200
 
 5. WEBHOOK SYNC (identity lifecycle)
-   SovGrant → POST /api/webhooks/sg (HMAC-signed)
+   SovGrant → POST /api/webhooks/sg
      → IDENTITY_SUSPENDED/DELETED: soft-deletes Relnex User
      → USER_REGISTERED: pre-provisions Relnex User
      ← 200
@@ -120,11 +121,10 @@ export const GET = handleApiRoute(async (req: NextRequest, { params }) => {
 ```
 
 Key rules:
-- Always wrap in `handleApiRoute` (catches all error types)
+- Always wrap in `handleApiRoute` (catches all error types, awaits async `params`)
 - Use `requireAuth` for routes that need any authentication
 - Use `requireOnboarded` for routes that need a fully-provisioned user
-- Never import from `@/lib/sg/middleware` (deprecated)
-- Never import from `@/domains/auth/require-auth` (removed)
+- `@/lib/sg/middleware` no longer exists (superseded by `@/core/auth` + `src/middleware.ts`)
 
 ---
 
@@ -145,20 +145,23 @@ export const createResourceFlow: Flow<CreateResourceInput, ResourceDTO> = {
 ```
 
 Flows are executed via `FlowExecutor`:
+
 ```typescript
-const result = await flowExecutor.run(createResourceFlow, input, {
-  userId: session.user.id,
-  identityId: session.identityId,
-  tenantId: session.tenantId,
-  db: prisma,
-});
+const result = await flowExecutor.run(
+  createResourceFlow,
+  input,
+  { userId: session.userId, identityId: session.identityId, tenantId: session.tenantId },
+);
 ```
 
-FlowExecutor automatically:
+`FlowExecutor` automatically:
 - Validates input via Zod (`inputSchema.parse`)
-- Wraps in Prisma transaction
+- Wraps execution in a Prisma transaction (`ctx.db` is the transaction client)
 - Validates output via `outputSchema` (if defined)
-- Converts FlowError to ApiError
+- Re-throws `FlowError` / `ApiError` / `SgError` unchanged so `handleError` can map them
+
+`FlowContext.db` is always injected by the executor - callers pass only the
+`InboundCtx` fields (`userId`, `identityId`, `tenantId`, plus optional `ip`/`userAgent`).
 
 ---
 
@@ -167,7 +170,7 @@ FlowExecutor automatically:
 ```typescript
 import { ApiError, handleApiRoute } from "@/lib/errors";
 
-// Throw from anywhere — handleApiRoute catches it
+// Throw from anywhere - handleApiRoute catches it
 throw ApiError.notFound("Resource not found");
 throw ApiError.badRequest("Invalid slug format");
 throw ApiError.unauthorized("Session expired");
@@ -176,6 +179,10 @@ throw ApiError.forbidden("Not the resource owner");
 
 Available static factories: `badRequest(400)`, `unauthorized(401)`, `forbidden(403)`, `notFound(404)`, `conflict(409)`, `unprocessable(422)`, `internal(500)`
 
+`handleError` maps `ApiError`, `SgError`, `ZodError` (422), and `FlowError` to JSON responses.
+Client-side code must import the leaf `@/lib/errors/api-error` (not the barrel), because the
+barrel pulls the server-only chain (`@/core/flows` -> Prisma -> `pg`) into the browser bundle.
+
 ---
 
 ## Import Rules
@@ -183,10 +190,11 @@ Available static factories: `badRequest(400)`, `unauthorized(401)`, `forbidden(4
 | Import Path | Exports | Used For |
 |---|---|---|
 | `@/core/auth` | `requireAuth`, `requireOnboarded`, `getSession`, `verifySgToken`, `setAuthCookies`, `clearAuthCookies` | Auth guards, JWT, cookies |
-| `@/core/db` | `prisma`, `resourceWithRelations`, `collectionWithResources`, `commentWithAuthor` | Database access |
+| `@/core/db` | `prisma`, `resourceWithRelations`, `collectionWithResources`, `commentWithAuthor`, `commentWithAuthorAndReplies` | Database access |
 | `@/core/flows` | `flowExecutor`, `Flow`, `FlowContext`, `FlowError` | Write operation flows |
-| `@/lib/errors` | `ApiError`, `handleError`, `handleApiRoute` | Error handling |
-| `@/lib/sg` | `sg`, `SgError` | SovGrant HTTP client (register, login, etc.) |
+| `@/lib/errors` | `ApiError`, `handleError`, `handleApiRoute` | Error handling (server) |
+| `@/lib/errors/api-error` | `ApiError` | Error handling (client leaf) |
+| `@/lib/sg` | `SgClient`, `AuthSdk`, `SgError`, `unwrap`, `createServerSgClient` | SovGrant SDK calls |
 | `@/lib/storage/s3` | `s3Client` | S3 uploads |
 | `@/config/site` | `siteConfig` | Navigation, features, validation |
 
@@ -205,3 +213,16 @@ export class ResourceService {
 ```
 
 Inside a `Flow`, services receive the transaction-scoped `ctx.db`. Outside a Flow (in simple GET handlers), the default `prisma` singleton is used.
+
+---
+
+## Middleware
+
+`src/middleware.ts` verifies the SovGrant JWT (from the `sg_at` cookie or `Authorization`
+header) and injects `x-tenant-id` (from the `tid` claim) and `x-identity-id` (from `sub`)
+into the forwarded request. It also gates protected page prefixes, redirecting unauthenticated
+users to `/login`.
+
+> Next.js 16 deprecates the `middleware` file convention in favor of `proxy`; the rename is
+> tracked in Phase 7. Verification currently uses `verifySgToken` (shared secret); the JWKS
+> swap happens behind that function.
