@@ -1,4 +1,5 @@
 # architecture
+- Prefers Relnex to consume SovGrant (Sg) as a JWKS (JSON Web Key Set) system for JWT verification rather than a shared symmetric secret (SG_JWT_SECRET) — shared-secret verification is temporary; design should not assume it is permanent. Confidence: 0.9
 - Values single-source-of-truth / canonical identity patterns — strongly prefers "identity linking" (storing `identityId` references to a central ID provider) over recreating duplicate user records across services. Anti-fragmentation is a core design principle for the ArcevoCirqle ecosystem. Confidence: 0.85
 - Prefers a dedicated canonical identity/auth service (arc-id) over per-app auth implementations — downstream apps (e.g. arcbase) should consume identity from that provider (auth, OAuth, MFA, passkeys) rather than owning their own user tables for identity data. Confidence: 0.85
 - Welcomes the agent validating/confirming architectural mental models back to them (e.g. "Does this align with what you had in mind?") — they're explicit they "might be wrong" and value the agent surfacing understanding rather than silently proceeding. Confidence: 0.7
