@@ -8,19 +8,20 @@ import { apiClient } from "@/lib/useful/api-client";
 import { Button } from "@fusorb/facet-components";
 import { Input } from "@fusorb/facet-components";
 import { Label } from "@fusorb/facet-components";
-import { toast } from "@fusorb/facet-components";
 
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({ email: "", password: "" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
-      toast.error("Please enter your email and password.");
+      setError("Please enter your email and password.");
       return;
     }
+    setError(null);
     setLoading(true);
     try {
       const res = await apiClient<{
@@ -45,7 +46,7 @@ export default function LoginPage() {
         router.push("/");
       }
     } catch (err: unknown) {
-      toast.error((err as Error)?.message ?? "Login failed. Please try again.");
+      setError((err as Error)?.message ?? "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -116,6 +117,11 @@ export default function LoginPage() {
                 }
               />
             </div>
+            {error && (
+              <div className="rounded-md bg-destructive/10 p-3 text-xs text-destructive">
+                {error}
+              </div>
+            )}
             <Button
               type="submit"
               className="w-full font-bold text-xs"

@@ -8,11 +8,11 @@ import { apiClient } from "@/lib/useful/api-client";
 import { Button } from "@fusorb/facet-components";
 import { Input } from "@fusorb/facet-components";
 import { Label } from "@fusorb/facet-components";
-import { toast } from "@fusorb/facet-components";
 
 export default function RegisterPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -22,19 +22,19 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.username || !formData.email || !formData.password) {
-      toast.error("Please fill in all fields.");
+      setError("Please fill in all fields.");
       return;
     }
+    setError(null);
     setLoading(true);
     try {
       await apiClient("/api/auth/register", {
         method: "POST",
         bodyData: formData,
       });
-      toast.success("Account created. Let's set up your workspace.");
       router.push("/onboarding");
     } catch (err: unknown) {
-      toast.error(
+      setError(
         (err as Error)?.message ?? "Registration failed. Please try again.",
       );
     } finally {
@@ -95,6 +95,11 @@ export default function RegisterPage() {
                 }
               />
             </div>
+            {error && (
+              <div className="rounded-md bg-destructive/10 p-3 text-xs text-destructive">
+                {error}
+              </div>
+            )}
             <Button
               type="submit"
               className="w-full font-bold text-xs"
