@@ -1,24 +1,35 @@
-# arcbase — Full Codebase Audit
+# arcbase - Full Codebase Audit
+
+> **⚠️ HISTORICAL / SUPERSEDED (2026-10-31).** This audit describes the repo as
+> "arcbase" (now **Relnex**) mid-rebuild, before the SovGrant/`sg`/Fusorb namespace
+> migration and the Phase 3-5 work. Most findings below are resolved. Current state
+> lives in `docs/relnex-roadmap.md`; the tracker is `.agent/todo.txt`.
+>
+> Resolved since this audit: error-handling chain (FlowError now mapped by
+> `handleError`); `users/[username]` route signatures; login route sets auth cookies;
+> `api-client` error mapping; auth consolidation onto `@fusorb/facet-sdk`; all 40
+> routes unified; `pnpm typecheck` and `pnpm build` green. The shared-secret -> JWKS
+> verification swap remains user-owned.
 
 **Date:** 2026-09-10  
 **Scope:** Entire repository (root, `src/`, `prisma/`, configs, deps)  
-**Status:** Mid-flight between Phase 2 and Phase 3 of the rebuild (CLAUDE.md phased roadmap)
+**Status:** Historical snapshot (see banner above)
 
 ---
 
 ## 1. Executive Summary
 
-The codebase is **mid-rebuild**. Phase 0–2 (docs, core infrastructure, flow unification) are complete.
-The new architecture — `@/core/` (auth, db, flows) + domain-driven flows + `handleApiRoute` wrapper — is
+The codebase is **mid-rebuild**. Phase 0-2 (docs, core infrastructure, flow unification) are complete.
+The new architecture - `@/core/` (auth, db, flows) + domain-driven flows + `handleApiRoute` wrapper - is
 solid and consistent across most route handlers. However, **the codebase does NOT compile** due to:
 1. Type mismatches from an incomplete service refactor (`UserService` signatures changed but routes not updated)
 2. Error-handling chain is broken (`FlowError` not handled by `handleError`)
 3. Missing/broken imports from un-migrated domains (`comments` PATCH/DELETE, `search`, `tags`)
 
-The auth flow is **completely broken at runtime** — the login route never sets auth cookies.
+The auth flow is **completely broken at runtime** - the login route never sets auth cookies.
 
 The UI layer was mass-deleted (38 shadcn component files removed) but replacement pages are **empty stubs**.
-The `@arcevo/facet-*` packages are massively underutilized — only `facet-tokens` and `facet-components`
+The `@arcevo/facet-*` packages are massively underutilized - only `facet-tokens` and `facet-components`
 are meaningfully used. The rest (`facet-auth`, `facet-layout`, `facet-store`, `facet-sdk`) exist as
 dependencies with wrapper files that are either dead code or underused.
 
@@ -30,12 +41,12 @@ from scratch using `@arcevo/facet-components` + `@arcevo/facet-layout` + `@arcev
 ## 2. What's Perfect
 
 ### Core Architecture (`@/core/`)
-- **`@/core/auth/`** — JWT verification via `jose`, cookie management (`auth-cookie.ts`), session
+- **`@/core/auth/`** - JWT verification via `jose`, cookie management (`auth-cookie.ts`), session
   resolution (`get-session.ts`), two-tier guards (`requireAuth` → `requireOnboarded`), decorator-style
   guards (`withAuth`/`withUser`/`withScope` in `guards.ts`). Clean separation.
-- **`@/core/db/`** — Prisma v7 adapter pattern (`@prisma/adapter-pg`), connection pooling
+- **`@/core/db/`** - Prisma v7 adapter pattern (`@prisma/adapter-pg`), connection pooling
   (20 connections prod / 10 dev), `prisma-helpers.ts` with split-query optimization for comments.
-- **`@/core/flows/`** — `Flow` interface (object-based, not class-based), `FlowExecutor` with automatic
+- **`@/core/flows/`** - `Flow` interface (object-based, not class-based), `FlowExecutor` with automatic
   Zod validation + Prisma `$transaction` wrapping + requestId tracing, `DbClient` type unification.
   Every flow takes `ctx.db` from context, every route passes minimal `InboundCtx`.
 
@@ -44,7 +55,7 @@ from scratch using `@arcevo/facet-components` + `@arcevo/facet-layout` + `@arcev
 - **Resources domain** is the most complete: 14 flows covering CRUD, versioning, publishing,
   tagging, usage tracking, commenting, saving, and resource-to-resource connections.
 - **`prisma-helpers.ts`** (`src/domains/resources/resource.repository.ts`) demonstrates
-  thoughtful query optimization: `commentWithAuthor` vs `commentWithAuthorAndReplies` —
+  thoughtful query optimization: `commentWithAuthor` vs `commentWithAuthorAndReplies` -
   avoids N+1 by splitting into base + nested includes.
 
 ### Prisma Schema (`prisma/schema.prisma`)
@@ -59,8 +70,8 @@ from scratch using `@arcevo/facet-components` + `@arcevo/facet-layout` + `@arcev
 - All 39+ route files follow the identical pattern:
   `handleApiRoute` → `requireAuth`/`requireOnboarded` → `flowExecutor.run()` → `NextResponse.json({ success, data })`
 - Consistent error boundary via `handleApiRoute`
-- OpenAPI spec (`src/lib/useful/openapi.ts`) — ~2100 lines, documents all endpoints
-- `api-docs/page.tsx` — production-ready Swagger UI with auth token support
+- OpenAPI spec (`src/lib/useful/openapi.ts`) - ~2100 lines, documents all endpoints
+- `api-docs/page.tsx` - production-ready Swagger UI with auth token support
 
 ### Build & Tooling
 - `pnpm` workspace + strict TypeScript
@@ -80,18 +91,18 @@ The `loginFlow` returns `{ accessToken, refreshToken, sessionId, expiresIn }`. T
 returns these tokens in JSON but **never calls `setAuthCookies()`**. The `auth-context.tsx`'s
 `refresh()` → `/api/auth/me` chain fails with 401 because no `arcid_at` cookie exists.
 
-The login flow even has a comment: `// Caller (route handler) sets cookies` — but the route
+The login flow even has a comment: `// Caller (route handler) sets cookies` - but the route
 handler doesn't do this.
 
 **Fix:** Call `setAuthCookies(result.accessToken, result.refreshToken)` before returning the response.
 Also set the session ID cookie if applicable.
 
-### BUG 2: Error handling chain is broken — all flow errors return 500
+### BUG 2: Error handling chain is broken - all flow errors return 500
 **Files:** `src/core/flows/flow-executor.ts` + `src/lib/errors/handle-error.ts` + `src/lib/errors/handle-api-route.ts`
 
 - `FlowExecutor.run()` catches ALL errors (including `ApiError`, `ZodError`, `ArcIDError`) and re-wraps
   them as `FlowError("FLOW_ERROR", message, 500)`.
-- `handleError()` (called by `handleApiRoute`) handles `ApiError`, `ArcIDError`, `ZodError` — but
+- `handleError()` (called by `handleApiRoute`) handles `ApiError`, `ArcIDError`, `ZodError` - but
   **does NOT handle `FlowError`**. It falls through to the generic `Error` case → `500 INTERNAL_SERVER_ERROR`.
 
 Result: validation errors (should be 400), conflicts (should be 409), not-found (should be 404) all
@@ -113,7 +124,7 @@ All are confirmed from reading both the route AND the flow:
 **Fix:** Either change the flow return shape to match the route expectation, or change the route
 to access the correct field.
 
-### BUG 4: `adminActionFlow` input mismatch — route and DTO use different field names
+### BUG 4: `adminActionFlow` input mismatch - route and DTO use different field names
 **Files:** `src/app/api/users/route.ts` + `src/domains/users/flows/admin-action.flow.ts` + `src/domains/users/user.dto.ts`
 
 - Route passes: `{ targetUserId, isArchived, isDeleted }`
@@ -143,7 +154,7 @@ async getPublicProfile(username: string) { this.repo.findByUsername(username) }
 This affects: `users/[username]/route.ts`, `analytics/route.ts`, `collections/route.ts`,
 `graph/route.ts`, `resources/route.ts`, and `saved/route.ts`.
 
-**Fix:** Remove `prisma` from all method calls — the service already has the db via constructor.
+**Fix:** Remove `prisma` from all method calls - the service already has the db via constructor.
 Change all calls to `userService.getPublicProfile(params.username)`.
 
 ### BUG 6: `api-client.ts` masks ALL HTTP error status codes as 500
@@ -157,7 +168,7 @@ if (!res.ok) {
 
 Every non-OK HTTP response (401, 403, 404, 409, 400) is thrown as `ApiError.internal` (500).
 The client-side code cannot distinguish error types. Login failures, rate limiting, permission
-errors — all appear as 500 Internal Server Error.
+errors - all appear as 500 Internal Server Error.
 
 **Fix:** Map HTTP status codes to appropriate `ApiError` static helpers:
 - 401 → `ApiError.unauthorized()`
@@ -167,14 +178,14 @@ errors — all appear as 500 Internal Server Error.
 - 422 → `ApiError.unprocessable()`
 - 5xx → `ApiError.internal()`
 
-### BUG 7: `auth/me` route — type error and bypassed flows
+### BUG 7: `auth/me` route - type error and bypassed flows
 **File:** `src/app/api/auth/me/route.ts`
 
 1. Uses `requireAuth(req)` which returns `AuthSession` where `userId: string | undefined`
    (since the User record might not exist yet). But `authService.getProfile(prisma, userId)`
    expects `userId: string`. **TypeScript strict mode error.**
 
-2. The route bypasses the flow executor entirely — calls `authService.getProfile()` directly,
+2. The route bypasses the flow executor entirely - calls `authService.getProfile()` directly,
    passing the raw `prisma` client. No transaction wrapping, no structured logging.
 
 3. `session.userId` could be `undefined` at runtime (user has arc-id identity but no User record
@@ -188,13 +199,13 @@ errors — all appear as 500 Internal Server Error.
 
 ### Two Competing Auth Systems
 **OLD (being phased out):**
-- `@/lib/arcid/client.ts` — hand-written axios HTTP client (58 lines) calling arc-id's REST API
-- `@/stores/auth.store.ts` — Zustand store wrapping `@arcevo/facet-store`
-- `@/context/auth-context.tsx` — React Context using `apiClient` (fetch-based) to call `/api/auth/*`
+- `@/lib/arcid/client.ts` - hand-written axios HTTP client (58 lines) calling arc-id's REST API
+- `@/stores/auth.store.ts` - Zustand store wrapping `@arcevo/facet-store`
+- `@/context/auth-context.tsx` - React Context using `apiClient` (fetch-based) to call `/api/auth/*`
 
 **NEW (current):**
-- `@/core/auth/` — JWT verification, cookie management, session resolution
-- `@/domains/auth/auth.service.ts` — uses `arcid` from `@/lib/arcid/client` (the OLD HTTP client!)
+- `@/core/auth/` - JWT verification, cookie management, session resolution
+- `@/domains/auth/auth.service.ts` - uses `arcid` from `@/lib/arcid/client` (the OLD HTTP client!)
 - Route handlers use `@/core/auth/requireAuth` guards
 
 **Problem:** The `authService` still uses the old hand-written `arcid` client, NOT the official
@@ -217,17 +228,17 @@ Unlike other flows that instantiate a Service (`new ResourceService(ctx.db)`), `
 directly calls `ctx.db.savedResource.upsert()` and `ctx.db.resource` operations. This breaks the
 consistent pattern where flows delegate to services for business logic.
 
-Also returns `{}` (empty object) — the route gets `data: {}` as the response.
+Also returns `{}` (empty object) - the route gets `data: {}` as the response.
 
 ### `DbClient` Duplicated
-- `src/lib/useful/db-client.ts` (3 lines) — OLD definition using `typeof prisma`
-- `src/core/flows/flow-context.ts` (13 lines) — NEW definition using `PrismaClient`
+- `src/lib/useful/db-client.ts` (3 lines) - OLD definition using `typeof prisma`
+- `src/core/flows/flow-context.ts` (13 lines) - NEW definition using `PrismaClient`
 
 The old file is still exported via `@/lib/useful` barrel and may be imported somewhere.
 
 ### `@/lib/facet/` Not Exported From `@/lib` Barrel
 The lib barrel (`src/lib/index.ts`) exports `./arcid`, `./errors`, `./useful`, `./storage`, `./activity`,
-and `cn` — but NOT `./facet`. This means `@/lib/facet` is only accessible via explicit path imports,
+and `cn` - but NOT `./facet`. This means `@/lib/facet` is only accessible via explicit path imports,
 not through the barrel. Inconsistent.
 
 ### FlowExecutor Output Validation Bypassed in Multiple Flows
@@ -252,7 +263,7 @@ FlowContext = { ...ctx, requestId: traceId, db }`. This is fine but the pattern 
 - **Hand-written:** `dashboard-layout.tsx` (110 lines), `marketing-layout.tsx` (145 lines)
 - **Facet-layout wrappers:** `FacetLayout.tsx` with `FacetDashboardLayout` (`ConsoleLayout` from
   `@arcevo/facet-layout`) and `FacetMarketingLayout` (`LandingLayout`)
-- `src/components/layout/index.tsx` — kitchen sink exporting `PublicLayout`, `AuthLayout`,
+- `src/components/layout/index.tsx` - kitchen sink exporting `PublicLayout`, `AuthLayout`,
   `AppLayout`, `FacetDashboardLayout`, `FacetMarketingLayout`
 - The app routes use the hand-written layouts, NOT the facet-layout wrappers
 
@@ -261,7 +272,7 @@ FlowContext = { ...ctx, requestId: traceId, db }`. This is fine but the pattern 
 and are not imported by any route or domain. It's a logging utility that was created but never wired up.
 
 ### Jobs Module Is Empty
-`src/jobs/worker.ts`, `cleanup.job.ts`, `metrics.job.ts` — all empty files. No job queue infrastructure
+`src/jobs/worker.ts`, `cleanup.job.ts`, `metrics.job.ts` - all empty files. No job queue infrastructure
 exists (no QStash, BullMQ, or @upstash/qstash usage in actual code despite being in package.json).
 
 ---
@@ -290,21 +301,21 @@ No rate limiting on any endpoint. Brute-force attacks on `/api/auth/login` are t
 The `@upstash/ratelimit` package is NOT in the dependencies.
 
 ### 4. No Security Headers
-`next.config.ts` is essentially empty — no CSP, HSTS, X-Frame-Options, X-Content-Type-Options,
+`next.config.ts` is essentially empty - no CSP, HSTS, X-Frame-Options, X-Content-Type-Options,
 or Referrer-Policy.
 
 ### 5. Raw Prisma Models Returned in API Responses
 Multiple flows and routes return raw Prisma model objects without using presenters:
-- `users/me/onboarding/route.ts` — returns `result.user` (raw User model with `deletedAt`,
+- `users/me/onboarding/route.ts` - returns `result.user` (raw User model with `deletedAt`,
   `identityId`, `preferences`, `metadata`)
-- `users/route.ts` PATCH — returns `result.user` (raw)
-- `comments/[commentId]/route.ts` GET — returns `comment` (raw, includes `deletedAt`)
+- `users/route.ts` PATCH - returns `result.user` (raw)
+- `comments/[commentId]/route.ts` GET - returns `comment` (raw, includes `deletedAt`)
 - The `authService.getProfile()` DOES use a manual field whitelist, but most other endpoints don't
 
 ### 6. `process.env` Non-Null Assertions
-- `src/middleware.ts`: `process.env.ARCID_JWT_SECRET!` — crashes with cryptic error if unset
+- `src/middleware.ts`: `process.env.ARCID_JWT_SECRET!` - crashes with cryptic error if unset
 - `src/core/auth/jwt.ts`: same pattern
-- `src/core/db/prisma.ts`: `process.env.DATABASE_URL!` — same
+- `src/core/db/prisma.ts`: `process.env.DATABASE_URL!` - same
 
 ### 7. Token Refresh Not Implemented Server-Side
 The login flow returns `refreshToken`, but there's no `/api/auth/refresh` route handler. The
@@ -322,16 +333,16 @@ but the route handlers don't enforce role checks. The `withScope` guard exists b
 
 | File | Lines | Reason |
 |---|---|---|
-| `src/lib/useful/db-client.ts` | 3 | Old `DbClient` — duplicated by `@/core/flows/flow-context.ts` |
+| `src/lib/useful/db-client.ts` | 3 | Old `DbClient` - duplicated by `@/core/flows/flow-context.ts` |
 | `src/stores/auth.store.ts` | 42 | Old Zustand store; auth-context.tsx is used instead |
 | `src/stores/tenant.store.ts` | 43 | Old Zustand store; not referenced anywhere |
 | `src/stores/index.ts` | 3 | Barrel for unused stores |
-| `src/components/auth/SignInPage.tsx` | ? | Uses `@arcevo/facet-auth` `SignIn` — not imported by login page |
-| `src/components/auth/SignUpPage.tsx` | ? | Same — not imported by register page |
+| `src/components/auth/SignInPage.tsx` | ? | Uses `@arcevo/facet-auth` `SignIn` - not imported by login page |
+| `src/components/auth/SignUpPage.tsx` | ? | Same - not imported by register page |
 | `src/components/auth/UserMenu.tsx` | ? | Not imported anywhere |
 | `src/components/auth/index.ts` | ? | Barrel for unused components |
-| `src/components/layout/FacetLayout.tsx` | ? | Facet-layout wrappers — not imported by app routes |
-| `src/components/layout/index.tsx` | ? | `PublicLayout`/`AuthLayout`/`AppLayout` — not imported by app routes |
+| `src/components/layout/FacetLayout.tsx` | ? | Facet-layout wrappers - not imported by app routes |
+| `src/components/layout/index.tsx` | ? | `PublicLayout`/`AuthLayout`/`AppLayout` - not imported by app routes |
 | `src/components/layout/protected-route.tsx` | ? | Uses old auth context; not imported |
 | `src/components/home/Features.tsx` | 0 | Empty file |
 | `src/app/(public)/page.tsx` | 0 | Empty homepage |
@@ -342,49 +353,49 @@ but the route handlers don't enforce role checks. The `withScope` guard exists b
 | `src/lib/cache/` | dir | Empty directory |
 | `src/lib/activity/log-activity.ts` | ? | Not exported from `@/lib` barrel; not imported anywhere |
 | `src/lib/activity/index.ts` | ? | Barrel for dead module |
-| `src/components/home/GraphVisualizerPreview.tsx` | — | Already deleted (git status: `D`) |
-| 38× `src/components/ui/*.tsx` | — | Already deleted (git status: `D`) |
+| `src/components/home/GraphVisualizerPreview.tsx` | - | Already deleted (git status: `D`) |
+| 38× `src/components/ui/*.tsx` | - | Already deleted (git status: `D`) |
 
 ### Delete These npm Dependencies (Unused)
-- `@arcevo/facet-auth` — only used in deleted/unused components
-- `@arcevo/facet-layout` — only used in deleted FacetLayout.tsx
-- `@arcevo/facet-store` — only used in deleted stores
-- `@hookform/resolvers` — no `react-hook-form` in deps
-- `framer-motion` — no motion components
-- `canvas-confetti` — not used
-- `@upstash/react` — not in deps but `@upstash/redis` is
-- `@upstash/redis` — not used in any code
-- `date-fns` — not used
-- `react-day-picker` — not used
-- `@radix-ui/react-icons` — might be unused (replaced by facet-components icons)
+- `@arcevo/facet-auth` - only used in deleted/unused components
+- `@arcevo/facet-layout` - only used in deleted FacetLayout.tsx
+- `@arcevo/facet-store` - only used in deleted stores
+- `@hookform/resolvers` - no `react-hook-form` in deps
+- `framer-motion` - no motion components
+- `canvas-confetti` - not used
+- `@upstash/react` - not in deps but `@upstash/redis` is
+- `@upstash/redis` - not used in any code
+- `date-fns` - not used
+- `react-day-picker` - not used
+- `@radix-ui/react-icons` - might be unused (replaced by facet-components icons)
 
 ---
 
 ## 7. Missing Functionality
 
 ### Empty App Pages (Need Rebuild)
-- `src/app/(public)/page.tsx` — empty, no homepage
-- `src/app/(onboarding)/onboarding/page.tsx` — empty, no onboarding wizard
-- `src/app/(protected)/dashboard/page.tsx` — referenced in nav but doesn't exist
-- `src/app/(protected)/dashboard/layout.tsx` — might not exist
+- `src/app/(public)/page.tsx` - empty, no homepage
+- `src/app/(onboarding)/onboarding/page.tsx` - empty, no onboarding wizard
+- `src/app/(protected)/dashboard/page.tsx` - referenced in nav but doesn't exist
+- `src/app/(protected)/dashboard/layout.tsx` - might not exist
 
 ### Missing API Routes
-- `/api/auth/refresh` — token refresh endpoint (no route exists; login returns refresh token but nothing uses it)
-- `/api/auth/logout` — exists, calls `clearAuthCookies()`, but login never set cookies
-- `/api/search` — documented in OpenAPI `PATH_GROUPS` but no route handler
-- `/api/tags` — documented in OpenAPI but no route handler
-- `/api/uploads` — documented in OpenAPI but no route handler (upload service exists but route missing)
+- `/api/auth/refresh` - token refresh endpoint (no route exists; login returns refresh token but nothing uses it)
+- `/api/auth/logout` - exists, calls `clearAuthCookies()`, but login never set cookies
+- `/api/search` - documented in OpenAPI `PATH_GROUPS` but no route handler
+- `/api/tags` - documented in OpenAPI but no route handler
+- `/api/uploads` - documented in OpenAPI but no route handler (upload service exists but route missing)
 
 ### Missing UI Features
-- MFA verification page (`/auth/mfa`) — login flow supports `requiresMfa` but the login page redirects to `/auth/mfa` which doesn't exist
-- Password reset pages (`/auth/forgot-password`, `/auth/reset-password`) — auth service has `requestPasswordReset`/`confirmPasswordReset` but no UI or routes
-- Dashboard pages — resource creation (`/resources/create/editor`, `/upload`, `/link`, `/module`), resource detail, collection management
+- MFA verification page (`/auth/mfa`) - login flow supports `requiresMfa` but the login page redirects to `/auth/mfa` which doesn't exist
+- Password reset pages (`/auth/forgot-password`, `/auth/reset-password`) - auth service has `requestPasswordReset`/`confirmPasswordReset` but no UI or routes
+- Dashboard pages - resource creation (`/resources/create/editor`, `/upload`, `/link`, `/module`), resource detail, collection management
 
 ### Incomplete Domain Implementations
-- **`comments` domain** — only has read methods (`findById`, `getRootComments`, `getReplies`). No create/update/delete flows.
-- **`search` domain** — service and repository exist but no flows, no routes.
-- **`tags` domain** — service and repository exist but no flows, no routes.
-- **`engagements` domain** — has `FollowService`, `ReactionService`, `SavedResourceService` but **no flows**. Routes in `users/[username]/` use these services directly (bypassing flows).
+- **`comments` domain** - only has read methods (`findById`, `getRootComments`, `getReplies`). No create/update/delete flows.
+- **`search` domain** - service and repository exist but no flows, no routes.
+- **`tags` domain** - service and repository exist but no flows, no routes.
+- **`engagements` domain** - has `FollowService`, `ReactionService`, `SavedResourceService` but **no flows**. Routes in `users/[username]/` use these services directly (bypassing flows).
 
 ---
 
@@ -394,16 +405,16 @@ but the route handlers don't enforce role checks. The `withScope` guard exists b
 | Package | Version | Issue |
 |---|---|---|
 | `@prisma/client` | `^7.5.0` | |
-| `@prisma/client-runtime-utils` | `^7.8.0` | **Newer than client** — potential incompatibility |
+| `@prisma/client-runtime-utils` | `^7.8.0` | **Newer than client** - potential incompatibility |
 | `next` | `16.3.4` | Next.js 16 is very new; `eslint-config-next` is at 15.5.18 |
 | `eslint-config-next` | `15.5.18` | **Mismatch** with Next.js 16.3.4 |
 | `eslint` | `^9` | v9 flat config but `eslint-config-next` may not support it |
 | `typescript` | `^5` | Fine |
-| `zod` | `^4.4.3` | Zod v4 — new API, may have breaking changes |
+| `zod` | `^4.4.3` | Zod v4 - new API, may have breaking changes |
 
 ### Conflicting UI Dependencies
 The `package.json` depends on `@arcevo/facet-components` for UI primitives (Button, Input, Label,
-toast, etc.) AND has `radix-ui` — but the shadcn UI components that used `radix-ui` were deleted.
+toast, etc.) AND has `radix-ui` - but the shadcn UI components that used `radix-ui` were deleted.
 The `@radix-ui/react-icons` package may be unused.
 
 ### Missing Dev Tooling
@@ -427,12 +438,12 @@ The `@radix-ui/react-icons` package may be unused.
 - Full-text search vector on Resource: `tsvector` column with `@@fulltext`
 
 ### Schema Concerns
-- `User.archivedAt` exists but only `deletedAt` is filtered in queries — `archivedAt` is never used
+- `User.archivedAt` exists but only `deletedAt` is filtered in queries - `archivedAt` is never used
   in any repository query. Either enforce it or remove it.
-- `Identity.status` field — what statuses? `ACTIVE`, `SUSPENDED`, `INVITED`? Not documented clearly.
-- `Resource.usage` relation — the `ResourceUsage` model tracks per-user views. This is fine but
+- `Identity.status` field - what statuses? `ACTIVE`, `SUSPENDED`, `INVITED`? Not documented clearly.
+- `Resource.usage` relation - the `ResourceUsage` model tracks per-user views. This is fine but
   could grow rapidly. No TTL/caching strategy documented.
-- `Tenant.isTrial` boolean and `Tenant.trialEndsAt` — trial management is in the schema but not
+- `Tenant.isTrial` boolean and `Tenant.trialEndsAt` - trial management is in the schema but not
   enforced in any service/route.
 - Migration files: 4 migration files exist but the naming is inconsistent:
   `20250808000000_init`, `20260525095006_arcbase_db_...`, `20260528171749` (unnamed), `20260910120000`
@@ -445,10 +456,10 @@ The `@radix-ui/react-icons` package may be unused.
 
 ### Prisma Client Usage Issues
 - `prisma-helpers.ts` has a comment: "split into commentWithAuthor and commentWithAuthorReplies
-  to avoid N+1" — this is good optimization, but it's ONLY defined on the `ResourceRepository`.
+  to avoid N+1" - this is good optimization, but it's ONLY defined on the `ResourceRepository`.
   Other repositories (UserRepository, CommentRepository) don't use this pattern consistently.
-- `UserRepository.findMany` uses `findMany` + `count` via `Promise.all` — good for pagination.
-- `UserRepository.findByUsername` doesn't filter by `deletedAt` — wait, it DOES: `where: { username, deletedAt: null }`. Good.
+- `UserRepository.findMany` uses `findMany` + `count` via `Promise.all` - good for pagination.
+- `UserRepository.findByUsername` doesn't filter by `deletedAt` - wait, it DOES: `where: { username, deletedAt: null }`. Good.
 
 ---
 
@@ -467,24 +478,24 @@ The `@radix-ui/react-icons` package may be unused.
 | **uploads** | ✅ | ✅ | ❌ | ❌ | ❌ | **Incomplete** |
 
 ### Engagement Domain Specifically
-- Has `FollowService`, `ReactionService`, `SavedResourceService` — all are CLASSES (not flow objects)
+- Has `FollowService`, `ReactionService`, `SavedResourceService` - all are CLASSES (not flow objects)
 - Methods use `this.db` from constructor
-- `FollowService` — `follow(userId, targetId)`, `unfollow(userId, targetId)`, `getFollowers(username)`, `getFollowing(username)`
-- `ReactionService` — `react(userId, resourceId, type)`, `unreact(userId, resourceId)`, `getReactions(resourceId, type)`
-- `SavedResourceService` — `saveResource(userId, resourceId)`, `unsaveResource(userId, resourceId)`,
+- `FollowService` - `follow(userId, targetId)`, `unfollow(userId, targetId)`, `getFollowers(username)`, `getFollowing(username)`
+- `ReactionService` - `react(userId, resourceId, type)`, `unreact(userId, resourceId)`, `getReactions(resourceId, type)`
+- `SavedResourceService` - `saveResource(userId, resourceId)`, `unsaveResource(userId, resourceId)`,
   `getUserSavedResources(username, page, limit)`
-- **No DTOs** — no Zod validation on any input
-- **No flows** — routes in `users/[username]/` call these services directly
+- **No DTOs** - no Zod validation on any input
+- **No flows** - routes in `users/[username]/` call these services directly
 - The `resources/saved/route.ts` GET uses `ResourceService.listSavedResources()` (from resources domain!)
   not `SavedResourceService.getUserSavedResources()`. Two implementations of the same concept!
 
 ### Comments Domain Specifically
-- `CommentRepository` — `findByResource(db, resourceId)`, `findByParent(commentId, page, limit)`,
+- `CommentRepository` - `findByResource(db, resourceId)`, `findByParent(commentId, page, limit)`,
   `findById(id)`, `findReplies(commentId, page, limit)`
-- `CommentService` — `getRootComments(resourceId)`, `getReplies(commentId, page, limit)`, `findById(commentId)`
-- `comments/[commentId]/route.ts` — has GET (findById) and POST (addCommentFlow reply)
+- `CommentService` - `getRootComments(resourceId)`, `getReplies(commentId, page, limit)`, `findById(commentId)`
+- `comments/[commentId]/route.ts` - has GET (findById) and POST (addCommentFlow reply)
 - **No create/update/delete flows** for top-level comments on resources
-- The `resources/[resourceId]/comments/route.ts` — GET uses `CommentService.getRootComments`,
+- The `resources/[resourceId]/comments/route.ts` - GET uses `CommentService.getRootComments`,
   POST uses `addCommentFlow` (imported from `@/domains/resources`)
 
 ---
@@ -497,9 +508,9 @@ etc.) was mass-deleted in the "chore: clean codebase" commit. The `GraphVisualiz
 also deleted.
 
 What remains:
-- `@/components/layout/` — 4 files (dashboard-layout, marketing-layout, FacetLayout, protected-route, index)
-- `@/components/home/` — Hero.tsx (181 lines, fully built), Features.tsx (0 lines, empty)
-- `@/components/shared/` — Navbar.tsx, Footer.tsx, Sidebar.tsx (all use facet-components)
+- `@/components/layout/` - 4 files (dashboard-layout, marketing-layout, FacetLayout, protected-route, index)
+- `@/components/home/` - Hero.tsx (181 lines, fully built), Features.tsx (0 lines, empty)
+- `@/components/shared/` - Navbar.tsx, Footer.tsx, Sidebar.tsx (all use facet-components)
 
 ### The App Router
 **Page structure:**
@@ -525,17 +536,17 @@ src/app/
 ```
 
 ### Issues
-1. **Empty pages** — 3 pages are empty stubs (public homepage, onboarding)
-2. **Protected routes without pages** — `/dashboard` is in the middleware matcher but has NO page
-3. **Auth pages are self-contained** — don't use `@arcevo/facet-auth`'s `SignIn`/`SignUp` components
-4. **Layout conflict** — hand-written `MarketingLayout`/`DashboardLayout` vs facet-layout's
+1. **Empty pages** - 3 pages are empty stubs (public homepage, onboarding)
+2. **Protected routes without pages** - `/dashboard` is in the middleware matcher but has NO page
+3. **Auth pages are self-contained** - don't use `@arcevo/facet-auth`'s `SignIn`/`SignUp` components
+4. **Layout conflict** - hand-written `MarketingLayout`/`DashboardLayout` vs facet-layout's
    `FacetMarketingLayout`/`FacetDashboardLayout`
-5. **The `protected-route.tsx` component** uses old `useAuth()` from auth-context — inconsistent with
+5. **The `protected-route.tsx` component** uses old `useAuth()` from auth-context - inconsistent with
    the server-side auth system
 6. **Login page** navigates to `/onboarding` if `user.onboardingStep < 3`, but the onboarding page
    is empty
 7. **Login page** checks `res.data.requiresMfa` but the login route doesn't return `requiresMfa: false`
-   on the non-MFA path — the field is `undefined` (falsy, but type-wise wrong)
+   on the non-MFA path - the field is `undefined` (falsy, but type-wise wrong)
 
 ### The Auth Flow (Client-Side)
 ```
@@ -553,7 +564,7 @@ Problems:
 
 ---
 
-## 12. The Facet Ecosystem — Full Utilization Plan
+## 12. The Facet Ecosystem - Full Utilization Plan
 
 The `@arcevo/facet-*` packages are a complete design system but only partially integrated. Here's what
 to fully leverage:
@@ -561,7 +572,7 @@ to fully leverage:
 ### `@arcevo/facet-components`
 Currently used for: `cn` (className helper), Button, Input, Label, toast, Icons
 **Full capacity:** Also provides Card, Dialog, DropdownMenu, Form, Select, Table, Tabs, Tooltip,
-Badge, Avatar, NavigationMenu, ScrollArea, Separator, Sheet, Skeleton, Switch, Textarea — basically
+Badge, Avatar, NavigationMenu, ScrollArea, Separator, Sheet, Skeleton, Switch, Textarea - basically
 a complete Radix UI + Tailwind kit. **Use these instead of rebuilding from scratch.**
 
 ### `@arcevo/facet-layout`
@@ -572,7 +583,7 @@ all app/layout.tsx files.**
 
 ### `@arcevo/facet-auth`
 Currently only used in dead `SignInPage.tsx`/`SignUpPage.tsx`
-**Full capacity:** `SignIn`, `SignUp`, `UserButton`, `ArcProvider` — pre-built auth components
+**Full capacity:** `SignIn`, `SignUp`, `UserButton`, `ArcProvider` - pre-built auth components
 that handle token management, MFA, and session state. **Replace self-written auth pages with these.**
 
 ### `@arcevo/facet-sdk`
@@ -583,7 +594,7 @@ Currently only used in `@/lib/facet/client.ts` (wrapper exists but authService d
 
 ### `@arcevo/facet-store`
 Currently only used in dead `@/stores/auth.store.ts`
-**Full capacity:** `useAuthStore`, `useTenantStore`, `usePermissionStore` — Zustand-based state
+**Full capacity:** `useAuthStore`, `useTenantStore`, `usePermissionStore` - Zustand-based state
 management with persistence, SSR hydration, and reactive updates. **Use these instead of
 auth-context.tsx.**
 
@@ -594,13 +605,13 @@ Currently used in `globals.css` for CSS variables
 
 ---
 
-## 13. Next Steps — Actionable Roadmap
+## 13. Next Steps - Actionable Roadmap
 
 ### Phase 3A: Stabilize Backend (Required for compilation)
 
 1. **Fix the error-handling chain** (BUG 2)
    - In `handle-error.ts`: import `FlowError` and add a case for it
-   - OR in `flow-executor.ts`: don't catch `ApiError`/`ZodError`/`ArcIDError` — let them propagate
+   - OR in `flow-executor.ts`: don't catch `ApiError`/`ZodError`/`ArcIDError` - let them propagate
    - **Files:** `src/lib/errors/handle-error.ts`, `src/core/flows/flow-executor.ts`
 
 2. **Fix `users/[username]` routes** (BUG 5)
@@ -610,7 +621,7 @@ Currently used in `globals.css` for CSS variables
 
 3. **Fix the 3 return-shape mismatches** (BUG 3)
    - Choose: either change the flow OR change the route. Flows are the source of truth.
-   - `users/route.ts`: input mismatch (BUG 4) — redesign to use `action` enum
+   - `users/route.ts`: input mismatch (BUG 4) - redesign to use `action` enum
    - `users/me/profile/route.ts`: access `result.user` instead of `result.profile` (or change flow)
    - `resources/[resourceId]/relations/route.ts`: access `result.relation` instead of `result.edge`
 
@@ -622,22 +633,22 @@ Currently used in `globals.css` for CSS variables
    - Map HTTP status codes to appropriate ApiError types
    - **File:** `src/lib/useful/api-client.ts`
 
-6. **Delete `src/lib/useful/db-client.ts`** — old duplicate of DbClient
+6. **Delete `src/lib/useful/db-client.ts`** - old duplicate of DbClient
 
-7. **Fix `auth/me/route.ts`** — use `requireOnboarded` instead of `requireAuth`, route through a flow
+7. **Fix `auth/me/route.ts`** - use `requireOnboarded` instead of `requireAuth`, route through a flow
 
 ### Phase 3B: Dead Code Cleanup
 
 Delete (verified unused):
-- `src/stores/*` (entire directory — auth.store, tenant.store, index)
+- `src/stores/*` (entire directory - auth.store, tenant.store, index)
 - `src/components/auth/*` (SignInPage, SignUpPage, UserMenu, index)
 - `src/components/layout/FacetLayout.tsx`
 - `src/components/layout/protected-route.tsx`
-- `src/jobs/*` (entire directory — all empty)
+- `src/jobs/*` (entire directory - all empty)
 - `src/lib/cache/` (empty directory)
 - `src/lib/activity/*` (dead module)
 - `src/components/home/Features.tsx` (empty)
-- `src/app/(public)/page.tsx` (empty stub — will be rebuilt)
+- `src/app/(public)/page.tsx` (empty stub - will be rebuilt)
 
 Run `pnpm install --prune` to remove unused npm dependencies
 (`@arcevo/facet-auth`, `@arcevo/facet-layout`, `@arcevo/facet-store`, `@hookform/resolvers`,
@@ -684,7 +695,7 @@ Run `pnpm install --prune` to remove unused npm dependencies
 
 6. **Delete entire `src/components/` directory** after rebuilding layouts/app-pages using
    facet-layout wrappers directly. Do NOT keep the hand-written `marketing-layout.tsx` and
-   `dashboard-layout.tsx` — use `ConsoleLayout` and `LandingLayout` from facet-layout instead.
+   `dashboard-layout.tsx` - use `ConsoleLayout` and `LandingLayout` from facet-layout instead.
 
 ### Phase 5: Testing (Post-Rebuild)
 
@@ -696,21 +707,21 @@ Run `pnpm install --prune` to remove unused npm dependencies
 
 ## 14. Quick Wins (Do These First)
 
-1. Fix `api-client.ts` error codes (BUG 6) — 30 min, huge UX improvement
-2. Fix the 3 return-shape mismatches (BUG 3) — 15 min each
-3. Fix `users/[username]` routes (BUG 5) — 30 min, fixes 6 routes
-4. Fix login cookie bug (BUG 1) — 30 min, unblocks all auth
-5. Fix error handling chain (BUG 2) — 30 min, proper error responses
+1. Fix `api-client.ts` error codes (BUG 6) - 30 min, huge UX improvement
+2. Fix the 3 return-shape mismatches (BUG 3) - 15 min each
+3. Fix `users/[username]` routes (BUG 5) - 30 min, fixes 6 routes
+4. Fix login cookie bug (BUG 1) - 30 min, unblocks all auth
+5. Fix error handling chain (BUG 2) - 30 min, proper error responses
 
 ---
 
 ## 15. Files To Read Next
 
-- `src/domains/resources/flows/save-resource.flow.ts` (full file — saw it returns `{}`)
+- `src/domains/resources/flows/save-resource.flow.ts` (full file - saw it returns `{}`)
 - `src/domains/resources/flows/update-resource.flow.ts` (not yet read)
-- `src/domains/users/user.service.ts` lines 1-38 (read — confirmed constructor pattern)
+- `src/domains/users/user.service.ts` lines 1-38 (read - confirmed constructor pattern)
 - `src/domains/auth/auth.service.ts` lines 1-23 (need to see register/login flow methods)
-- `src/lib/useful/api-client.ts` (full — only 24 lines, need to confirm fetch wrapper)
+- `src/lib/useful/api-client.ts` (full - only 24 lines, need to confirm fetch wrapper)
 - `src/lib/useful/api-response.ts` (not yet read)
 - `src/lib/useful/query-client.ts` (not yet read)
 - All 9 unread resource flow files (`update-resource`, `delete-resource`, `disconnect-resources`,

@@ -1,0 +1,61 @@
+Relnex - Development Tracker
+Updated: 2026-10-31  (development PAUSED until SovGrant is stable)
+Source of truth: docs/relnex-roadmap.md
+
+================================================================================
+STATUS: Phases 0-5 complete. Repo builds clean (pnpm build + pnpm typecheck).
+Remaining: Phase 6 (pages) and Phase 7 (polish). Resume once SG is stable.
+================================================================================
+
+PHASE 0 - DOCUMENTATION ........................................ [x] DONE
+  [x] README, AGENTS.md, CLAUDE.md, docs/architecture.md present
+  [x] Namespace canonical (Relnex / SovGrant / sg / @fusorb/facet-*)
+  [x] Docs re-synced to repo state (17 models, 11 enums, 40 routes, 10 domains)
+
+PHASE 1 - CORE INFRASTRUCTURE ................................. [x] DONE
+  [x] requireAuth / requireOnboarded guards (@/core/auth)
+  [x] handleApiRoute wrapper (@/lib/errors)
+  [x] FlowExecutor + Flow + FlowContext (@/core/flows)
+  [x] Prisma singleton + query helpers (@/core/db)
+
+PHASE 2 - FLOW UNIFICATION .................................... [x] DONE
+  [x] All flows are objects (Flow<I,O>), never classes
+  [x] flowExecutor.run(flow, input, ctx) everywhere
+
+PHASE 3 - AUTH CONSOLIDATION .................................. [x] DONE
+  [x] Hand-rolled sgFetch client replaced by @fusorb/facet-sdk via @/lib/sg
+  [x] Dead src/lib/facet/ wrappers deleted
+  [x] src/lib/arcid/ and src/lib/sg/middleware gone
+  [x] Sg boundary: SgClient/AuthSdk + createServerSgClient + unwrap + SgError
+  [ ] (deferred) Swap shared-secret verify for JWKS - user-owned, verifySgToken seam
+
+PHASE 4 - ROUTE FIX PASS ...................................... [x] DONE
+  [x] All 40 route files: handleApiRoute + guards + flow executor
+  [x] Async params handled centrally in handleApiRoute (Next 16)
+  [x] tsc --noEmit green
+
+PHASE 5 - EDGE MIDDLEWARE ..................................... [x] DONE
+  [x] src/middleware.ts forwards x-tenant-id / x-identity-id from verified JWT
+  [x] Protected page prefixes gated -> redirect to /login
+  [x] Edge-safe import (@/core/auth/jwt leaf, not the barrel)
+
+PHASE 6 - PAGES ............................................... [ ] TODO (deferred)
+  [ ] Landing page (src/app/(public)/page.tsx) - currently placeholder
+  [ ] Onboarding wizard - REUSE SovGrant's onboarding feature if consumable
+  [ ] Dashboard (src/app/(protected)/dashboard/) - missing entirely
+  [ ] Extend middleware PROTECTED_PREFIXES (onboarding, resources, collections, settings)
+
+PHASE 7 - POLISH & VERIFY ..................................... [ ] TODO
+  [ ] Migrate lint off `next lint` (removed in Next 16) to the ESLint CLI
+  [ ] Rename middleware.ts -> proxy.ts (Next 16 deprecation)
+  [ ] End-to-end auth test (login -> cookie -> /api/auth/me)
+  [ ] Prune any remaining dead files (verify src/lib/useful/db-client.ts usage)
+
+================================================================================
+VERIFICATION CHECKLIST (current)
+================================================================================
+  [x] pnpm typecheck passes with zero errors
+  [x] pnpm build passes; 27 static pages, 40 routes emitted
+  [ ] pnpm lint passes (blocked - `next lint` removed in Next 16; see Phase 7)
+  [ ] Login -> cookie set -> /api/auth/me returns 200 (needs live SG)
+  [ ] Extended middleware coverage for all protected prefixes (Phase 6)
