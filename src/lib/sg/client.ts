@@ -1,46 +1,21 @@
 /**
- * Sg HTTP SDK Client for Relnex
+ * Sg integration boundary for Relnex.
  *
- * This is the integration contract between Relnex and Sg.
- * All auth operations go through these methods.
- * Never call Sg endpoints directly from Relnex components or routes —
- * always use this client.
+ * The actual HTTP client lives in `@fusorb/facet-sdk`. This module re-exports
+ * it, adds the local error type + `unwrap` helper, and builds the configured
+ * server-side client so the rest of the repo never hand-rolls endpoints.
  */
 
-const SG_BASE_URL = process.env.SG_API_URL ?? "http://localhost:4000";
-const SG_SERVICE_TOKEN = process.env.SG_SERVICE_TOKEN!; // M2M token for server-to-server
+import { SgClient, AuthSdk, type ApiResponse } from "@fusorb/facet-sdk";
 
-type FetchOptions = {
-  method?: string;
-  body?: unknown;
-  token?: string; // user's access token for proxied calls
-};
-
-async function sgFetch<T>(path: string, options: FetchOptions = {}): Promise<T> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    Authorization: options.token
-      ? `Bearer ${options.token}`
-      : `Bearer ${SG_SERVICE_TOKEN}`,
-  };
-
-  const res = await fetch(`${SG_BASE_URL}${path}`, {
-    method: options.method ?? "GET",
-    headers,
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new SgError(
-      err.message ?? "Sg request failed",
-      res.status,
-      err.error ?? "SG_ERROR"
-    );
-  }
-
-  return res.json();
-}
+export { SgClient, AuthSdk };
+export type {
+  User as SgIdentity,
+  LoginResult,
+  RegisterResult,
+  TokenBundle,
+  RefreshResult,
+} from "@fusorb/facet-sdk";
 
 export class SgError extends Error {
   constructor(message: string, public status: number, public code: string) {
@@ -49,154 +24,32 @@ export class SgError extends Error {
   }
 }
 
-// ── Identity ──────────────────────────────────────────────────────────────────
-
-export interface SgIdentity {
-  id: string;
-  email: string | null;
-  name: string | null;
-  picture: string | null;
-  status: string;
-  emailVerified: boolean;
-  globalRole: string;
-  metadata: Record<string, unknown> | null;
-  createdAt: string;
+/**
+ * Unwraps an SDK `ApiResponse<T>` envelope (or the promise resolving to it),
+ * throwing a local `SgError` on failure and returning the inner payload.
+ */
+export async function unwrap<T>(
+  res: ApiResponse<T> | Promise<ApiResponse<T>>
+): Promise<T> {
+  const r = await res;
+  if (r.error) {
+    throw new SgError(r.error.message, r.error.statusCode, r.error.error);
+  }
+  return r.data;
 }
 
-export interface RegisterResult {
-  identity: SgIdentity;
+const SERVER_BASE_URL = process.env.SG_API_URL ?? "http://localhost:4000";
+
+/**
+ * Builds a server-side `SgClient`. Server-to-server calls (register/login/
+ * password reset) authenticate with the M2M service token; per-request user
+ * tokens override it when present.
+ */
+export function createServerSgClient(accessToken?: string): SgClient {
+  const client = new SgClient({
+    baseUrl: SERVER_BASE_URL,
+    clientId: process.env.SG_CLIENT_ID,
+  });
+  client.setAccessToken(accessToken ?? process.env.SG_SERVICE_TOKEN ?? null);
+  return client;
 }
-
-export interface LoginResult {
-  sessionId: string;
-  requiresMfa: boolean;
-  mfaTypes: string[];
-  accessToken?: string;
-  refreshToken?: string;
-}
-
-export interface TokenBundle {
-  access_token: string;
-  refresh_token: string;
-  id_token?: string;
-  token_type: "Bearer";
-  expires_in: number;
-}
-
-export const sg = {
-  // ── Registration ────────────────────────────────────────────────────────
-
-  async register(email: string, password: string, name?: string): Promise<RegisterResult> {
-    const res = await sgFetch<{ success: boolean; data: RegisterResult }>(
-      "/auth/register",
-      { method: "POST", body: { email, password, name } }
-    );
-    return res.data;
-  },
-
-  // ── Login ────────────────────────────────────────────────────────────────
-
-  async login(email: string, password: string): Promise<LoginResult> {
-    const res = await sgFetch<{ success: boolean; data: LoginResult }>(
-      "/auth/login",
-      { method: "POST", body: { email, password } }
-    );
-    return res.data;
-  },
-
-  // ── MFA ──────────────────────────────────────────────────────────────────
-
-  async verifyMfa(sessionId: string, code: string): Promise<LoginResult> {
-    const res = await sgFetch<{ success: boolean; data: LoginResult }>(
-      "/auth/mfa/verify",
-      { method: "POST", body: { sessionId, code } }
-    );
-    return res.data;
-  },
-
-  // ── Token operations ─────────────────────────────────────────────────────
-
-  async refreshToken(refreshToken: string): Promise<TokenBundle> {
-    return sgFetch<TokenBundle>("/oauth/token", {
-      method: "POST",
-      body: {
-        grant_type: "refresh_token",
-        refresh_token: refreshToken,
-        client_id: process.env.SG_CLIENT_ID!,
-      },
-    });
-  },
-
-  async logout(sessionId: string, accessToken: string): Promise<void> {
-    await sgFetch("/auth/logout", {
-      method: "POST",
-      body: { sessionId },
-      token: accessToken,
-    });
-  },
-
-  async revokeToken(token: string): Promise<void> {
-    await sgFetch("/oauth/revoke", {
-      method: "POST",
-      body: {
-        token,
-        client_id: process.env.SG_CLIENT_ID!,
-      },
-    });
-  },
-
-  // ── Identity profile ─────────────────────────────────────────────────────
-
-  async getIdentity(accessToken: string): Promise<SgIdentity> {
-    const res = await sgFetch<{ success: boolean; data: SgIdentity }>(
-      "/identity/profile",
-      { token: accessToken }
-    );
-    return res.data;
-  },
-
-  async updateIdentity(
-    accessToken: string,
-    data: { name?: string; picture?: string; metadata?: Record<string, unknown> }
-  ): Promise<SgIdentity> {
-    const res = await sgFetch<{ success: boolean; data: SgIdentity }>(
-      "/identity/profile",
-      { method: "PATCH", body: data, token: accessToken }
-    );
-    return res.data;
-  },
-
-  // ── Password ─────────────────────────────────────────────────────────────
-
-  async requestPasswordReset(email: string): Promise<void> {
-    await sgFetch("/auth/password/reset", {
-      method: "POST",
-      body: { email },
-    });
-  },
-
-  async confirmPasswordReset(token: string, newPassword: string): Promise<void> {
-    await sgFetch("/auth/password/reset/confirm", {
-      method: "POST",
-      body: { token, newPassword },
-    });
-  },
-
-  // ── Email verification ────────────────────────────────────────────────────
-
-  async verifyEmail(token: string): Promise<void> {
-    await sgFetch("/auth/email/verify", {
-      method: "POST",
-      body: { token },
-    });
-  },
-
-  // ── Token introspection (server-to-server) ────────────────────────────────
-
-  async introspect(token: string): Promise<{ active: boolean; sub?: string; scope?: string }> {
-    return sgFetch("/oauth/introspect", {
-      method: "POST",
-      body: { token },
-    });
-  },
-};
