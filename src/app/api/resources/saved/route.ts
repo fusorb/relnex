@@ -6,7 +6,7 @@ import { ResourceService } from "@/domains/resources";
 
 const resourceService = new ResourceService();
 
-// GET — list all resources saved/bookmarked by the authenticated user,
+// GET - list all resources saved/bookmarked by the authenticated user,
 // scoped to their current tenant. Ordered by savedAt descending (most recent first).
 export const GET = handleApiRoute(async (req: NextRequest) => {
   const session = await requireOnboarded(req);

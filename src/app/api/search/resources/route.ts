@@ -1,5 +1,5 @@
 // src/app/api/search/resources/route.ts
-// Dedicated resource search — full pagination metadata.
+// Dedicated resource search - full pagination metadata.
 // Useful when the UI has a full search page focused on resources only.
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute, ApiError } from "@/lib/errors";

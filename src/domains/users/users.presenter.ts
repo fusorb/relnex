@@ -1,5 +1,5 @@
 /**
- * User presenter — transforms User model to API-safe response shapes.
+ * User presenter - transforms User model to API-safe response shapes.
  */
 
 import type { User, Membership } from "@prisma-client";

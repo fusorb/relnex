@@ -12,7 +12,7 @@ interface RouteParams {
 
 const commentService = new CommentService();
 
-// GET — fetch a single comment by ID
+// GET - fetch a single comment by ID
 export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     await requireOnboarded(req);
@@ -24,7 +24,7 @@ export const GET = handleApiRoute(
   },
 );
 
-// POST — create a reply to this comment
+// POST - create a reply to this comment
 export const POST = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);

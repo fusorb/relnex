@@ -12,7 +12,7 @@ interface RouteParams {
 
 const resourceService = new ResourceService();
 
-// GET — list version history (read: direct service call, no transaction overhead)
+// GET - list version history (read: direct service call, no transaction overhead)
 export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     await requireOnboarded(req);
@@ -25,7 +25,7 @@ export const GET = handleApiRoute(
   },
 );
 
-// POST — create a manual version snapshot
+// POST - create a manual version snapshot
 export const POST = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);

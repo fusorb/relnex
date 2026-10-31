@@ -8,7 +8,7 @@ interface RouteParams {
   params: { resourceId: string };
 }
 
-// Public — resource children are scoped by tenantId only; no auth required.
+// Public - resource children are scoped by tenantId only; no auth required.
 export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const tenantId = req.headers.get("x-tenant-id") ?? null;

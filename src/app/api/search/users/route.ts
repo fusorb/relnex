@@ -1,5 +1,5 @@
 // src/app/api/search/users/route.ts
-// User directory search — for @mention lookups, user discovery, etc.
+// User directory search - for @mention lookups, user discovery, etc.
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute, ApiError } from "@/lib/errors";
 import { SearchRepository } from "@/domains/search/search.repository";

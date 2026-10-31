@@ -1,4 +1,4 @@
-// src/app/api/users/[username]/route.ts — public profile (no auth required)
+// src/app/api/users/[username]/route.ts - public profile (no auth required)
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { UserService } from "@/domains/users";

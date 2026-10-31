@@ -9,7 +9,7 @@ interface RouteParams {
   params: { resourceId: string };
 }
 
-// POST — bookmark/save this resource for the authenticated user
+// POST - bookmark/save this resource for the authenticated user
 export const POST = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);
@@ -23,7 +23,7 @@ export const POST = handleApiRoute(
   },
 );
 
-// DELETE — remove bookmark
+// DELETE - remove bookmark
 export const DELETE = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);

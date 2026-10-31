@@ -1,7 +1,7 @@
 // src/app/api/search/tags/route.ts
-// Tag autocomplete — for tag pickers, filter dropdowns, and search suggestions.
+// Tag autocomplete - for tag pickers, filter dropdowns, and search suggestions.
 // Returns tags whose name OR slug contains the query string.
-// No auth required — tags are public reference data.
+// No auth required - tags are public reference data.
 
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute, ApiError } from "@/lib/errors";

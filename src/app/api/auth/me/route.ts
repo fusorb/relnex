@@ -1,7 +1,7 @@
 // src/app/api/auth/me/route.ts
 //
 // Returns the authenticated user's full SafeUserDTO. This is the primary
-// hydration endpoint on app load — call it once to restore session state.
+// hydration endpoint on app load - call it once to restore session state.
 //
 // Note: requireAuth (not requireOnboarded) is intentional here. A user who
 // hasn't finished onboarding still needs to fetch their profile to know which

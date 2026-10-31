@@ -1,6 +1,6 @@
 // src/app/api/uploads/presign/route.ts
 // FIX: UploadService was instantiated inside the handler on every request.
-// Moved to module scope — constructor validates env vars once at startup,
+// Moved to module scope - constructor validates env vars once at startup,
 // failing fast rather than on the first upload attempt.
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";

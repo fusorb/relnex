@@ -44,10 +44,10 @@ export class FlowExecutor {
       const message = (err as Error)?.message ?? "Unexpected error";
       logger.error(`[FLOW] ${flow.name} fail`, { traceId, message });
 
-      // Re-throw FlowError — carries its own statusCode, handled by handleError
+      // Re-throw FlowError - carries its own statusCode, handled by handleError
       if (err instanceof FlowError) throw err;
 
-      // Re-throw ZodError — handled by handleError (returns 422 with field errors)
+      // Re-throw ZodError - handled by handleError (returns 422 with field errors)
       if (err instanceof ZodError) throw err;
 
       // Re-throw ApiError (statusCode) and SgError (status) via duck-typing

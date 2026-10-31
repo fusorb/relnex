@@ -1,5 +1,5 @@
 // src/app/api/search/collections/route.ts
-// Public collection discovery — only surfaces PUBLIC collections.
+// Public collection discovery - only surfaces PUBLIC collections.
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute, ApiError } from "@/lib/errors";
 import { SearchRepository } from "@/domains/search/search.repository";

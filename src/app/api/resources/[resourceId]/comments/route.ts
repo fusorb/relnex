@@ -12,7 +12,7 @@ interface RouteParams {
 
 const commentService = new CommentService();
 
-// GET — root-level comments for this resource
+// GET - root-level comments for this resource
 export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     await requireOnboarded(req);
@@ -21,7 +21,7 @@ export const GET = handleApiRoute(
   },
 );
 
-// POST — create a root-level comment on this resource
+// POST - create a root-level comment on this resource
 export const POST = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);

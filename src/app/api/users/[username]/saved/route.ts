@@ -1,5 +1,5 @@
 // src/app/api/users/[username]/saved/route.ts
-// Auth required — saved resources are private to their owner.
+// Auth required - saved resources are private to their owner.
 // The service enforces the ownership check and throws 403 for mismatches.
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";

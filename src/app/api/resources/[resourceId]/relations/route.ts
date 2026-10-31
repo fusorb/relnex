@@ -9,7 +9,7 @@ interface RouteParams {
   params: { resourceId: string };
 }
 
-// POST — add a directed relation from [resourceId] to body.targetId
+// POST - add a directed relation from [resourceId] to body.targetId
 export const POST = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);
@@ -27,7 +27,7 @@ export const POST = handleApiRoute(
   },
 );
 
-// DELETE — remove a specific typed relation; body carries { targetId, type }
+// DELETE - remove a specific typed relation; body carries { targetId, type }
 export const DELETE = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);

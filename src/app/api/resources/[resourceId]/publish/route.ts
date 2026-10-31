@@ -10,7 +10,7 @@ interface RouteParams {
 }
 
 // POST /api/resources/[resourceId]/publish
-// Separate from PATCH to make publish an explicit, intentional action — not
+// Separate from PATCH to make publish an explicit, intentional action - not
 // just another field update. Enforces the full publish contract via the flow.
 export const POST = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {

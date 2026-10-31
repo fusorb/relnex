@@ -4,7 +4,7 @@ import { prisma } from "@/core/db/prisma";
 import { ApiError } from "@/lib/errors";
 
 /**
- * Inline guard — returns AuthSession or throws ApiError.unauthorized.
+ * Inline guard - returns AuthSession or throws ApiError.unauthorized.
  * Used inside handleApiRoute wrappers.
  *
  * Usage: const session = await requireAuth(req);

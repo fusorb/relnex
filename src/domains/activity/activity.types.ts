@@ -1,7 +1,7 @@
 // domains/activity/activity.types.ts
 // Canonical activity type strings written to the Activity table.
 // Using dot-notation namespacing: entity.action (e.g. resource.published).
-// Add new types here as new domains are introduced — the DB column is String
+// Add new types here as new domains are introduced - the DB column is String
 // so any value is valid, but keeping them here prevents typos and makes
 // querying the activity feed predictable.
 

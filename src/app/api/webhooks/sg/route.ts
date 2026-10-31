@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
 
     case "USER_REGISTERED": {
       // Sg notifies us of new registrations so we can pre-provision User
-      // This is optional — withUser() above also handles lazy provisioning
+      // This is optional - withUser() above also handles lazy provisioning
       if (event.identityId) {
         const existing = await prisma.user.findUnique({
           where: { identityId: event.identityId },
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
     }
 
     default:
-      // Unknown event — ignore, return 200 so Sg doesn't retry
+      // Unknown event - ignore, return 200 so Sg doesn't retry
       break;
   }
 

@@ -13,7 +13,7 @@ export interface SgTokenPayload extends JWTPayload {
 
 /**
  * Verifies a Sg access token locally (no network call).
- * Throws jose errors on failure — caught by error boundary.
+ * Throws jose errors on failure - caught by error boundary.
  */
 export async function verifySgToken(token: string): Promise<SgTokenPayload> {
   const { payload } = await jwtVerify(token, secret(), { issuer: ISSUER });

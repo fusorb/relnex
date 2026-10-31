@@ -1,5 +1,5 @@
 /**
- * Resource presenter — transforms Resource model to API-safe response shapes.
+ * Resource presenter - transforms Resource model to API-safe response shapes.
  */
 
 import type { Resource, ResourceTag, ResourceMetrics } from "@prisma-client";

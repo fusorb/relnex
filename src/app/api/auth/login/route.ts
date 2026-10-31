@@ -13,7 +13,7 @@ import { setAuthCookies } from "@/core/auth";
 export const POST = handleApiRoute(async (req: NextRequest) => {
   const body = await req.json();
 
-  // Auth flows make external HTTP calls to Sg — no DB transaction needed
+  // Auth flows make external HTTP calls to Sg - no DB transaction needed
   const result = await flowExecutor.run(loginFlow, body, {
     userId: null,
     identityId: null,

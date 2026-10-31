@@ -1,4 +1,4 @@
-// src/app/api/search/route.ts — unified search across resources, users, collections
+// src/app/api/search/route.ts - unified search across resources, users, collections
 //
 // Examples:
 //   GET /api/search?q=typescript           → all three entities
@@ -7,7 +7,7 @@
 //   GET /api/search?q=design&entity=collection
 //   GET /api/search?q=react&entity=resource&tagId=<uuid>&page=2&limit=20
 //
-// No auth required — results are scoped to tenant and only surface
+// No auth required - results are scoped to tenant and only surface
 // PUBLISHED resources + PUBLIC collections.
 
 import { NextRequest, NextResponse } from "next/server";

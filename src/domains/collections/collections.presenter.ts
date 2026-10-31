@@ -1,5 +1,5 @@
 /**
- * Collection presenter — transforms Collection model to API-safe response shapes.
+ * Collection presenter - transforms Collection model to API-safe response shapes.
  */
 
 import type { Collection, CollectionResource, Resource } from "@prisma-client";

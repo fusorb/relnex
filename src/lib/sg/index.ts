@@ -1,4 +1,4 @@
-// Sg integration barrel — import the SDK from here, not individual files.
+// Sg integration barrel - import the SDK from here, not individual files.
 // Auth guards, JWT verification, and session management come from @/core/auth.
 export {
   SgClient,

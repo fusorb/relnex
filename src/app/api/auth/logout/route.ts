@@ -1,5 +1,5 @@
 // src/app/api/auth/logout/route.ts
-// Logout is stateless — we clear the cookie on the client.
+// Logout is stateless - we clear the cookie on the client.
 // POST (not GET) to prevent logout via prefetch or image tags (CSRF hygiene).
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";

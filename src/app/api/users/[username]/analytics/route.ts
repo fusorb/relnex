@@ -1,4 +1,4 @@
-// src/app/api/users/[username]/analytics/route.ts — public activity heatmap
+// src/app/api/users/[username]/analytics/route.ts - public activity heatmap
 // NOTE: heatmap is now correct after fixing UserRepository.fetchChronologicalTelemetryEvents
 //       which was querying the wrong field (userId instead of actorId on ResourceUsage).
 import { NextRequest, NextResponse } from "next/server";

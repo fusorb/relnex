@@ -10,8 +10,8 @@ interface RouteParams {
 
 const commentService = new CommentService();
 
-// GET — direct children of a comment (one level deep, chronological ascending).
-// Creating a reply goes to POST /comments (with parentId in body) — not here.
+// GET - direct children of a comment (one level deep, chronological ascending).
+// Creating a reply goes to POST /comments (with parentId in body) - not here.
 // This endpoint is read-only.
 export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
