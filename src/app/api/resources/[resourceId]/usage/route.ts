@@ -16,12 +16,12 @@ interface RouteParams {
 export const POST = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const tenantId = req.headers.get("x-tenant-id") ?? null;
-    const userId = req.headers.get("x-user-id") ?? undefined;
+    const userId = req.headers.get("x-user-id") ?? null;
     const body = await req.json();
     await flowExecutor.run(
       trackUsageFlow,
       { resourceId: params.resourceId, ...body },
-      { userId, tenantId },
+      { userId, identityId: null, tenantId },
     );
     return NextResponse.json({ success: true }, { status: 202 });
   },

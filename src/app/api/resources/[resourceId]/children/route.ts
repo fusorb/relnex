@@ -18,7 +18,7 @@ export const GET = handleApiRoute(
     const result = await flowExecutor.run(
       getChildrenFlow,
       { resourceId: params.resourceId, page, limit },
-      { tenantId },
+      { userId: null, identityId: null, tenantId },
     );
     return NextResponse.json({ success: true, data: result });
   },

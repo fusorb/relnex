@@ -40,7 +40,7 @@ export const createResourceFlow: Flow<z.infer<typeof CreateResourceDto>, { resou
           create: input.tags.map((name) => ({
             tag: {
               connectOrCreate: {
-                where:  { "tenantId_slug": { tenantId: ctx.tenantId, slug: name.toLowerCase().replace(/\s+/g, "-") } },
+                where:  { "tenantId_slug": { tenantId: ctx.tenantId ?? "", slug: name.toLowerCase().replace(/\s+/g, "-") } },
                 create: { tenantId: ctx.tenantId, name, slug: name.toLowerCase().replace(/\s+/g, "-") },
               },
             },

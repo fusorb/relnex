@@ -61,8 +61,9 @@ export class ResourceService {
   }
 
   async archiveResource(resourceId: string, userId: string, tenantId?: string | null) {
-    await this.assertOwnership(resourceId, userId, tenantId);
-    return this.repo.update(resourceId, { status: "ARCHIVED" });
+    const resource = await this.assertOwnership(resourceId, userId, tenantId);
+    await this.repo.update(resourceId, { status: "ARCHIVED" });
+    return { ...resource, status: "ARCHIVED" as const };
   }
 
   async deleteResource(resourceId: string, userId: string, tenantId?: string | null) {
