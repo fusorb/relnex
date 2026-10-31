@@ -32,15 +32,29 @@ export class SearchService {
     };
   }
 
-  async executeUnifiedQuery(query: SearchInput, tenantId: string) {
-    return this.search({ ...query, type: "all", tenantId: tenantId ?? null });
+  async executeUnifiedQuery(
+    query: { q: string; page: number; limit: number; tenantId?: string | null },
+    tenantId: string | null
+  ) {
+    return this.search({
+      q:        query.q,
+      type:     "all",
+      page:     query.page,
+      limit:    query.limit,
+      tenantId: query.tenantId ?? tenantId ?? null,
+    });
   }
 
-  async executeResourceQuery(query: SearchInput, tenantId: string) {
+  async executeResourceQuery(
+    query: { q?: string; page: number; limit: number; tenantId?: string | null },
+    tenantId: string | null
+  ) {
     const result = await this.search({
-      ...query,
-      type:      "resources",
-      tenantId:  tenantId ?? null,
+      q:        query.q ?? "",
+      type:     "resources",
+      page:     query.page,
+      limit:    query.limit,
+      tenantId: query.tenantId ?? tenantId ?? null,
     });
     return result.resources;
   }

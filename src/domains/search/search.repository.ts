@@ -62,6 +62,11 @@ export class SearchRepository {
         where, orderBy: { createdAt: "desc" },
         skip: (input.page - 1) * input.limit,
         take: input.limit,
+        include: {
+          author: {
+            select: { id: true, username: true, displayName: true, avatarUrl: true },
+          },
+        },
       }),
       this.db.collection.count({ where }),
     ]);

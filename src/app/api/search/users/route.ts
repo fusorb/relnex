@@ -24,11 +24,12 @@ export const GET = handleApiRoute(async (req: NextRequest) => {
   const page = parseInt(parsed.data.page, 10);
   const skip = (page - 1) * limit;
 
-  const { total, items } = await repo.searchUsers({
-    searchTerm: parsed.data.q,
-    tenantId,
+  const { total, items } = await repo.searchUsers(parsed.data.q, {
+    q: parsed.data.q,
+    type: "users",
+    page,
     limit,
-    skip,
+    tenantId,
   });
 
   return NextResponse.json({
