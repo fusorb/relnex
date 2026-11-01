@@ -4,6 +4,7 @@ import type { FlowContext } from "@/core/flows/flow-context";
 import { ResourceService } from "../resource.service";
 import { ApiError }        from "@/lib/errors";
 import type { Prisma }      from "@prisma-client";
+import { resolveTenantId }  from "@/core/tenancy";
 
 const Input = z.object({
   resourceId:    z.string(),
@@ -34,7 +35,7 @@ export const createVersionFlow: Flow<z.infer<typeof Input>> = {
         contentSnapshot: (resource.publishedContentJson ?? resource.draftContentJson) as Prisma.InputJsonValue,
         metadataSnapshot: resource.metadata as Prisma.InputJsonValue,
         changeSummary:   input.changeSummary,
-        tenantId:        ctx.tenantId,
+        tenantId:        resolveTenantId(ctx.tenantId),
       },
     });
 

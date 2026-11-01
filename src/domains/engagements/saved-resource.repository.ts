@@ -1,5 +1,5 @@
-import type { Prisma } from "@prisma-client";
 import type { DbClient } from "@/core/flows/flow-context";
+import { resolveTenantId } from "@/core/tenancy";
 
 export class SavedResourceRepository {
   constructor(private db: DbClient) {}
@@ -19,7 +19,9 @@ export class SavedResourceRepository {
   }
 
   async create(data: { userId: string; resourceId: string; tenantId?: string | null }) {
-    return this.db.savedResource.create({ data });
+    return this.db.savedResource.create({
+      data: { ...data, tenantId: resolveTenantId(data.tenantId) },
+    });
   }
 
   async delete(id: string) {

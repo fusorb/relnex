@@ -1,9 +1,11 @@
 import type { DbClient } from "@/core/flows/flow-context";
+import type { ReactionType } from "@prisma-client";
+import { resolveTenantId } from "@/core/tenancy";
 
 export class ReactionRepository {
   constructor(private db: DbClient) {}
 
-  async findByUserAndResourceAndType(userId: string, resourceId: string, type: string) {
+  async findByUserAndResourceAndType(userId: string, resourceId: string, type: ReactionType) {
     return this.db.reaction.findUnique({
       where: { userId_resourceId_type: { userId, resourceId, type } },
     });
@@ -16,8 +18,10 @@ export class ReactionRepository {
     });
   }
 
-  async create(data: { userId: string; resourceId: string; type: string; tenantId?: string | null }) {
-    return this.db.reaction.create({ data });
+  async create(data: { userId: string; resourceId: string; type: ReactionType; tenantId?: string | null }) {
+    return this.db.reaction.create({
+      data: { ...data, tenantId: resolveTenantId(data.tenantId) },
+    });
   }
 
   async delete(id: string) {

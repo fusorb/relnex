@@ -1,4 +1,5 @@
 import type { DbClient } from "@/core/flows/flow-context";
+import type { ReactionType } from "@prisma-client";
 import { ReactionRepository } from "./reaction.repository";
 import { ApiError } from "@/lib/errors";
 
@@ -8,14 +9,14 @@ export class ReactionService {
     this.repo = new ReactionRepository(db);
   }
 
-  async addReaction(userId: string, resourceId: string, type: string = "like", tenantId?: string | null) {
+  async addReaction(userId: string, resourceId: string, type: ReactionType = "LIKE", tenantId?: string | null) {
     const existing = await this.repo.findByUserAndResourceAndType(userId, resourceId, type);
     if (existing) return existing;
 
     return this.repo.create({ userId, resourceId, type, tenantId });
   }
 
-  async removeReaction(userId: string, resourceId: string, type: string = "like") {
+  async removeReaction(userId: string, resourceId: string, type: ReactionType = "LIKE") {
     const existing = await this.repo.findByUserAndResourceAndType(userId, resourceId, type);
     if (!existing) throw ApiError.notFound("Reaction not found");
     return this.repo.delete(existing.id);

@@ -7,14 +7,14 @@ export class ResourceRepository {
 
   async findById(id: string, tenantId?: string | null) {
     return this.db.resource.findFirst({
-      where: { id, ...(tenantId !== undefined ? { tenantId } : {}), deletedAt: null },
+      where: { id, ...(tenantId ? { tenantId } : {}), deletedAt: null },
       include: { author: true, metrics: true, resourceTags: { include: { tag: true } } },
     });
   }
 
   async findBySlug(slug: string, authorId: string, tenantId?: string | null) {
     return this.db.resource.findFirst({
-      where: { slug, authorId, tenantId, deletedAt: null },
+      where: { slug, authorId, ...(tenantId ? { tenantId } : {}), deletedAt: null },
     });
   }
 
@@ -58,11 +58,18 @@ export class ResourceRepository {
   }
 
   async incrementMetric(resourceId: string, field: "views" | "opens" | "downloads" | "shares" | "likes" | "bookmarks" | "comments") {
-    await this.db.resourceMetrics.upsert({
+    const m = await this.db.resourceMetrics.upsert({
       where:  { resourceId },
       create: { resourceId, [field]: 1 },
       update: { [field]: { increment: 1 } },
     });
+
+    // Derived engagement score (weighted counters), kept in sync on every event.
+    const engagementScore =
+      m.views + m.opens + m.downloads + m.shares + m.likes * 2 + m.bookmarks * 3 + m.comments * 4;
+    if (m.engagementScore !== engagementScore) {
+      await this.db.resourceMetrics.update({ where: { resourceId }, data: { engagementScore } });
+    }
   }
 
   async attachTags(resourceId: string, tagIds: string[]) {

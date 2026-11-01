@@ -3,6 +3,7 @@ import type { Flow }     from "@/core/flows/flow";
 import type { FlowContext } from "@/core/flows/flow-context";
 import { ResourceService }  from "../resource.service";
 import { ResourceRepository } from "../resource.repository";
+import { resolveTenantId }    from "@/core/tenancy";
 
 const Input = z.object({
   resourceId: z.string(),
@@ -24,7 +25,7 @@ export const addCommentFlow: Flow<z.infer<typeof Input>, { comment: unknown }> =
         authorId:   ctx.userId!,
         resourceId: input.resourceId,
         parentId:   input.parentId,
-        tenantId:   ctx.tenantId,
+        tenantId:   resolveTenantId(ctx.tenantId),
       },
     });
 

@@ -4,12 +4,10 @@ export type { UpdateProfileInput, OnboardingStepInput, AdminActionInput } from "
 
 // ── Presenters ─────────────────────────────────────────────────────────
 export { presentPublicUser, presentPrivateUser, type PublicUser, type PrivateUser } from "./users.presenter";
-export { presentMembership, type MembershipResponse, type UserMembershipListResponse } from "./membership.presenter";
 
 // ── Services & Repositories ────────────────────────────────────────────
 export { UserService } from "./user.service";
 export { UserRepository } from "./user.repository";
-export { MembershipRepository } from "./membership.repository";
 
 // ── Flows ──────────────────────────────────────────────────────────────
 export { updateProfileFlow } from "./flows/update-profile.flow";

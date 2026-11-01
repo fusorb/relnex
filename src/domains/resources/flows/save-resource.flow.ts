@@ -3,6 +3,7 @@ import type { Flow }     from "@/core/flows/flow";
 import type { FlowContext } from "@/core/flows/flow-context";
 import { ResourceService }   from "../resource.service";
 import { ResourceRepository } from "../resource.repository";
+import { resolveTenantId }    from "@/core/tenancy";
 
 const Input = z.object({ resourceId: z.string() });
 
@@ -16,7 +17,7 @@ export const saveResourceFlow: Flow<z.infer<typeof Input>> = {
 
     await ctx.db.savedResource.upsert({
       where:  { userId_resourceId: { userId: ctx.userId!, resourceId: input.resourceId } },
-      create: { userId: ctx.userId!, resourceId: input.resourceId, tenantId: ctx.tenantId },
+      create: { userId: ctx.userId!, resourceId: input.resourceId, tenantId: resolveTenantId(ctx.tenantId) },
       update: {},
     });
 

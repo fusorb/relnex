@@ -16,7 +16,7 @@ export class CollectionRepository {
 
   async findById(id: string, tenantId?: string | null) {
     return this.db.collection.findFirst({
-      where:   { id, tenantId, deletedAt: null },
+      where:   { id, ...(tenantId ? { tenantId } : {}), deletedAt: null },
       include: {
         author: true,
         resources: {
@@ -30,7 +30,7 @@ export class CollectionRepository {
   }
 
   async findBySlug(slug: string, authorId: string, tenantId?: string | null) {
-    return this.db.collection.findFirst({ where: { slug, authorId, tenantId, deletedAt: null } });
+    return this.db.collection.findFirst({ where: { slug, authorId, ...(tenantId ? { tenantId } : {}), deletedAt: null } });
   }
 
   async findByAuthor(authorId: string, tenantId?: string | null) {

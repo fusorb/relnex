@@ -12,6 +12,7 @@ generator client {
 // ENUMS
 // ==========================================
 
+// Relnex-local product role. Distinct from SovGrant's identity-level globalRole.
 enum UserRole {
   ADMIN
   MODERATOR
@@ -80,48 +81,27 @@ enum ResourceTypeRenderer {
   AI_OUTPUT
 }
 
-enum ActivityType {
-  RESOURCE_CREATED
-  RESOURCE_PUBLISHED
-  RESOURCE_ARCHIVED
-  RESOURCE_DELETED
-  COMMENT_POSTED
-  COMMENT_DELETED
-  COLLECTION_CREATED
-  RESOURCE_SAVED
-  RESOURCE_UNSAVED
-  REACTION_ADDED
-  REACTION_REMOVED
-  FOLLOW_ADDED
-  FOLLOW_REMOVED
-  NOTIFICATION_READ
-}
-
-enum NotificationType {
-  NEW_COMMENT
-  NEW_REPLY
-  NEW_FOLLOWER
-  RESOURCE_PUBLISHED
-  RESOURCE_FEATURED
-  MENTION
-  SYSTEM
+enum ReactionType {
+  LIKE
 }
 
 // ==========================================
-// CORE USER — profile only, no auth fields
+// CORE USER - profile only, no auth fields
 // Auth lives entirely in SovGrant.
 // identityId is the permanent immutable bridge.
+// tenantId is the SovGrant Tenant.id this user defaults to;
+// "relnex-default" is the reserved personal scope.
 // ==========================================
 
 model User {
-  id       String  @id @default(uuid(7))
-  tenantId String?
+  id       String @id @default(uuid(7))
+  tenantId String @default("relnex-default")
 
-  // Bridge to SovGrant Identity — set on first login, never changed
-  // SovGrant Identity.id → Relnex User.identityId
+  // Bridge to SovGrant Identity - set on first login, never changed
+  // SovGrant Identity.id -> Relnex User.identityId
   identityId String @unique
 
-  username    String        @unique
+  username    String        @unique // public profile handle (globally unique)
   displayName String?
   avatarUrl   String?
   bio         String?
@@ -129,14 +109,11 @@ model User {
   archetype   UserArchetype @default(GENERAL)
 
   onboardingStep Int   @default(0)
-  onboardingJson Json?
   preferences    Json?
-  metadata       Json?
 
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  archivedAt DateTime?
-  deletedAt  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   resources      Resource[]
   collections    Collection[]
@@ -144,50 +121,12 @@ model User {
   savedResources SavedResource[]
   usageEvents    ResourceUsage[]
   versions       ResourceVersion[]
-  activities     Activity[]
   reactions      Reaction[]
-  notifications  Notification[]
   following      Follow[]          @relation("Follower")
   followers      Follow[]          @relation("Following")
-  memberships    Membership[]
 
   @@index([tenantId])
-  @@index([identityId])
   @@index([deletedAt])
-}
-
-// ==========================================
-// TENANT MEMBERSHIP
-// Links Relnex Users to SovGrant Tenants.
-// The tenantId references SovGrant's Tenant.id directly.
-// Membership roles are Relnex-specific, separate from SovGrant RBAC.
-// ==========================================
-
-enum MemberRole {
-  OWNER      // Full control, can delete tenant
-  ADMIN      // Manage members, settings
-  EDITOR     // Create/edit resources
-  VIEWER     // Read-only access
-  GUEST      // Limited access
-}
-
-model Membership {
-  id        String     @id @default(uuid(7))
-  role      MemberRole @default(VIEWER)
-  status    String     @default("ACTIVE") // ACTIVE, SUSPENDED, INVITED, PENDING
-  metadata  Json?
-  joinedAt  DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  userId   String
-  tenantId String      // References SovGrant Tenant.id
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, tenantId])
-  @@index([tenantId])
-  @@index([status])
-  @@index([role])
 }
 
 // ==========================================
@@ -195,37 +134,34 @@ model Membership {
 // ==========================================
 
 model Resource {
-  id                   String               @id @default(uuid(7))
-  tenantId             String?
-  slug                 String?
-  title                String?
-  description          String?
-  excerpt              String?
-  // Canonical content fields — pick one and stick with it
-  // publishedContentJson = live, draftContentJson = work in progress
+  id            String               @id @default(uuid(7))
+  tenantId      String               @default("relnex-default")
+  slug          String
+  title         String?
+  description   String?
+  excerpt       String?
+  // Canonical content fields - publishedContentJson = live, draftContentJson = WIP
   publishedContentJson Json?
   draftContentJson     Json?
-  type                 ResourceTypeRenderer
-  status               ResourceStatus       @default(DRAFT)
-  visibility           Visibility           @default(PUBLIC)
-  category             String?
-  language             String               @default("en")
-  thumbnailUrl         String?
-  coverImageUrl        String?
-  fileUrl              String?
-  metadata             Json?
-  aiMetadata           Json?
-  wordCount            Int?
-  estimatedTime        Int?
+  type          ResourceTypeRenderer
+  status        ResourceStatus       @default(DRAFT)
+  visibility    Visibility           @default(PUBLIC)
+  category      String?
+  language      String               @default("en")
+  thumbnailUrl  String?
+  coverImageUrl String?
+  fileUrl       String?
+  metadata      Json?
+  wordCount     Int?
+  estimatedTime Int?
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   publishedAt DateTime?
-  archivedAt  DateTime?
   deletedAt   DateTime?
 
   authorId String
-  author   User       @relation(fields: [authorId], references: [id])
+  author   User       @relation(fields: [authorId], references: [id], onDelete: Restrict)
   parentId String?
   parent   Resource?  @relation("Hierarchy", fields: [parentId], references: [id], onDelete: SetNull)
   children Resource[] @relation("Hierarchy")
@@ -245,9 +181,11 @@ model Resource {
   @@unique([tenantId, authorId, slug])
   @@index([type, status])
   @@index([tenantId])
+  @@index([tenantId, status, visibility])
   @@index([deletedAt])
   @@index([publishedAt])
   @@index([authorId])
+  @@index([parentId])
 }
 
 // ==========================================
@@ -256,7 +194,7 @@ model Resource {
 
 model Relation {
   id        String       @id @default(uuid(7))
-  tenantId  String?
+  tenantId  String       @default("relnex-default")
   type      RelationType
   fromId    String
   toId      String
@@ -273,7 +211,7 @@ model Relation {
 
 model ResourceVersion {
   id               String   @id @default(uuid(7))
-  tenantId         String?
+  tenantId         String   @default("relnex-default")
   resourceId       String
   authorId         String
   versionNumber    Int
@@ -284,7 +222,7 @@ model ResourceVersion {
   createdAt        DateTime @default(now())
 
   resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
-  author   User     @relation(fields: [authorId], references: [id])
+  author   User     @relation(fields: [authorId], references: [id], onDelete: Restrict)
 
   @@unique([resourceId, versionNumber])
   @@index([tenantId])
@@ -297,7 +235,7 @@ model ResourceVersion {
 
 model Collection {
   id          String     @id @default(uuid(7))
-  tenantId    String?
+  tenantId    String     @default("relnex-default")
   slug        String
   title       String
   description String?
@@ -308,11 +246,11 @@ model Collection {
   deletedAt   DateTime?
 
   authorId String
-  author   User   @relation(fields: [authorId], references: [id])
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Restrict)
 
   // Nested collections (series, modules within a course)
   parentId String?
-  parent   Collection?  @relation("CollectionHierarchy", fields: [parentId], references: [id])
+  parent   Collection?  @relation("CollectionHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
   children Collection[] @relation("CollectionHierarchy")
 
   resources CollectionResource[]
@@ -321,11 +259,12 @@ model Collection {
   @@index([tenantId])
   @@index([deletedAt])
   @@index([authorId])
+  @@index([parentId])
 }
 
 model CollectionResource {
   id           String   @id @default(uuid(7))
-  tenantId     String?
+  tenantId     String   @default("relnex-default")
   collectionId String
   resourceId   String
   orderIndex   Int
@@ -341,7 +280,7 @@ model CollectionResource {
 
 model Tag {
   id        String   @id @default(uuid(7))
-  tenantId  String?
+  tenantId  String   @default("relnex-default")
   name      String
   slug      String
   createdAt DateTime @default(now())
@@ -371,10 +310,9 @@ model ResourceTag {
 
 model Comment {
   id        String        @id @default(uuid(7))
-  tenantId  String?
+  tenantId  String        @default("relnex-default")
   content   String
   status    CommentStatus @default(ACTIVE)
-  metadata  Json?
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
   deletedAt DateTime?
@@ -383,19 +321,20 @@ model Comment {
   resourceId String
   parentId   String?
 
-  author   User      @relation(fields: [authorId], references: [id])
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Restrict)
   resource Resource  @relation(fields: [resourceId], references: [id], onDelete: Cascade)
-  parent   Comment?  @relation("Thread", fields: [parentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  parent   Comment?  @relation("Thread", fields: [parentId], references: [id], onDelete: Cascade)
   replies  Comment[] @relation("Thread")
 
   @@index([tenantId])
   @@index([resourceId, createdAt])
   @@index([authorId])
+  @@index([parentId])
 }
 
 model SavedResource {
   id         String   @id @default(uuid(7))
-  tenantId   String?
+  tenantId   String   @default("relnex-default")
   userId     String
   resourceId String
   createdAt  DateTime @default(now())
@@ -408,12 +347,12 @@ model SavedResource {
 }
 
 model Reaction {
-  id         String   @id @default(uuid(7))
-  tenantId   String?
+  id         String       @id @default(uuid(7))
+  tenantId   String       @default("relnex-default")
   userId     String
   resourceId String
-  type       String   @default("like")
-  createdAt  DateTime @default(now())
+  type       ReactionType @default(LIKE)
+  createdAt  DateTime     @default(now())
 
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
@@ -423,21 +362,18 @@ model Reaction {
   @@index([tenantId])
 }
 
+// Global social graph (identity-to-identity), not tenant-scoped.
 model Follow {
-  id          String     @id @default(uuid(7))
-  tenantId    String?
+  id          String   @id @default(uuid(7))
   followerId  String
   followingId String
-  createdAt   DateTime   @default(now())
-  deletedAt   DateTime?
+  createdAt   DateTime @default(now())
 
   follower  User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
   following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followingId])
   @@index([followingId])
-  @@index([tenantId])
-  @@index([deletedAt])
 }
 
 // ==========================================
@@ -446,7 +382,7 @@ model Follow {
 
 model ResourceUsage {
   id         String     @id @default(uuid(7))
-  tenantId   String?
+  tenantId   String     @default("relnex-default")
   resourceId String
   actorId    String?
   event      UsageEvent
@@ -458,6 +394,7 @@ model ResourceUsage {
   user     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([resourceId, event])
+  @@index([resourceId, createdAt])
   @@index([actorId])
   @@index([tenantId])
   @@index([createdAt])
@@ -465,7 +402,7 @@ model ResourceUsage {
 
 model ResourceMetrics {
   id              String   @id @default(uuid(7))
-  tenantId        String?
+  tenantId        String   @default("relnex-default")
   resourceId      String   @unique
   views           Int      @default(0)
   opens           Int      @default(0)
@@ -480,41 +417,4 @@ model ResourceMetrics {
   resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
-}
-
-model Activity {
-  id        String       @id @default(uuid(7))
-  tenantId  String?
-  userId    String?
-  type      ActivityType
-  entityId  String
-  metadata  Json?
-  createdAt DateTime     @default(now())
-
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  @@index([userId])
-  @@index([entityId])
-  @@index([type])
-  @@index([tenantId, createdAt])
-}
-
-model Notification {
-  id         String           @id @default(uuid(7))
-  tenantId   String?
-  userId     String
-  type       NotificationType
-  title      String
-  body       String?
-  entityId   String?
-  entityType String?
-  read       Boolean          @default(false)
-  readAt     DateTime?
-  createdAt  DateTime         @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, read])
-  @@index([tenantId])
-  @@index([createdAt])
 }

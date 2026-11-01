@@ -19,11 +19,6 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
- * Model Membership
- * 
- */
-export type Membership = $Result.DefaultSelection<Prisma.$MembershipPayload>
-/**
  * Model Resource
  * 
  */
@@ -88,16 +83,6 @@ export type ResourceUsage = $Result.DefaultSelection<Prisma.$ResourceUsagePayloa
  * 
  */
 export type ResourceMetrics = $Result.DefaultSelection<Prisma.$ResourceMetricsPayload>
-/**
- * Model Activity
- * 
- */
-export type Activity = $Result.DefaultSelection<Prisma.$ActivityPayload>
-/**
- * Model Notification
- * 
- */
-export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
 
 /**
  * Enums
@@ -195,48 +180,11 @@ export const ResourceTypeRenderer: {
 export type ResourceTypeRenderer = (typeof ResourceTypeRenderer)[keyof typeof ResourceTypeRenderer]
 
 
-export const ActivityType: {
-  RESOURCE_CREATED: 'RESOURCE_CREATED',
-  RESOURCE_PUBLISHED: 'RESOURCE_PUBLISHED',
-  RESOURCE_ARCHIVED: 'RESOURCE_ARCHIVED',
-  RESOURCE_DELETED: 'RESOURCE_DELETED',
-  COMMENT_POSTED: 'COMMENT_POSTED',
-  COMMENT_DELETED: 'COMMENT_DELETED',
-  COLLECTION_CREATED: 'COLLECTION_CREATED',
-  RESOURCE_SAVED: 'RESOURCE_SAVED',
-  RESOURCE_UNSAVED: 'RESOURCE_UNSAVED',
-  REACTION_ADDED: 'REACTION_ADDED',
-  REACTION_REMOVED: 'REACTION_REMOVED',
-  FOLLOW_ADDED: 'FOLLOW_ADDED',
-  FOLLOW_REMOVED: 'FOLLOW_REMOVED',
-  NOTIFICATION_READ: 'NOTIFICATION_READ'
+export const ReactionType: {
+  LIKE: 'LIKE'
 };
 
-export type ActivityType = (typeof ActivityType)[keyof typeof ActivityType]
-
-
-export const NotificationType: {
-  NEW_COMMENT: 'NEW_COMMENT',
-  NEW_REPLY: 'NEW_REPLY',
-  NEW_FOLLOWER: 'NEW_FOLLOWER',
-  RESOURCE_PUBLISHED: 'RESOURCE_PUBLISHED',
-  RESOURCE_FEATURED: 'RESOURCE_FEATURED',
-  MENTION: 'MENTION',
-  SYSTEM: 'SYSTEM'
-};
-
-export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
-
-
-export const MemberRole: {
-  OWNER: 'OWNER',
-  ADMIN: 'ADMIN',
-  EDITOR: 'EDITOR',
-  VIEWER: 'VIEWER',
-  GUEST: 'GUEST'
-};
-
-export type MemberRole = (typeof MemberRole)[keyof typeof MemberRole]
+export type ReactionType = (typeof ReactionType)[keyof typeof ReactionType]
 
 }
 
@@ -272,17 +220,9 @@ export type ResourceTypeRenderer = $Enums.ResourceTypeRenderer
 
 export const ResourceTypeRenderer: typeof $Enums.ResourceTypeRenderer
 
-export type ActivityType = $Enums.ActivityType
+export type ReactionType = $Enums.ReactionType
 
-export const ActivityType: typeof $Enums.ActivityType
-
-export type NotificationType = $Enums.NotificationType
-
-export const NotificationType: typeof $Enums.NotificationType
-
-export type MemberRole = $Enums.MemberRole
-
-export const MemberRole: typeof $Enums.MemberRole
+export const ReactionType: typeof $Enums.ReactionType
 
 /**
  * ##  Prisma Client ʲˢ
@@ -416,16 +356,6 @@ export class PrismaClient<
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.membership`: Exposes CRUD operations for the **Membership** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Memberships
-    * const memberships = await prisma.membership.findMany()
-    * ```
-    */
-  get membership(): Prisma.MembershipDelegate<ExtArgs, ClientOptions>;
-
-  /**
    * `prisma.resource`: Exposes CRUD operations for the **Resource** model.
     * Example usage:
     * ```ts
@@ -554,26 +484,6 @@ export class PrismaClient<
     * ```
     */
   get resourceMetrics(): Prisma.ResourceMetricsDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.activity`: Exposes CRUD operations for the **Activity** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Activities
-    * const activities = await prisma.activity.findMany()
-    * ```
-    */
-  get activity(): Prisma.ActivityDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.notification`: Exposes CRUD operations for the **Notification** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Notifications
-    * const notifications = await prisma.notification.findMany()
-    * ```
-    */
-  get notification(): Prisma.NotificationDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1022,7 +932,6 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
-    Membership: 'Membership',
     Resource: 'Resource',
     Relation: 'Relation',
     ResourceVersion: 'ResourceVersion',
@@ -1035,9 +944,7 @@ export namespace Prisma {
     Reaction: 'Reaction',
     Follow: 'Follow',
     ResourceUsage: 'ResourceUsage',
-    ResourceMetrics: 'ResourceMetrics',
-    Activity: 'Activity',
-    Notification: 'Notification'
+    ResourceMetrics: 'ResourceMetrics'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1053,7 +960,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "membership" | "resource" | "relation" | "resourceVersion" | "collection" | "collectionResource" | "tag" | "resourceTag" | "comment" | "savedResource" | "reaction" | "follow" | "resourceUsage" | "resourceMetrics" | "activity" | "notification"
+      modelProps: "user" | "resource" | "relation" | "resourceVersion" | "collection" | "collectionResource" | "tag" | "resourceTag" | "comment" | "savedResource" | "reaction" | "follow" | "resourceUsage" | "resourceMetrics"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1128,80 +1035,6 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
-          }
-        }
-      }
-      Membership: {
-        payload: Prisma.$MembershipPayload<ExtArgs>
-        fields: Prisma.MembershipFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.MembershipFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MembershipPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.MembershipFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MembershipPayload>
-          }
-          findFirst: {
-            args: Prisma.MembershipFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MembershipPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.MembershipFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MembershipPayload>
-          }
-          findMany: {
-            args: Prisma.MembershipFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MembershipPayload>[]
-          }
-          create: {
-            args: Prisma.MembershipCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MembershipPayload>
-          }
-          createMany: {
-            args: Prisma.MembershipCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.MembershipCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MembershipPayload>[]
-          }
-          delete: {
-            args: Prisma.MembershipDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MembershipPayload>
-          }
-          update: {
-            args: Prisma.MembershipUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MembershipPayload>
-          }
-          deleteMany: {
-            args: Prisma.MembershipDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.MembershipUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.MembershipUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MembershipPayload>[]
-          }
-          upsert: {
-            args: Prisma.MembershipUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$MembershipPayload>
-          }
-          aggregate: {
-            args: Prisma.MembershipAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateMembership>
-          }
-          groupBy: {
-            args: Prisma.MembershipGroupByArgs<ExtArgs>
-            result: $Utils.Optional<MembershipGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.MembershipCountArgs<ExtArgs>
-            result: $Utils.Optional<MembershipCountAggregateOutputType> | number
           }
         }
       }
@@ -2167,154 +2000,6 @@ export namespace Prisma {
           }
         }
       }
-      Activity: {
-        payload: Prisma.$ActivityPayload<ExtArgs>
-        fields: Prisma.ActivityFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.ActivityFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ActivityPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.ActivityFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>
-          }
-          findFirst: {
-            args: Prisma.ActivityFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ActivityPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.ActivityFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>
-          }
-          findMany: {
-            args: Prisma.ActivityFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>[]
-          }
-          create: {
-            args: Prisma.ActivityCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>
-          }
-          createMany: {
-            args: Prisma.ActivityCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.ActivityCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>[]
-          }
-          delete: {
-            args: Prisma.ActivityDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>
-          }
-          update: {
-            args: Prisma.ActivityUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>
-          }
-          deleteMany: {
-            args: Prisma.ActivityDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.ActivityUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.ActivityUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>[]
-          }
-          upsert: {
-            args: Prisma.ActivityUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ActivityPayload>
-          }
-          aggregate: {
-            args: Prisma.ActivityAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateActivity>
-          }
-          groupBy: {
-            args: Prisma.ActivityGroupByArgs<ExtArgs>
-            result: $Utils.Optional<ActivityGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.ActivityCountArgs<ExtArgs>
-            result: $Utils.Optional<ActivityCountAggregateOutputType> | number
-          }
-        }
-      }
-      Notification: {
-        payload: Prisma.$NotificationPayload<ExtArgs>
-        fields: Prisma.NotificationFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.NotificationFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.NotificationFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
-          }
-          findFirst: {
-            args: Prisma.NotificationFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.NotificationFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
-          }
-          findMany: {
-            args: Prisma.NotificationFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
-          }
-          create: {
-            args: Prisma.NotificationCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
-          }
-          createMany: {
-            args: Prisma.NotificationCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.NotificationCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
-          }
-          delete: {
-            args: Prisma.NotificationDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
-          }
-          update: {
-            args: Prisma.NotificationUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
-          }
-          deleteMany: {
-            args: Prisma.NotificationDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.NotificationUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.NotificationUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
-          }
-          upsert: {
-            args: Prisma.NotificationUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
-          }
-          aggregate: {
-            args: Prisma.NotificationAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateNotification>
-          }
-          groupBy: {
-            args: Prisma.NotificationGroupByArgs<ExtArgs>
-            result: $Utils.Optional<NotificationGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.NotificationCountArgs<ExtArgs>
-            result: $Utils.Optional<NotificationCountAggregateOutputType> | number
-          }
-        }
-      }
     }
   } & {
     other: {
@@ -2439,7 +2124,6 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     user?: UserOmit
-    membership?: MembershipOmit
     resource?: ResourceOmit
     relation?: RelationOmit
     resourceVersion?: ResourceVersionOmit
@@ -2453,8 +2137,6 @@ export namespace Prisma {
     follow?: FollowOmit
     resourceUsage?: ResourceUsageOmit
     resourceMetrics?: ResourceMetricsOmit
-    activity?: ActivityOmit
-    notification?: NotificationOmit
   }
 
   /* Types for Logging */
@@ -2541,12 +2223,9 @@ export namespace Prisma {
     savedResources: number
     usageEvents: number
     versions: number
-    activities: number
     reactions: number
-    notifications: number
     following: number
     followers: number
-    memberships: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2556,12 +2235,9 @@ export namespace Prisma {
     savedResources?: boolean | UserCountOutputTypeCountSavedResourcesArgs
     usageEvents?: boolean | UserCountOutputTypeCountUsageEventsArgs
     versions?: boolean | UserCountOutputTypeCountVersionsArgs
-    activities?: boolean | UserCountOutputTypeCountActivitiesArgs
     reactions?: boolean | UserCountOutputTypeCountReactionsArgs
-    notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
     following?: boolean | UserCountOutputTypeCountFollowingArgs
     followers?: boolean | UserCountOutputTypeCountFollowersArgs
-    memberships?: boolean | UserCountOutputTypeCountMembershipsArgs
   }
 
   // Custom InputTypes
@@ -2620,22 +2296,8 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ActivityWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
   export type UserCountOutputTypeCountReactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ReactionWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
-  export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationWhereInput
   }
 
   /**
@@ -2650,13 +2312,6 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountFollowersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FollowWhereInput
-  }
-
-  /**
-   * UserCountOutputType without action
-   */
-  export type UserCountOutputTypeCountMembershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: MembershipWhereInput
   }
 
 
@@ -2911,7 +2566,6 @@ export namespace Prisma {
     onboardingStep: number | null
     createdAt: Date | null
     updatedAt: Date | null
-    archivedAt: Date | null
     deletedAt: Date | null
   }
 
@@ -2928,7 +2582,6 @@ export namespace Prisma {
     onboardingStep: number | null
     createdAt: Date | null
     updatedAt: Date | null
-    archivedAt: Date | null
     deletedAt: Date | null
   }
 
@@ -2943,12 +2596,9 @@ export namespace Prisma {
     role: number
     archetype: number
     onboardingStep: number
-    onboardingJson: number
     preferences: number
-    metadata: number
     createdAt: number
     updatedAt: number
-    archivedAt: number
     deletedAt: number
     _all: number
   }
@@ -2975,7 +2625,6 @@ export namespace Prisma {
     onboardingStep?: true
     createdAt?: true
     updatedAt?: true
-    archivedAt?: true
     deletedAt?: true
   }
 
@@ -2992,7 +2641,6 @@ export namespace Prisma {
     onboardingStep?: true
     createdAt?: true
     updatedAt?: true
-    archivedAt?: true
     deletedAt?: true
   }
 
@@ -3007,12 +2655,9 @@ export namespace Prisma {
     role?: true
     archetype?: true
     onboardingStep?: true
-    onboardingJson?: true
     preferences?: true
-    metadata?: true
     createdAt?: true
     updatedAt?: true
-    archivedAt?: true
     deletedAt?: true
     _all?: true
   }
@@ -3105,7 +2750,7 @@ export namespace Prisma {
 
   export type UserGroupByOutputType = {
     id: string
-    tenantId: string | null
+    tenantId: string
     identityId: string
     username: string
     displayName: string | null
@@ -3114,12 +2759,9 @@ export namespace Prisma {
     role: $Enums.UserRole
     archetype: $Enums.UserArchetype
     onboardingStep: number
-    onboardingJson: JsonValue | null
     preferences: JsonValue | null
-    metadata: JsonValue | null
     createdAt: Date
     updatedAt: Date
-    archivedAt: Date | null
     deletedAt: Date | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
@@ -3153,12 +2795,9 @@ export namespace Prisma {
     role?: boolean
     archetype?: boolean
     onboardingStep?: boolean
-    onboardingJson?: boolean
     preferences?: boolean
-    metadata?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    archivedAt?: boolean
     deletedAt?: boolean
     resources?: boolean | User$resourcesArgs<ExtArgs>
     collections?: boolean | User$collectionsArgs<ExtArgs>
@@ -3166,12 +2805,9 @@ export namespace Prisma {
     savedResources?: boolean | User$savedResourcesArgs<ExtArgs>
     usageEvents?: boolean | User$usageEventsArgs<ExtArgs>
     versions?: boolean | User$versionsArgs<ExtArgs>
-    activities?: boolean | User$activitiesArgs<ExtArgs>
     reactions?: boolean | User$reactionsArgs<ExtArgs>
-    notifications?: boolean | User$notificationsArgs<ExtArgs>
     following?: boolean | User$followingArgs<ExtArgs>
     followers?: boolean | User$followersArgs<ExtArgs>
-    memberships?: boolean | User$membershipsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3186,12 +2822,9 @@ export namespace Prisma {
     role?: boolean
     archetype?: boolean
     onboardingStep?: boolean
-    onboardingJson?: boolean
     preferences?: boolean
-    metadata?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    archivedAt?: boolean
     deletedAt?: boolean
   }, ExtArgs["result"]["user"]>
 
@@ -3206,12 +2839,9 @@ export namespace Prisma {
     role?: boolean
     archetype?: boolean
     onboardingStep?: boolean
-    onboardingJson?: boolean
     preferences?: boolean
-    metadata?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    archivedAt?: boolean
     deletedAt?: boolean
   }, ExtArgs["result"]["user"]>
 
@@ -3226,16 +2856,13 @@ export namespace Prisma {
     role?: boolean
     archetype?: boolean
     onboardingStep?: boolean
-    onboardingJson?: boolean
     preferences?: boolean
-    metadata?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    archivedAt?: boolean
     deletedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "identityId" | "username" | "displayName" | "avatarUrl" | "bio" | "role" | "archetype" | "onboardingStep" | "onboardingJson" | "preferences" | "metadata" | "createdAt" | "updatedAt" | "archivedAt" | "deletedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "identityId" | "username" | "displayName" | "avatarUrl" | "bio" | "role" | "archetype" | "onboardingStep" | "preferences" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     resources?: boolean | User$resourcesArgs<ExtArgs>
     collections?: boolean | User$collectionsArgs<ExtArgs>
@@ -3243,12 +2870,9 @@ export namespace Prisma {
     savedResources?: boolean | User$savedResourcesArgs<ExtArgs>
     usageEvents?: boolean | User$usageEventsArgs<ExtArgs>
     versions?: boolean | User$versionsArgs<ExtArgs>
-    activities?: boolean | User$activitiesArgs<ExtArgs>
     reactions?: boolean | User$reactionsArgs<ExtArgs>
-    notifications?: boolean | User$notificationsArgs<ExtArgs>
     following?: boolean | User$followingArgs<ExtArgs>
     followers?: boolean | User$followersArgs<ExtArgs>
-    memberships?: boolean | User$membershipsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3263,16 +2887,13 @@ export namespace Prisma {
       savedResources: Prisma.$SavedResourcePayload<ExtArgs>[]
       usageEvents: Prisma.$ResourceUsagePayload<ExtArgs>[]
       versions: Prisma.$ResourceVersionPayload<ExtArgs>[]
-      activities: Prisma.$ActivityPayload<ExtArgs>[]
       reactions: Prisma.$ReactionPayload<ExtArgs>[]
-      notifications: Prisma.$NotificationPayload<ExtArgs>[]
       following: Prisma.$FollowPayload<ExtArgs>[]
       followers: Prisma.$FollowPayload<ExtArgs>[]
-      memberships: Prisma.$MembershipPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string | null
+      tenantId: string
       identityId: string
       username: string
       displayName: string | null
@@ -3281,12 +2902,9 @@ export namespace Prisma {
       role: $Enums.UserRole
       archetype: $Enums.UserArchetype
       onboardingStep: number
-      onboardingJson: Prisma.JsonValue | null
       preferences: Prisma.JsonValue | null
-      metadata: Prisma.JsonValue | null
       createdAt: Date
       updatedAt: Date
-      archivedAt: Date | null
       deletedAt: Date | null
     }, ExtArgs["result"]["user"]>
     composites: {}
@@ -3688,12 +3306,9 @@ export namespace Prisma {
     savedResources<T extends User$savedResourcesArgs<ExtArgs> = {}>(args?: Subset<T, User$savedResourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedResourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     usageEvents<T extends User$usageEventsArgs<ExtArgs> = {}>(args?: Subset<T, User$usageEventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ResourceUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     versions<T extends User$versionsArgs<ExtArgs> = {}>(args?: Subset<T, User$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ResourceVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    activities<T extends User$activitiesArgs<ExtArgs> = {}>(args?: Subset<T, User$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     reactions<T extends User$reactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$reactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     following<T extends User$followingArgs<ExtArgs> = {}>(args?: Subset<T, User$followingArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     followers<T extends User$followersArgs<ExtArgs> = {}>(args?: Subset<T, User$followersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    memberships<T extends User$membershipsArgs<ExtArgs> = {}>(args?: Subset<T, User$membershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3733,12 +3348,9 @@ export namespace Prisma {
     readonly role: FieldRef<"User", 'UserRole'>
     readonly archetype: FieldRef<"User", 'UserArchetype'>
     readonly onboardingStep: FieldRef<"User", 'Int'>
-    readonly onboardingJson: FieldRef<"User", 'Json'>
     readonly preferences: FieldRef<"User", 'Json'>
-    readonly metadata: FieldRef<"User", 'Json'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
-    readonly archivedAt: FieldRef<"User", 'DateTime'>
     readonly deletedAt: FieldRef<"User", 'DateTime'>
   }
     
@@ -4277,30 +3889,6 @@ export namespace Prisma {
   }
 
   /**
-   * User.activities
-   */
-  export type User$activitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Activity
-     */
-    select?: ActivitySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Activity
-     */
-    omit?: ActivityOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ActivityInclude<ExtArgs> | null
-    where?: ActivityWhereInput
-    orderBy?: ActivityOrderByWithRelationInput | ActivityOrderByWithRelationInput[]
-    cursor?: ActivityWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ActivityScalarFieldEnum | ActivityScalarFieldEnum[]
-  }
-
-  /**
    * User.reactions
    */
   export type User$reactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4322,30 +3910,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ReactionScalarFieldEnum | ReactionScalarFieldEnum[]
-  }
-
-  /**
-   * User.notifications
-   */
-  export type User$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    where?: NotificationWhereInput
-    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
-    cursor?: NotificationWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
   }
 
   /**
@@ -4397,30 +3961,6 @@ export namespace Prisma {
   }
 
   /**
-   * User.memberships
-   */
-  export type User$membershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Membership
-     */
-    select?: MembershipSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Membership
-     */
-    omit?: MembershipOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MembershipInclude<ExtArgs> | null
-    where?: MembershipWhereInput
-    orderBy?: MembershipOrderByWithRelationInput | MembershipOrderByWithRelationInput[]
-    cursor?: MembershipWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: MembershipScalarFieldEnum | MembershipScalarFieldEnum[]
-  }
-
-  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4436,1104 +3976,6 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model Membership
-   */
-
-  export type AggregateMembership = {
-    _count: MembershipCountAggregateOutputType | null
-    _min: MembershipMinAggregateOutputType | null
-    _max: MembershipMaxAggregateOutputType | null
-  }
-
-  export type MembershipMinAggregateOutputType = {
-    id: string | null
-    role: $Enums.MemberRole | null
-    status: string | null
-    joinedAt: Date | null
-    updatedAt: Date | null
-    userId: string | null
-    tenantId: string | null
-  }
-
-  export type MembershipMaxAggregateOutputType = {
-    id: string | null
-    role: $Enums.MemberRole | null
-    status: string | null
-    joinedAt: Date | null
-    updatedAt: Date | null
-    userId: string | null
-    tenantId: string | null
-  }
-
-  export type MembershipCountAggregateOutputType = {
-    id: number
-    role: number
-    status: number
-    metadata: number
-    joinedAt: number
-    updatedAt: number
-    userId: number
-    tenantId: number
-    _all: number
-  }
-
-
-  export type MembershipMinAggregateInputType = {
-    id?: true
-    role?: true
-    status?: true
-    joinedAt?: true
-    updatedAt?: true
-    userId?: true
-    tenantId?: true
-  }
-
-  export type MembershipMaxAggregateInputType = {
-    id?: true
-    role?: true
-    status?: true
-    joinedAt?: true
-    updatedAt?: true
-    userId?: true
-    tenantId?: true
-  }
-
-  export type MembershipCountAggregateInputType = {
-    id?: true
-    role?: true
-    status?: true
-    metadata?: true
-    joinedAt?: true
-    updatedAt?: true
-    userId?: true
-    tenantId?: true
-    _all?: true
-  }
-
-  export type MembershipAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Membership to aggregate.
-     */
-    where?: MembershipWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Memberships to fetch.
-     */
-    orderBy?: MembershipOrderByWithRelationInput | MembershipOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: MembershipWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Memberships from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Memberships.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Memberships
-    **/
-    _count?: true | MembershipCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: MembershipMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: MembershipMaxAggregateInputType
-  }
-
-  export type GetMembershipAggregateType<T extends MembershipAggregateArgs> = {
-        [P in keyof T & keyof AggregateMembership]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateMembership[P]>
-      : GetScalarType<T[P], AggregateMembership[P]>
-  }
-
-
-
-
-  export type MembershipGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: MembershipWhereInput
-    orderBy?: MembershipOrderByWithAggregationInput | MembershipOrderByWithAggregationInput[]
-    by: MembershipScalarFieldEnum[] | MembershipScalarFieldEnum
-    having?: MembershipScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: MembershipCountAggregateInputType | true
-    _min?: MembershipMinAggregateInputType
-    _max?: MembershipMaxAggregateInputType
-  }
-
-  export type MembershipGroupByOutputType = {
-    id: string
-    role: $Enums.MemberRole
-    status: string
-    metadata: JsonValue | null
-    joinedAt: Date
-    updatedAt: Date
-    userId: string
-    tenantId: string
-    _count: MembershipCountAggregateOutputType | null
-    _min: MembershipMinAggregateOutputType | null
-    _max: MembershipMaxAggregateOutputType | null
-  }
-
-  type GetMembershipGroupByPayload<T extends MembershipGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<MembershipGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof MembershipGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], MembershipGroupByOutputType[P]>
-            : GetScalarType<T[P], MembershipGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type MembershipSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    role?: boolean
-    status?: boolean
-    metadata?: boolean
-    joinedAt?: boolean
-    updatedAt?: boolean
-    userId?: boolean
-    tenantId?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["membership"]>
-
-  export type MembershipSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    role?: boolean
-    status?: boolean
-    metadata?: boolean
-    joinedAt?: boolean
-    updatedAt?: boolean
-    userId?: boolean
-    tenantId?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["membership"]>
-
-  export type MembershipSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    role?: boolean
-    status?: boolean
-    metadata?: boolean
-    joinedAt?: boolean
-    updatedAt?: boolean
-    userId?: boolean
-    tenantId?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["membership"]>
-
-  export type MembershipSelectScalar = {
-    id?: boolean
-    role?: boolean
-    status?: boolean
-    metadata?: boolean
-    joinedAt?: boolean
-    updatedAt?: boolean
-    userId?: boolean
-    tenantId?: boolean
-  }
-
-  export type MembershipOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "role" | "status" | "metadata" | "joinedAt" | "updatedAt" | "userId" | "tenantId", ExtArgs["result"]["membership"]>
-  export type MembershipInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-  export type MembershipIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-  export type MembershipIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-
-  export type $MembershipPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Membership"
-    objects: {
-      user: Prisma.$UserPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      role: $Enums.MemberRole
-      status: string
-      metadata: Prisma.JsonValue | null
-      joinedAt: Date
-      updatedAt: Date
-      userId: string
-      tenantId: string
-    }, ExtArgs["result"]["membership"]>
-    composites: {}
-  }
-
-  type MembershipGetPayload<S extends boolean | null | undefined | MembershipDefaultArgs> = $Result.GetResult<Prisma.$MembershipPayload, S>
-
-  type MembershipCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<MembershipFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: MembershipCountAggregateInputType | true
-    }
-
-  export interface MembershipDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Membership'], meta: { name: 'Membership' } }
-    /**
-     * Find zero or one Membership that matches the filter.
-     * @param {MembershipFindUniqueArgs} args - Arguments to find a Membership
-     * @example
-     * // Get one Membership
-     * const membership = await prisma.membership.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends MembershipFindUniqueArgs>(args: SelectSubset<T, MembershipFindUniqueArgs<ExtArgs>>): Prisma__MembershipClient<$Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one Membership that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {MembershipFindUniqueOrThrowArgs} args - Arguments to find a Membership
-     * @example
-     * // Get one Membership
-     * const membership = await prisma.membership.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends MembershipFindUniqueOrThrowArgs>(args: SelectSubset<T, MembershipFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MembershipClient<$Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Membership that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {MembershipFindFirstArgs} args - Arguments to find a Membership
-     * @example
-     * // Get one Membership
-     * const membership = await prisma.membership.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends MembershipFindFirstArgs>(args?: SelectSubset<T, MembershipFindFirstArgs<ExtArgs>>): Prisma__MembershipClient<$Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Membership that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {MembershipFindFirstOrThrowArgs} args - Arguments to find a Membership
-     * @example
-     * // Get one Membership
-     * const membership = await prisma.membership.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends MembershipFindFirstOrThrowArgs>(args?: SelectSubset<T, MembershipFindFirstOrThrowArgs<ExtArgs>>): Prisma__MembershipClient<$Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more Memberships that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {MembershipFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Memberships
-     * const memberships = await prisma.membership.findMany()
-     * 
-     * // Get first 10 Memberships
-     * const memberships = await prisma.membership.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const membershipWithIdOnly = await prisma.membership.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends MembershipFindManyArgs>(args?: SelectSubset<T, MembershipFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a Membership.
-     * @param {MembershipCreateArgs} args - Arguments to create a Membership.
-     * @example
-     * // Create one Membership
-     * const Membership = await prisma.membership.create({
-     *   data: {
-     *     // ... data to create a Membership
-     *   }
-     * })
-     * 
-     */
-    create<T extends MembershipCreateArgs>(args: SelectSubset<T, MembershipCreateArgs<ExtArgs>>): Prisma__MembershipClient<$Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many Memberships.
-     * @param {MembershipCreateManyArgs} args - Arguments to create many Memberships.
-     * @example
-     * // Create many Memberships
-     * const membership = await prisma.membership.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends MembershipCreateManyArgs>(args?: SelectSubset<T, MembershipCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many Memberships and returns the data saved in the database.
-     * @param {MembershipCreateManyAndReturnArgs} args - Arguments to create many Memberships.
-     * @example
-     * // Create many Memberships
-     * const membership = await prisma.membership.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many Memberships and only return the `id`
-     * const membershipWithIdOnly = await prisma.membership.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends MembershipCreateManyAndReturnArgs>(args?: SelectSubset<T, MembershipCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a Membership.
-     * @param {MembershipDeleteArgs} args - Arguments to delete one Membership.
-     * @example
-     * // Delete one Membership
-     * const Membership = await prisma.membership.delete({
-     *   where: {
-     *     // ... filter to delete one Membership
-     *   }
-     * })
-     * 
-     */
-    delete<T extends MembershipDeleteArgs>(args: SelectSubset<T, MembershipDeleteArgs<ExtArgs>>): Prisma__MembershipClient<$Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one Membership.
-     * @param {MembershipUpdateArgs} args - Arguments to update one Membership.
-     * @example
-     * // Update one Membership
-     * const membership = await prisma.membership.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends MembershipUpdateArgs>(args: SelectSubset<T, MembershipUpdateArgs<ExtArgs>>): Prisma__MembershipClient<$Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more Memberships.
-     * @param {MembershipDeleteManyArgs} args - Arguments to filter Memberships to delete.
-     * @example
-     * // Delete a few Memberships
-     * const { count } = await prisma.membership.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends MembershipDeleteManyArgs>(args?: SelectSubset<T, MembershipDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Memberships.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {MembershipUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Memberships
-     * const membership = await prisma.membership.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends MembershipUpdateManyArgs>(args: SelectSubset<T, MembershipUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Memberships and returns the data updated in the database.
-     * @param {MembershipUpdateManyAndReturnArgs} args - Arguments to update many Memberships.
-     * @example
-     * // Update many Memberships
-     * const membership = await prisma.membership.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Memberships and only return the `id`
-     * const membershipWithIdOnly = await prisma.membership.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends MembershipUpdateManyAndReturnArgs>(args: SelectSubset<T, MembershipUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one Membership.
-     * @param {MembershipUpsertArgs} args - Arguments to update or create a Membership.
-     * @example
-     * // Update or create a Membership
-     * const membership = await prisma.membership.upsert({
-     *   create: {
-     *     // ... data to create a Membership
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Membership we want to update
-     *   }
-     * })
-     */
-    upsert<T extends MembershipUpsertArgs>(args: SelectSubset<T, MembershipUpsertArgs<ExtArgs>>): Prisma__MembershipClient<$Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of Memberships.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {MembershipCountArgs} args - Arguments to filter Memberships to count.
-     * @example
-     * // Count the number of Memberships
-     * const count = await prisma.membership.count({
-     *   where: {
-     *     // ... the filter for the Memberships we want to count
-     *   }
-     * })
-    **/
-    count<T extends MembershipCountArgs>(
-      args?: Subset<T, MembershipCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], MembershipCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Membership.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {MembershipAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends MembershipAggregateArgs>(args: Subset<T, MembershipAggregateArgs>): Prisma.PrismaPromise<GetMembershipAggregateType<T>>
-
-    /**
-     * Group by Membership.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {MembershipGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends MembershipGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: MembershipGroupByArgs['orderBy'] }
-        : { orderBy?: MembershipGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, MembershipGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMembershipGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Membership model
-   */
-  readonly fields: MembershipFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Membership.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__MembershipClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the Membership model
-   */
-  interface MembershipFieldRefs {
-    readonly id: FieldRef<"Membership", 'String'>
-    readonly role: FieldRef<"Membership", 'MemberRole'>
-    readonly status: FieldRef<"Membership", 'String'>
-    readonly metadata: FieldRef<"Membership", 'Json'>
-    readonly joinedAt: FieldRef<"Membership", 'DateTime'>
-    readonly updatedAt: FieldRef<"Membership", 'DateTime'>
-    readonly userId: FieldRef<"Membership", 'String'>
-    readonly tenantId: FieldRef<"Membership", 'String'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * Membership findUnique
-   */
-  export type MembershipFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Membership
-     */
-    select?: MembershipSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Membership
-     */
-    omit?: MembershipOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MembershipInclude<ExtArgs> | null
-    /**
-     * Filter, which Membership to fetch.
-     */
-    where: MembershipWhereUniqueInput
-  }
-
-  /**
-   * Membership findUniqueOrThrow
-   */
-  export type MembershipFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Membership
-     */
-    select?: MembershipSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Membership
-     */
-    omit?: MembershipOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MembershipInclude<ExtArgs> | null
-    /**
-     * Filter, which Membership to fetch.
-     */
-    where: MembershipWhereUniqueInput
-  }
-
-  /**
-   * Membership findFirst
-   */
-  export type MembershipFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Membership
-     */
-    select?: MembershipSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Membership
-     */
-    omit?: MembershipOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MembershipInclude<ExtArgs> | null
-    /**
-     * Filter, which Membership to fetch.
-     */
-    where?: MembershipWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Memberships to fetch.
-     */
-    orderBy?: MembershipOrderByWithRelationInput | MembershipOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Memberships.
-     */
-    cursor?: MembershipWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Memberships from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Memberships.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Memberships.
-     */
-    distinct?: MembershipScalarFieldEnum | MembershipScalarFieldEnum[]
-  }
-
-  /**
-   * Membership findFirstOrThrow
-   */
-  export type MembershipFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Membership
-     */
-    select?: MembershipSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Membership
-     */
-    omit?: MembershipOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MembershipInclude<ExtArgs> | null
-    /**
-     * Filter, which Membership to fetch.
-     */
-    where?: MembershipWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Memberships to fetch.
-     */
-    orderBy?: MembershipOrderByWithRelationInput | MembershipOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Memberships.
-     */
-    cursor?: MembershipWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Memberships from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Memberships.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Memberships.
-     */
-    distinct?: MembershipScalarFieldEnum | MembershipScalarFieldEnum[]
-  }
-
-  /**
-   * Membership findMany
-   */
-  export type MembershipFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Membership
-     */
-    select?: MembershipSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Membership
-     */
-    omit?: MembershipOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MembershipInclude<ExtArgs> | null
-    /**
-     * Filter, which Memberships to fetch.
-     */
-    where?: MembershipWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Memberships to fetch.
-     */
-    orderBy?: MembershipOrderByWithRelationInput | MembershipOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Memberships.
-     */
-    cursor?: MembershipWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Memberships from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Memberships.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Memberships.
-     */
-    distinct?: MembershipScalarFieldEnum | MembershipScalarFieldEnum[]
-  }
-
-  /**
-   * Membership create
-   */
-  export type MembershipCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Membership
-     */
-    select?: MembershipSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Membership
-     */
-    omit?: MembershipOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MembershipInclude<ExtArgs> | null
-    /**
-     * The data needed to create a Membership.
-     */
-    data: XOR<MembershipCreateInput, MembershipUncheckedCreateInput>
-  }
-
-  /**
-   * Membership createMany
-   */
-  export type MembershipCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many Memberships.
-     */
-    data: MembershipCreateManyInput | MembershipCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * Membership createManyAndReturn
-   */
-  export type MembershipCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Membership
-     */
-    select?: MembershipSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Membership
-     */
-    omit?: MembershipOmit<ExtArgs> | null
-    /**
-     * The data used to create many Memberships.
-     */
-    data: MembershipCreateManyInput | MembershipCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MembershipIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * Membership update
-   */
-  export type MembershipUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Membership
-     */
-    select?: MembershipSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Membership
-     */
-    omit?: MembershipOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MembershipInclude<ExtArgs> | null
-    /**
-     * The data needed to update a Membership.
-     */
-    data: XOR<MembershipUpdateInput, MembershipUncheckedUpdateInput>
-    /**
-     * Choose, which Membership to update.
-     */
-    where: MembershipWhereUniqueInput
-  }
-
-  /**
-   * Membership updateMany
-   */
-  export type MembershipUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update Memberships.
-     */
-    data: XOR<MembershipUpdateManyMutationInput, MembershipUncheckedUpdateManyInput>
-    /**
-     * Filter which Memberships to update
-     */
-    where?: MembershipWhereInput
-    /**
-     * Limit how many Memberships to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * Membership updateManyAndReturn
-   */
-  export type MembershipUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Membership
-     */
-    select?: MembershipSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Membership
-     */
-    omit?: MembershipOmit<ExtArgs> | null
-    /**
-     * The data used to update Memberships.
-     */
-    data: XOR<MembershipUpdateManyMutationInput, MembershipUncheckedUpdateManyInput>
-    /**
-     * Filter which Memberships to update
-     */
-    where?: MembershipWhereInput
-    /**
-     * Limit how many Memberships to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MembershipIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * Membership upsert
-   */
-  export type MembershipUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Membership
-     */
-    select?: MembershipSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Membership
-     */
-    omit?: MembershipOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MembershipInclude<ExtArgs> | null
-    /**
-     * The filter to search for the Membership to update in case it exists.
-     */
-    where: MembershipWhereUniqueInput
-    /**
-     * In case the Membership found by the `where` argument doesn't exist, create a new Membership with this data.
-     */
-    create: XOR<MembershipCreateInput, MembershipUncheckedCreateInput>
-    /**
-     * In case the Membership was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<MembershipUpdateInput, MembershipUncheckedUpdateInput>
-  }
-
-  /**
-   * Membership delete
-   */
-  export type MembershipDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Membership
-     */
-    select?: MembershipSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Membership
-     */
-    omit?: MembershipOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MembershipInclude<ExtArgs> | null
-    /**
-     * Filter which Membership to delete.
-     */
-    where: MembershipWhereUniqueInput
-  }
-
-  /**
-   * Membership deleteMany
-   */
-  export type MembershipDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Memberships to delete
-     */
-    where?: MembershipWhereInput
-    /**
-     * Limit how many Memberships to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * Membership without action
-   */
-  export type MembershipDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Membership
-     */
-    select?: MembershipSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Membership
-     */
-    omit?: MembershipOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MembershipInclude<ExtArgs> | null
   }
 
 
@@ -5579,7 +4021,6 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     publishedAt: Date | null
-    archivedAt: Date | null
     deletedAt: Date | null
     authorId: string | null
     parentId: string | null
@@ -5605,7 +4046,6 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     publishedAt: Date | null
-    archivedAt: Date | null
     deletedAt: Date | null
     authorId: string | null
     parentId: string | null
@@ -5629,13 +4069,11 @@ export namespace Prisma {
     coverImageUrl: number
     fileUrl: number
     metadata: number
-    aiMetadata: number
     wordCount: number
     estimatedTime: number
     createdAt: number
     updatedAt: number
     publishedAt: number
-    archivedAt: number
     deletedAt: number
     authorId: number
     parentId: number
@@ -5673,7 +4111,6 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     publishedAt?: true
-    archivedAt?: true
     deletedAt?: true
     authorId?: true
     parentId?: true
@@ -5699,7 +4136,6 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     publishedAt?: true
-    archivedAt?: true
     deletedAt?: true
     authorId?: true
     parentId?: true
@@ -5723,13 +4159,11 @@ export namespace Prisma {
     coverImageUrl?: true
     fileUrl?: true
     metadata?: true
-    aiMetadata?: true
     wordCount?: true
     estimatedTime?: true
     createdAt?: true
     updatedAt?: true
     publishedAt?: true
-    archivedAt?: true
     deletedAt?: true
     authorId?: true
     parentId?: true
@@ -5824,8 +4258,8 @@ export namespace Prisma {
 
   export type ResourceGroupByOutputType = {
     id: string
-    tenantId: string | null
-    slug: string | null
+    tenantId: string
+    slug: string
     title: string | null
     description: string | null
     excerpt: string | null
@@ -5840,13 +4274,11 @@ export namespace Prisma {
     coverImageUrl: string | null
     fileUrl: string | null
     metadata: JsonValue | null
-    aiMetadata: JsonValue | null
     wordCount: number | null
     estimatedTime: number | null
     createdAt: Date
     updatedAt: Date
     publishedAt: Date | null
-    archivedAt: Date | null
     deletedAt: Date | null
     authorId: string
     parentId: string | null
@@ -5889,13 +4321,11 @@ export namespace Prisma {
     coverImageUrl?: boolean
     fileUrl?: boolean
     metadata?: boolean
-    aiMetadata?: boolean
     wordCount?: boolean
     estimatedTime?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     publishedAt?: boolean
-    archivedAt?: boolean
     deletedAt?: boolean
     authorId?: boolean
     parentId?: boolean
@@ -5933,13 +4363,11 @@ export namespace Prisma {
     coverImageUrl?: boolean
     fileUrl?: boolean
     metadata?: boolean
-    aiMetadata?: boolean
     wordCount?: boolean
     estimatedTime?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     publishedAt?: boolean
-    archivedAt?: boolean
     deletedAt?: boolean
     authorId?: boolean
     parentId?: boolean
@@ -5965,13 +4393,11 @@ export namespace Prisma {
     coverImageUrl?: boolean
     fileUrl?: boolean
     metadata?: boolean
-    aiMetadata?: boolean
     wordCount?: boolean
     estimatedTime?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     publishedAt?: boolean
-    archivedAt?: boolean
     deletedAt?: boolean
     authorId?: boolean
     parentId?: boolean
@@ -5997,19 +4423,17 @@ export namespace Prisma {
     coverImageUrl?: boolean
     fileUrl?: boolean
     metadata?: boolean
-    aiMetadata?: boolean
     wordCount?: boolean
     estimatedTime?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     publishedAt?: boolean
-    archivedAt?: boolean
     deletedAt?: boolean
     authorId?: boolean
     parentId?: boolean
   }
 
-  export type ResourceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "slug" | "title" | "description" | "excerpt" | "publishedContentJson" | "draftContentJson" | "type" | "status" | "visibility" | "category" | "language" | "thumbnailUrl" | "coverImageUrl" | "fileUrl" | "metadata" | "aiMetadata" | "wordCount" | "estimatedTime" | "createdAt" | "updatedAt" | "publishedAt" | "archivedAt" | "deletedAt" | "authorId" | "parentId", ExtArgs["result"]["resource"]>
+  export type ResourceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "slug" | "title" | "description" | "excerpt" | "publishedContentJson" | "draftContentJson" | "type" | "status" | "visibility" | "category" | "language" | "thumbnailUrl" | "coverImageUrl" | "fileUrl" | "metadata" | "wordCount" | "estimatedTime" | "createdAt" | "updatedAt" | "publishedAt" | "deletedAt" | "authorId" | "parentId", ExtArgs["result"]["resource"]>
   export type ResourceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     author?: boolean | UserDefaultArgs<ExtArgs>
     parent?: boolean | Resource$parentArgs<ExtArgs>
@@ -6054,8 +4478,8 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string | null
-      slug: string | null
+      tenantId: string
+      slug: string
       title: string | null
       description: string | null
       excerpt: string | null
@@ -6070,13 +4494,11 @@ export namespace Prisma {
       coverImageUrl: string | null
       fileUrl: string | null
       metadata: Prisma.JsonValue | null
-      aiMetadata: Prisma.JsonValue | null
       wordCount: number | null
       estimatedTime: number | null
       createdAt: Date
       updatedAt: Date
       publishedAt: Date | null
-      archivedAt: Date | null
       deletedAt: Date | null
       authorId: string
       parentId: string | null
@@ -6533,13 +4955,11 @@ export namespace Prisma {
     readonly coverImageUrl: FieldRef<"Resource", 'String'>
     readonly fileUrl: FieldRef<"Resource", 'String'>
     readonly metadata: FieldRef<"Resource", 'Json'>
-    readonly aiMetadata: FieldRef<"Resource", 'Json'>
     readonly wordCount: FieldRef<"Resource", 'Int'>
     readonly estimatedTime: FieldRef<"Resource", 'Int'>
     readonly createdAt: FieldRef<"Resource", 'DateTime'>
     readonly updatedAt: FieldRef<"Resource", 'DateTime'>
     readonly publishedAt: FieldRef<"Resource", 'DateTime'>
-    readonly archivedAt: FieldRef<"Resource", 'DateTime'>
     readonly deletedAt: FieldRef<"Resource", 'DateTime'>
     readonly authorId: FieldRef<"Resource", 'String'>
     readonly parentId: FieldRef<"Resource", 'String'>
@@ -7383,7 +5803,7 @@ export namespace Prisma {
 
   export type RelationGroupByOutputType = {
     id: string
-    tenantId: string | null
+    tenantId: string
     type: $Enums.RelationType
     fromId: string
     toId: string
@@ -7476,7 +5896,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string | null
+      tenantId: string
       type: $Enums.RelationType
       fromId: string
       toId: string
@@ -8522,7 +6942,7 @@ export namespace Prisma {
 
   export type ResourceVersionGroupByOutputType = {
     id: string
-    tenantId: string | null
+    tenantId: string
     resourceId: string
     authorId: string
     versionNumber: number
@@ -8632,7 +7052,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string | null
+      tenantId: string
       resourceId: string
       authorId: string
       versionNumber: number
@@ -9668,7 +8088,7 @@ export namespace Prisma {
 
   export type CollectionGroupByOutputType = {
     id: string
-    tenantId: string | null
+    tenantId: string
     slug: string
     title: string
     description: string | null
@@ -9794,7 +8214,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string | null
+      tenantId: string
       slug: string
       title: string
       description: string | null
@@ -10903,7 +9323,7 @@ export namespace Prisma {
 
   export type CollectionResourceGroupByOutputType = {
     id: string
-    tenantId: string | null
+    tenantId: string
     collectionId: string
     resourceId: string
     orderIndex: number
@@ -10993,7 +9413,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string | null
+      tenantId: string
       collectionId: string
       resourceId: string
       orderIndex: number
@@ -11983,7 +10403,7 @@ export namespace Prisma {
 
   export type TagGroupByOutputType = {
     id: string
-    tenantId: string | null
+    tenantId: string
     name: string
     slug: string
     createdAt: Date
@@ -12055,7 +10475,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string | null
+      tenantId: string
       name: string
       slug: string
       createdAt: Date
@@ -14009,7 +12429,6 @@ export namespace Prisma {
     tenantId: number
     content: number
     status: number
-    metadata: number
     createdAt: number
     updatedAt: number
     deletedAt: number
@@ -14051,7 +12470,6 @@ export namespace Prisma {
     tenantId?: true
     content?: true
     status?: true
-    metadata?: true
     createdAt?: true
     updatedAt?: true
     deletedAt?: true
@@ -14135,10 +12553,9 @@ export namespace Prisma {
 
   export type CommentGroupByOutputType = {
     id: string
-    tenantId: string | null
+    tenantId: string
     content: string
     status: $Enums.CommentStatus
-    metadata: JsonValue | null
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -14169,7 +12586,6 @@ export namespace Prisma {
     tenantId?: boolean
     content?: boolean
     status?: boolean
-    metadata?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
@@ -14188,7 +12604,6 @@ export namespace Prisma {
     tenantId?: boolean
     content?: boolean
     status?: boolean
-    metadata?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
@@ -14205,7 +12620,6 @@ export namespace Prisma {
     tenantId?: boolean
     content?: boolean
     status?: boolean
-    metadata?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
@@ -14222,7 +12636,6 @@ export namespace Prisma {
     tenantId?: boolean
     content?: boolean
     status?: boolean
-    metadata?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
@@ -14231,7 +12644,7 @@ export namespace Prisma {
     parentId?: boolean
   }
 
-  export type CommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "content" | "status" | "metadata" | "createdAt" | "updatedAt" | "deletedAt" | "authorId" | "resourceId" | "parentId", ExtArgs["result"]["comment"]>
+  export type CommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "content" | "status" | "createdAt" | "updatedAt" | "deletedAt" | "authorId" | "resourceId" | "parentId", ExtArgs["result"]["comment"]>
   export type CommentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     author?: boolean | UserDefaultArgs<ExtArgs>
     resource?: boolean | ResourceDefaultArgs<ExtArgs>
@@ -14260,10 +12673,9 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string | null
+      tenantId: string
       content: string
       status: $Enums.CommentStatus
-      metadata: Prisma.JsonValue | null
       createdAt: Date
       updatedAt: Date
       deletedAt: Date | null
@@ -14701,7 +13113,6 @@ export namespace Prisma {
     readonly tenantId: FieldRef<"Comment", 'String'>
     readonly content: FieldRef<"Comment", 'String'>
     readonly status: FieldRef<"Comment", 'CommentStatus'>
-    readonly metadata: FieldRef<"Comment", 'Json'>
     readonly createdAt: FieldRef<"Comment", 'DateTime'>
     readonly updatedAt: FieldRef<"Comment", 'DateTime'>
     readonly deletedAt: FieldRef<"Comment", 'DateTime'>
@@ -15305,7 +13716,7 @@ export namespace Prisma {
 
   export type SavedResourceGroupByOutputType = {
     id: string
-    tenantId: string | null
+    tenantId: string
     userId: string
     resourceId: string
     createdAt: Date
@@ -15388,7 +13799,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string | null
+      tenantId: string
       userId: string
       resourceId: string
       createdAt: Date
@@ -16256,7 +14667,7 @@ export namespace Prisma {
     tenantId: string | null
     userId: string | null
     resourceId: string | null
-    type: string | null
+    type: $Enums.ReactionType | null
     createdAt: Date | null
   }
 
@@ -16265,7 +14676,7 @@ export namespace Prisma {
     tenantId: string | null
     userId: string | null
     resourceId: string | null
-    type: string | null
+    type: $Enums.ReactionType | null
     createdAt: Date | null
   }
 
@@ -16382,10 +14793,10 @@ export namespace Prisma {
 
   export type ReactionGroupByOutputType = {
     id: string
-    tenantId: string | null
+    tenantId: string
     userId: string
     resourceId: string
-    type: string
+    type: $Enums.ReactionType
     createdAt: Date
     _count: ReactionCountAggregateOutputType | null
     _min: ReactionMinAggregateOutputType | null
@@ -16470,10 +14881,10 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string | null
+      tenantId: string
       userId: string
       resourceId: string
-      type: string
+      type: $Enums.ReactionType
       createdAt: Date
     }, ExtArgs["result"]["reaction"]>
     composites: {}
@@ -16904,7 +15315,7 @@ export namespace Prisma {
     readonly tenantId: FieldRef<"Reaction", 'String'>
     readonly userId: FieldRef<"Reaction", 'String'>
     readonly resourceId: FieldRef<"Reaction", 'String'>
-    readonly type: FieldRef<"Reaction", 'String'>
+    readonly type: FieldRef<"Reaction", 'ReactionType'>
     readonly createdAt: FieldRef<"Reaction", 'DateTime'>
   }
     
@@ -17337,58 +15748,46 @@ export namespace Prisma {
 
   export type FollowMinAggregateOutputType = {
     id: string | null
-    tenantId: string | null
     followerId: string | null
     followingId: string | null
     createdAt: Date | null
-    deletedAt: Date | null
   }
 
   export type FollowMaxAggregateOutputType = {
     id: string | null
-    tenantId: string | null
     followerId: string | null
     followingId: string | null
     createdAt: Date | null
-    deletedAt: Date | null
   }
 
   export type FollowCountAggregateOutputType = {
     id: number
-    tenantId: number
     followerId: number
     followingId: number
     createdAt: number
-    deletedAt: number
     _all: number
   }
 
 
   export type FollowMinAggregateInputType = {
     id?: true
-    tenantId?: true
     followerId?: true
     followingId?: true
     createdAt?: true
-    deletedAt?: true
   }
 
   export type FollowMaxAggregateInputType = {
     id?: true
-    tenantId?: true
     followerId?: true
     followingId?: true
     createdAt?: true
-    deletedAt?: true
   }
 
   export type FollowCountAggregateInputType = {
     id?: true
-    tenantId?: true
     followerId?: true
     followingId?: true
     createdAt?: true
-    deletedAt?: true
     _all?: true
   }
 
@@ -17466,11 +15865,9 @@ export namespace Prisma {
 
   export type FollowGroupByOutputType = {
     id: string
-    tenantId: string | null
     followerId: string
     followingId: string
     createdAt: Date
-    deletedAt: Date | null
     _count: FollowCountAggregateOutputType | null
     _min: FollowMinAggregateOutputType | null
     _max: FollowMaxAggregateOutputType | null
@@ -17492,47 +15889,39 @@ export namespace Prisma {
 
   export type FollowSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    tenantId?: boolean
     followerId?: boolean
     followingId?: boolean
     createdAt?: boolean
-    deletedAt?: boolean
     follower?: boolean | UserDefaultArgs<ExtArgs>
     following?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["follow"]>
 
   export type FollowSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    tenantId?: boolean
     followerId?: boolean
     followingId?: boolean
     createdAt?: boolean
-    deletedAt?: boolean
     follower?: boolean | UserDefaultArgs<ExtArgs>
     following?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["follow"]>
 
   export type FollowSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    tenantId?: boolean
     followerId?: boolean
     followingId?: boolean
     createdAt?: boolean
-    deletedAt?: boolean
     follower?: boolean | UserDefaultArgs<ExtArgs>
     following?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["follow"]>
 
   export type FollowSelectScalar = {
     id?: boolean
-    tenantId?: boolean
     followerId?: boolean
     followingId?: boolean
     createdAt?: boolean
-    deletedAt?: boolean
   }
 
-  export type FollowOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "followerId" | "followingId" | "createdAt" | "deletedAt", ExtArgs["result"]["follow"]>
+  export type FollowOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "followerId" | "followingId" | "createdAt", ExtArgs["result"]["follow"]>
   export type FollowInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     follower?: boolean | UserDefaultArgs<ExtArgs>
     following?: boolean | UserDefaultArgs<ExtArgs>
@@ -17554,11 +15943,9 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string | null
       followerId: string
       followingId: string
       createdAt: Date
-      deletedAt: Date | null
     }, ExtArgs["result"]["follow"]>
     composites: {}
   }
@@ -17985,11 +16372,9 @@ export namespace Prisma {
    */
   interface FollowFieldRefs {
     readonly id: FieldRef<"Follow", 'String'>
-    readonly tenantId: FieldRef<"Follow", 'String'>
     readonly followerId: FieldRef<"Follow", 'String'>
     readonly followingId: FieldRef<"Follow", 'String'>
     readonly createdAt: FieldRef<"Follow", 'DateTime'>
-    readonly deletedAt: FieldRef<"Follow", 'DateTime'>
   }
     
 
@@ -18558,7 +16943,7 @@ export namespace Prisma {
 
   export type ResourceUsageGroupByOutputType = {
     id: string
-    tenantId: string | null
+    tenantId: string
     resourceId: string
     actorId: string | null
     event: $Enums.UsageEvent
@@ -18656,7 +17041,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string | null
+      tenantId: string
       resourceId: string
       actorId: string | null
       event: $Enums.UsageEvent
@@ -19771,7 +18156,7 @@ export namespace Prisma {
 
   export type ResourceMetricsGroupByOutputType = {
     id: string
-    tenantId: string | null
+    tenantId: string
     resourceId: string
     views: number
     opens: number
@@ -19884,7 +18269,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      tenantId: string | null
+      tenantId: string
       resourceId: string
       views: number
       opens: number
@@ -20751,2251 +19136,6 @@ export namespace Prisma {
 
 
   /**
-   * Model Activity
-   */
-
-  export type AggregateActivity = {
-    _count: ActivityCountAggregateOutputType | null
-    _min: ActivityMinAggregateOutputType | null
-    _max: ActivityMaxAggregateOutputType | null
-  }
-
-  export type ActivityMinAggregateOutputType = {
-    id: string | null
-    tenantId: string | null
-    userId: string | null
-    type: $Enums.ActivityType | null
-    entityId: string | null
-    createdAt: Date | null
-  }
-
-  export type ActivityMaxAggregateOutputType = {
-    id: string | null
-    tenantId: string | null
-    userId: string | null
-    type: $Enums.ActivityType | null
-    entityId: string | null
-    createdAt: Date | null
-  }
-
-  export type ActivityCountAggregateOutputType = {
-    id: number
-    tenantId: number
-    userId: number
-    type: number
-    entityId: number
-    metadata: number
-    createdAt: number
-    _all: number
-  }
-
-
-  export type ActivityMinAggregateInputType = {
-    id?: true
-    tenantId?: true
-    userId?: true
-    type?: true
-    entityId?: true
-    createdAt?: true
-  }
-
-  export type ActivityMaxAggregateInputType = {
-    id?: true
-    tenantId?: true
-    userId?: true
-    type?: true
-    entityId?: true
-    createdAt?: true
-  }
-
-  export type ActivityCountAggregateInputType = {
-    id?: true
-    tenantId?: true
-    userId?: true
-    type?: true
-    entityId?: true
-    metadata?: true
-    createdAt?: true
-    _all?: true
-  }
-
-  export type ActivityAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Activity to aggregate.
-     */
-    where?: ActivityWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Activities to fetch.
-     */
-    orderBy?: ActivityOrderByWithRelationInput | ActivityOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: ActivityWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Activities from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Activities.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Activities
-    **/
-    _count?: true | ActivityCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: ActivityMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: ActivityMaxAggregateInputType
-  }
-
-  export type GetActivityAggregateType<T extends ActivityAggregateArgs> = {
-        [P in keyof T & keyof AggregateActivity]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateActivity[P]>
-      : GetScalarType<T[P], AggregateActivity[P]>
-  }
-
-
-
-
-  export type ActivityGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ActivityWhereInput
-    orderBy?: ActivityOrderByWithAggregationInput | ActivityOrderByWithAggregationInput[]
-    by: ActivityScalarFieldEnum[] | ActivityScalarFieldEnum
-    having?: ActivityScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: ActivityCountAggregateInputType | true
-    _min?: ActivityMinAggregateInputType
-    _max?: ActivityMaxAggregateInputType
-  }
-
-  export type ActivityGroupByOutputType = {
-    id: string
-    tenantId: string | null
-    userId: string | null
-    type: $Enums.ActivityType
-    entityId: string
-    metadata: JsonValue | null
-    createdAt: Date
-    _count: ActivityCountAggregateOutputType | null
-    _min: ActivityMinAggregateOutputType | null
-    _max: ActivityMaxAggregateOutputType | null
-  }
-
-  type GetActivityGroupByPayload<T extends ActivityGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<ActivityGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof ActivityGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], ActivityGroupByOutputType[P]>
-            : GetScalarType<T[P], ActivityGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type ActivitySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    tenantId?: boolean
-    userId?: boolean
-    type?: boolean
-    entityId?: boolean
-    metadata?: boolean
-    createdAt?: boolean
-    user?: boolean | Activity$userArgs<ExtArgs>
-  }, ExtArgs["result"]["activity"]>
-
-  export type ActivitySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    tenantId?: boolean
-    userId?: boolean
-    type?: boolean
-    entityId?: boolean
-    metadata?: boolean
-    createdAt?: boolean
-    user?: boolean | Activity$userArgs<ExtArgs>
-  }, ExtArgs["result"]["activity"]>
-
-  export type ActivitySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    tenantId?: boolean
-    userId?: boolean
-    type?: boolean
-    entityId?: boolean
-    metadata?: boolean
-    createdAt?: boolean
-    user?: boolean | Activity$userArgs<ExtArgs>
-  }, ExtArgs["result"]["activity"]>
-
-  export type ActivitySelectScalar = {
-    id?: boolean
-    tenantId?: boolean
-    userId?: boolean
-    type?: boolean
-    entityId?: boolean
-    metadata?: boolean
-    createdAt?: boolean
-  }
-
-  export type ActivityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "userId" | "type" | "entityId" | "metadata" | "createdAt", ExtArgs["result"]["activity"]>
-  export type ActivityInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | Activity$userArgs<ExtArgs>
-  }
-  export type ActivityIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | Activity$userArgs<ExtArgs>
-  }
-  export type ActivityIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | Activity$userArgs<ExtArgs>
-  }
-
-  export type $ActivityPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Activity"
-    objects: {
-      user: Prisma.$UserPayload<ExtArgs> | null
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      tenantId: string | null
-      userId: string | null
-      type: $Enums.ActivityType
-      entityId: string
-      metadata: Prisma.JsonValue | null
-      createdAt: Date
-    }, ExtArgs["result"]["activity"]>
-    composites: {}
-  }
-
-  type ActivityGetPayload<S extends boolean | null | undefined | ActivityDefaultArgs> = $Result.GetResult<Prisma.$ActivityPayload, S>
-
-  type ActivityCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<ActivityFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: ActivityCountAggregateInputType | true
-    }
-
-  export interface ActivityDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Activity'], meta: { name: 'Activity' } }
-    /**
-     * Find zero or one Activity that matches the filter.
-     * @param {ActivityFindUniqueArgs} args - Arguments to find a Activity
-     * @example
-     * // Get one Activity
-     * const activity = await prisma.activity.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends ActivityFindUniqueArgs>(args: SelectSubset<T, ActivityFindUniqueArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one Activity that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {ActivityFindUniqueOrThrowArgs} args - Arguments to find a Activity
-     * @example
-     * // Get one Activity
-     * const activity = await prisma.activity.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends ActivityFindUniqueOrThrowArgs>(args: SelectSubset<T, ActivityFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Activity that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ActivityFindFirstArgs} args - Arguments to find a Activity
-     * @example
-     * // Get one Activity
-     * const activity = await prisma.activity.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends ActivityFindFirstArgs>(args?: SelectSubset<T, ActivityFindFirstArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Activity that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ActivityFindFirstOrThrowArgs} args - Arguments to find a Activity
-     * @example
-     * // Get one Activity
-     * const activity = await prisma.activity.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends ActivityFindFirstOrThrowArgs>(args?: SelectSubset<T, ActivityFindFirstOrThrowArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more Activities that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ActivityFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Activities
-     * const activities = await prisma.activity.findMany()
-     * 
-     * // Get first 10 Activities
-     * const activities = await prisma.activity.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const activityWithIdOnly = await prisma.activity.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends ActivityFindManyArgs>(args?: SelectSubset<T, ActivityFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a Activity.
-     * @param {ActivityCreateArgs} args - Arguments to create a Activity.
-     * @example
-     * // Create one Activity
-     * const Activity = await prisma.activity.create({
-     *   data: {
-     *     // ... data to create a Activity
-     *   }
-     * })
-     * 
-     */
-    create<T extends ActivityCreateArgs>(args: SelectSubset<T, ActivityCreateArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many Activities.
-     * @param {ActivityCreateManyArgs} args - Arguments to create many Activities.
-     * @example
-     * // Create many Activities
-     * const activity = await prisma.activity.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends ActivityCreateManyArgs>(args?: SelectSubset<T, ActivityCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many Activities and returns the data saved in the database.
-     * @param {ActivityCreateManyAndReturnArgs} args - Arguments to create many Activities.
-     * @example
-     * // Create many Activities
-     * const activity = await prisma.activity.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many Activities and only return the `id`
-     * const activityWithIdOnly = await prisma.activity.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends ActivityCreateManyAndReturnArgs>(args?: SelectSubset<T, ActivityCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a Activity.
-     * @param {ActivityDeleteArgs} args - Arguments to delete one Activity.
-     * @example
-     * // Delete one Activity
-     * const Activity = await prisma.activity.delete({
-     *   where: {
-     *     // ... filter to delete one Activity
-     *   }
-     * })
-     * 
-     */
-    delete<T extends ActivityDeleteArgs>(args: SelectSubset<T, ActivityDeleteArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one Activity.
-     * @param {ActivityUpdateArgs} args - Arguments to update one Activity.
-     * @example
-     * // Update one Activity
-     * const activity = await prisma.activity.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends ActivityUpdateArgs>(args: SelectSubset<T, ActivityUpdateArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more Activities.
-     * @param {ActivityDeleteManyArgs} args - Arguments to filter Activities to delete.
-     * @example
-     * // Delete a few Activities
-     * const { count } = await prisma.activity.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends ActivityDeleteManyArgs>(args?: SelectSubset<T, ActivityDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Activities.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ActivityUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Activities
-     * const activity = await prisma.activity.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends ActivityUpdateManyArgs>(args: SelectSubset<T, ActivityUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Activities and returns the data updated in the database.
-     * @param {ActivityUpdateManyAndReturnArgs} args - Arguments to update many Activities.
-     * @example
-     * // Update many Activities
-     * const activity = await prisma.activity.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Activities and only return the `id`
-     * const activityWithIdOnly = await prisma.activity.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends ActivityUpdateManyAndReturnArgs>(args: SelectSubset<T, ActivityUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one Activity.
-     * @param {ActivityUpsertArgs} args - Arguments to update or create a Activity.
-     * @example
-     * // Update or create a Activity
-     * const activity = await prisma.activity.upsert({
-     *   create: {
-     *     // ... data to create a Activity
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Activity we want to update
-     *   }
-     * })
-     */
-    upsert<T extends ActivityUpsertArgs>(args: SelectSubset<T, ActivityUpsertArgs<ExtArgs>>): Prisma__ActivityClient<$Result.GetResult<Prisma.$ActivityPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of Activities.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ActivityCountArgs} args - Arguments to filter Activities to count.
-     * @example
-     * // Count the number of Activities
-     * const count = await prisma.activity.count({
-     *   where: {
-     *     // ... the filter for the Activities we want to count
-     *   }
-     * })
-    **/
-    count<T extends ActivityCountArgs>(
-      args?: Subset<T, ActivityCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], ActivityCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Activity.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ActivityAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends ActivityAggregateArgs>(args: Subset<T, ActivityAggregateArgs>): Prisma.PrismaPromise<GetActivityAggregateType<T>>
-
-    /**
-     * Group by Activity.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ActivityGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends ActivityGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: ActivityGroupByArgs['orderBy'] }
-        : { orderBy?: ActivityGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, ActivityGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetActivityGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Activity model
-   */
-  readonly fields: ActivityFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Activity.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__ActivityClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends Activity$userArgs<ExtArgs> = {}>(args?: Subset<T, Activity$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the Activity model
-   */
-  interface ActivityFieldRefs {
-    readonly id: FieldRef<"Activity", 'String'>
-    readonly tenantId: FieldRef<"Activity", 'String'>
-    readonly userId: FieldRef<"Activity", 'String'>
-    readonly type: FieldRef<"Activity", 'ActivityType'>
-    readonly entityId: FieldRef<"Activity", 'String'>
-    readonly metadata: FieldRef<"Activity", 'Json'>
-    readonly createdAt: FieldRef<"Activity", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * Activity findUnique
-   */
-  export type ActivityFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Activity
-     */
-    select?: ActivitySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Activity
-     */
-    omit?: ActivityOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ActivityInclude<ExtArgs> | null
-    /**
-     * Filter, which Activity to fetch.
-     */
-    where: ActivityWhereUniqueInput
-  }
-
-  /**
-   * Activity findUniqueOrThrow
-   */
-  export type ActivityFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Activity
-     */
-    select?: ActivitySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Activity
-     */
-    omit?: ActivityOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ActivityInclude<ExtArgs> | null
-    /**
-     * Filter, which Activity to fetch.
-     */
-    where: ActivityWhereUniqueInput
-  }
-
-  /**
-   * Activity findFirst
-   */
-  export type ActivityFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Activity
-     */
-    select?: ActivitySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Activity
-     */
-    omit?: ActivityOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ActivityInclude<ExtArgs> | null
-    /**
-     * Filter, which Activity to fetch.
-     */
-    where?: ActivityWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Activities to fetch.
-     */
-    orderBy?: ActivityOrderByWithRelationInput | ActivityOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Activities.
-     */
-    cursor?: ActivityWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Activities from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Activities.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Activities.
-     */
-    distinct?: ActivityScalarFieldEnum | ActivityScalarFieldEnum[]
-  }
-
-  /**
-   * Activity findFirstOrThrow
-   */
-  export type ActivityFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Activity
-     */
-    select?: ActivitySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Activity
-     */
-    omit?: ActivityOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ActivityInclude<ExtArgs> | null
-    /**
-     * Filter, which Activity to fetch.
-     */
-    where?: ActivityWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Activities to fetch.
-     */
-    orderBy?: ActivityOrderByWithRelationInput | ActivityOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Activities.
-     */
-    cursor?: ActivityWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Activities from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Activities.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Activities.
-     */
-    distinct?: ActivityScalarFieldEnum | ActivityScalarFieldEnum[]
-  }
-
-  /**
-   * Activity findMany
-   */
-  export type ActivityFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Activity
-     */
-    select?: ActivitySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Activity
-     */
-    omit?: ActivityOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ActivityInclude<ExtArgs> | null
-    /**
-     * Filter, which Activities to fetch.
-     */
-    where?: ActivityWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Activities to fetch.
-     */
-    orderBy?: ActivityOrderByWithRelationInput | ActivityOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Activities.
-     */
-    cursor?: ActivityWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Activities from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Activities.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Activities.
-     */
-    distinct?: ActivityScalarFieldEnum | ActivityScalarFieldEnum[]
-  }
-
-  /**
-   * Activity create
-   */
-  export type ActivityCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Activity
-     */
-    select?: ActivitySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Activity
-     */
-    omit?: ActivityOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ActivityInclude<ExtArgs> | null
-    /**
-     * The data needed to create a Activity.
-     */
-    data: XOR<ActivityCreateInput, ActivityUncheckedCreateInput>
-  }
-
-  /**
-   * Activity createMany
-   */
-  export type ActivityCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many Activities.
-     */
-    data: ActivityCreateManyInput | ActivityCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * Activity createManyAndReturn
-   */
-  export type ActivityCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Activity
-     */
-    select?: ActivitySelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Activity
-     */
-    omit?: ActivityOmit<ExtArgs> | null
-    /**
-     * The data used to create many Activities.
-     */
-    data: ActivityCreateManyInput | ActivityCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ActivityIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * Activity update
-   */
-  export type ActivityUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Activity
-     */
-    select?: ActivitySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Activity
-     */
-    omit?: ActivityOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ActivityInclude<ExtArgs> | null
-    /**
-     * The data needed to update a Activity.
-     */
-    data: XOR<ActivityUpdateInput, ActivityUncheckedUpdateInput>
-    /**
-     * Choose, which Activity to update.
-     */
-    where: ActivityWhereUniqueInput
-  }
-
-  /**
-   * Activity updateMany
-   */
-  export type ActivityUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update Activities.
-     */
-    data: XOR<ActivityUpdateManyMutationInput, ActivityUncheckedUpdateManyInput>
-    /**
-     * Filter which Activities to update
-     */
-    where?: ActivityWhereInput
-    /**
-     * Limit how many Activities to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * Activity updateManyAndReturn
-   */
-  export type ActivityUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Activity
-     */
-    select?: ActivitySelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Activity
-     */
-    omit?: ActivityOmit<ExtArgs> | null
-    /**
-     * The data used to update Activities.
-     */
-    data: XOR<ActivityUpdateManyMutationInput, ActivityUncheckedUpdateManyInput>
-    /**
-     * Filter which Activities to update
-     */
-    where?: ActivityWhereInput
-    /**
-     * Limit how many Activities to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ActivityIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * Activity upsert
-   */
-  export type ActivityUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Activity
-     */
-    select?: ActivitySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Activity
-     */
-    omit?: ActivityOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ActivityInclude<ExtArgs> | null
-    /**
-     * The filter to search for the Activity to update in case it exists.
-     */
-    where: ActivityWhereUniqueInput
-    /**
-     * In case the Activity found by the `where` argument doesn't exist, create a new Activity with this data.
-     */
-    create: XOR<ActivityCreateInput, ActivityUncheckedCreateInput>
-    /**
-     * In case the Activity was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<ActivityUpdateInput, ActivityUncheckedUpdateInput>
-  }
-
-  /**
-   * Activity delete
-   */
-  export type ActivityDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Activity
-     */
-    select?: ActivitySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Activity
-     */
-    omit?: ActivityOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ActivityInclude<ExtArgs> | null
-    /**
-     * Filter which Activity to delete.
-     */
-    where: ActivityWhereUniqueInput
-  }
-
-  /**
-   * Activity deleteMany
-   */
-  export type ActivityDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Activities to delete
-     */
-    where?: ActivityWhereInput
-    /**
-     * Limit how many Activities to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * Activity.user
-   */
-  export type Activity$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the User
-     */
-    select?: UserSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the User
-     */
-    omit?: UserOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
-  }
-
-  /**
-   * Activity without action
-   */
-  export type ActivityDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Activity
-     */
-    select?: ActivitySelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Activity
-     */
-    omit?: ActivityOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ActivityInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model Notification
-   */
-
-  export type AggregateNotification = {
-    _count: NotificationCountAggregateOutputType | null
-    _min: NotificationMinAggregateOutputType | null
-    _max: NotificationMaxAggregateOutputType | null
-  }
-
-  export type NotificationMinAggregateOutputType = {
-    id: string | null
-    tenantId: string | null
-    userId: string | null
-    type: $Enums.NotificationType | null
-    title: string | null
-    body: string | null
-    entityId: string | null
-    entityType: string | null
-    read: boolean | null
-    readAt: Date | null
-    createdAt: Date | null
-  }
-
-  export type NotificationMaxAggregateOutputType = {
-    id: string | null
-    tenantId: string | null
-    userId: string | null
-    type: $Enums.NotificationType | null
-    title: string | null
-    body: string | null
-    entityId: string | null
-    entityType: string | null
-    read: boolean | null
-    readAt: Date | null
-    createdAt: Date | null
-  }
-
-  export type NotificationCountAggregateOutputType = {
-    id: number
-    tenantId: number
-    userId: number
-    type: number
-    title: number
-    body: number
-    entityId: number
-    entityType: number
-    read: number
-    readAt: number
-    createdAt: number
-    _all: number
-  }
-
-
-  export type NotificationMinAggregateInputType = {
-    id?: true
-    tenantId?: true
-    userId?: true
-    type?: true
-    title?: true
-    body?: true
-    entityId?: true
-    entityType?: true
-    read?: true
-    readAt?: true
-    createdAt?: true
-  }
-
-  export type NotificationMaxAggregateInputType = {
-    id?: true
-    tenantId?: true
-    userId?: true
-    type?: true
-    title?: true
-    body?: true
-    entityId?: true
-    entityType?: true
-    read?: true
-    readAt?: true
-    createdAt?: true
-  }
-
-  export type NotificationCountAggregateInputType = {
-    id?: true
-    tenantId?: true
-    userId?: true
-    type?: true
-    title?: true
-    body?: true
-    entityId?: true
-    entityType?: true
-    read?: true
-    readAt?: true
-    createdAt?: true
-    _all?: true
-  }
-
-  export type NotificationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Notification to aggregate.
-     */
-    where?: NotificationWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Notifications to fetch.
-     */
-    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: NotificationWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Notifications from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Notifications.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Notifications
-    **/
-    _count?: true | NotificationCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: NotificationMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: NotificationMaxAggregateInputType
-  }
-
-  export type GetNotificationAggregateType<T extends NotificationAggregateArgs> = {
-        [P in keyof T & keyof AggregateNotification]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateNotification[P]>
-      : GetScalarType<T[P], AggregateNotification[P]>
-  }
-
-
-
-
-  export type NotificationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationWhereInput
-    orderBy?: NotificationOrderByWithAggregationInput | NotificationOrderByWithAggregationInput[]
-    by: NotificationScalarFieldEnum[] | NotificationScalarFieldEnum
-    having?: NotificationScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: NotificationCountAggregateInputType | true
-    _min?: NotificationMinAggregateInputType
-    _max?: NotificationMaxAggregateInputType
-  }
-
-  export type NotificationGroupByOutputType = {
-    id: string
-    tenantId: string | null
-    userId: string
-    type: $Enums.NotificationType
-    title: string
-    body: string | null
-    entityId: string | null
-    entityType: string | null
-    read: boolean
-    readAt: Date | null
-    createdAt: Date
-    _count: NotificationCountAggregateOutputType | null
-    _min: NotificationMinAggregateOutputType | null
-    _max: NotificationMaxAggregateOutputType | null
-  }
-
-  type GetNotificationGroupByPayload<T extends NotificationGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<NotificationGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof NotificationGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], NotificationGroupByOutputType[P]>
-            : GetScalarType<T[P], NotificationGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type NotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    tenantId?: boolean
-    userId?: boolean
-    type?: boolean
-    title?: boolean
-    body?: boolean
-    entityId?: boolean
-    entityType?: boolean
-    read?: boolean
-    readAt?: boolean
-    createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["notification"]>
-
-  export type NotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    tenantId?: boolean
-    userId?: boolean
-    type?: boolean
-    title?: boolean
-    body?: boolean
-    entityId?: boolean
-    entityType?: boolean
-    read?: boolean
-    readAt?: boolean
-    createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["notification"]>
-
-  export type NotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    tenantId?: boolean
-    userId?: boolean
-    type?: boolean
-    title?: boolean
-    body?: boolean
-    entityId?: boolean
-    entityType?: boolean
-    read?: boolean
-    readAt?: boolean
-    createdAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["notification"]>
-
-  export type NotificationSelectScalar = {
-    id?: boolean
-    tenantId?: boolean
-    userId?: boolean
-    type?: boolean
-    title?: boolean
-    body?: boolean
-    entityId?: boolean
-    entityType?: boolean
-    read?: boolean
-    readAt?: boolean
-    createdAt?: boolean
-  }
-
-  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "userId" | "type" | "title" | "body" | "entityId" | "entityType" | "read" | "readAt" | "createdAt", ExtArgs["result"]["notification"]>
-  export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-  export type NotificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-  export type NotificationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
-  }
-
-  export type $NotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Notification"
-    objects: {
-      user: Prisma.$UserPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      tenantId: string | null
-      userId: string
-      type: $Enums.NotificationType
-      title: string
-      body: string | null
-      entityId: string | null
-      entityType: string | null
-      read: boolean
-      readAt: Date | null
-      createdAt: Date
-    }, ExtArgs["result"]["notification"]>
-    composites: {}
-  }
-
-  type NotificationGetPayload<S extends boolean | null | undefined | NotificationDefaultArgs> = $Result.GetResult<Prisma.$NotificationPayload, S>
-
-  type NotificationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<NotificationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: NotificationCountAggregateInputType | true
-    }
-
-  export interface NotificationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Notification'], meta: { name: 'Notification' } }
-    /**
-     * Find zero or one Notification that matches the filter.
-     * @param {NotificationFindUniqueArgs} args - Arguments to find a Notification
-     * @example
-     * // Get one Notification
-     * const notification = await prisma.notification.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends NotificationFindUniqueArgs>(args: SelectSubset<T, NotificationFindUniqueArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one Notification that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {NotificationFindUniqueOrThrowArgs} args - Arguments to find a Notification
-     * @example
-     * // Get one Notification
-     * const notification = await prisma.notification.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends NotificationFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Notification that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationFindFirstArgs} args - Arguments to find a Notification
-     * @example
-     * // Get one Notification
-     * const notification = await prisma.notification.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends NotificationFindFirstArgs>(args?: SelectSubset<T, NotificationFindFirstArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Notification that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationFindFirstOrThrowArgs} args - Arguments to find a Notification
-     * @example
-     * // Get one Notification
-     * const notification = await prisma.notification.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends NotificationFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more Notifications that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Notifications
-     * const notifications = await prisma.notification.findMany()
-     * 
-     * // Get first 10 Notifications
-     * const notifications = await prisma.notification.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const notificationWithIdOnly = await prisma.notification.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends NotificationFindManyArgs>(args?: SelectSubset<T, NotificationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a Notification.
-     * @param {NotificationCreateArgs} args - Arguments to create a Notification.
-     * @example
-     * // Create one Notification
-     * const Notification = await prisma.notification.create({
-     *   data: {
-     *     // ... data to create a Notification
-     *   }
-     * })
-     * 
-     */
-    create<T extends NotificationCreateArgs>(args: SelectSubset<T, NotificationCreateArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many Notifications.
-     * @param {NotificationCreateManyArgs} args - Arguments to create many Notifications.
-     * @example
-     * // Create many Notifications
-     * const notification = await prisma.notification.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends NotificationCreateManyArgs>(args?: SelectSubset<T, NotificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many Notifications and returns the data saved in the database.
-     * @param {NotificationCreateManyAndReturnArgs} args - Arguments to create many Notifications.
-     * @example
-     * // Create many Notifications
-     * const notification = await prisma.notification.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many Notifications and only return the `id`
-     * const notificationWithIdOnly = await prisma.notification.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends NotificationCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a Notification.
-     * @param {NotificationDeleteArgs} args - Arguments to delete one Notification.
-     * @example
-     * // Delete one Notification
-     * const Notification = await prisma.notification.delete({
-     *   where: {
-     *     // ... filter to delete one Notification
-     *   }
-     * })
-     * 
-     */
-    delete<T extends NotificationDeleteArgs>(args: SelectSubset<T, NotificationDeleteArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one Notification.
-     * @param {NotificationUpdateArgs} args - Arguments to update one Notification.
-     * @example
-     * // Update one Notification
-     * const notification = await prisma.notification.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends NotificationUpdateArgs>(args: SelectSubset<T, NotificationUpdateArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more Notifications.
-     * @param {NotificationDeleteManyArgs} args - Arguments to filter Notifications to delete.
-     * @example
-     * // Delete a few Notifications
-     * const { count } = await prisma.notification.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends NotificationDeleteManyArgs>(args?: SelectSubset<T, NotificationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Notifications.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Notifications
-     * const notification = await prisma.notification.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends NotificationUpdateManyArgs>(args: SelectSubset<T, NotificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Notifications and returns the data updated in the database.
-     * @param {NotificationUpdateManyAndReturnArgs} args - Arguments to update many Notifications.
-     * @example
-     * // Update many Notifications
-     * const notification = await prisma.notification.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Notifications and only return the `id`
-     * const notificationWithIdOnly = await prisma.notification.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends NotificationUpdateManyAndReturnArgs>(args: SelectSubset<T, NotificationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one Notification.
-     * @param {NotificationUpsertArgs} args - Arguments to update or create a Notification.
-     * @example
-     * // Update or create a Notification
-     * const notification = await prisma.notification.upsert({
-     *   create: {
-     *     // ... data to create a Notification
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Notification we want to update
-     *   }
-     * })
-     */
-    upsert<T extends NotificationUpsertArgs>(args: SelectSubset<T, NotificationUpsertArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of Notifications.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationCountArgs} args - Arguments to filter Notifications to count.
-     * @example
-     * // Count the number of Notifications
-     * const count = await prisma.notification.count({
-     *   where: {
-     *     // ... the filter for the Notifications we want to count
-     *   }
-     * })
-    **/
-    count<T extends NotificationCountArgs>(
-      args?: Subset<T, NotificationCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], NotificationCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Notification.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends NotificationAggregateArgs>(args: Subset<T, NotificationAggregateArgs>): Prisma.PrismaPromise<GetNotificationAggregateType<T>>
-
-    /**
-     * Group by Notification.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends NotificationGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: NotificationGroupByArgs['orderBy'] }
-        : { orderBy?: NotificationGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, NotificationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Notification model
-   */
-  readonly fields: NotificationFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Notification.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__NotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the Notification model
-   */
-  interface NotificationFieldRefs {
-    readonly id: FieldRef<"Notification", 'String'>
-    readonly tenantId: FieldRef<"Notification", 'String'>
-    readonly userId: FieldRef<"Notification", 'String'>
-    readonly type: FieldRef<"Notification", 'NotificationType'>
-    readonly title: FieldRef<"Notification", 'String'>
-    readonly body: FieldRef<"Notification", 'String'>
-    readonly entityId: FieldRef<"Notification", 'String'>
-    readonly entityType: FieldRef<"Notification", 'String'>
-    readonly read: FieldRef<"Notification", 'Boolean'>
-    readonly readAt: FieldRef<"Notification", 'DateTime'>
-    readonly createdAt: FieldRef<"Notification", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * Notification findUnique
-   */
-  export type NotificationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
-     * Filter, which Notification to fetch.
-     */
-    where: NotificationWhereUniqueInput
-  }
-
-  /**
-   * Notification findUniqueOrThrow
-   */
-  export type NotificationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
-     * Filter, which Notification to fetch.
-     */
-    where: NotificationWhereUniqueInput
-  }
-
-  /**
-   * Notification findFirst
-   */
-  export type NotificationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
-     * Filter, which Notification to fetch.
-     */
-    where?: NotificationWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Notifications to fetch.
-     */
-    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Notifications.
-     */
-    cursor?: NotificationWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Notifications from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Notifications.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Notifications.
-     */
-    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
-  }
-
-  /**
-   * Notification findFirstOrThrow
-   */
-  export type NotificationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
-     * Filter, which Notification to fetch.
-     */
-    where?: NotificationWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Notifications to fetch.
-     */
-    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Notifications.
-     */
-    cursor?: NotificationWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Notifications from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Notifications.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Notifications.
-     */
-    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
-  }
-
-  /**
-   * Notification findMany
-   */
-  export type NotificationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
-     * Filter, which Notifications to fetch.
-     */
-    where?: NotificationWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Notifications to fetch.
-     */
-    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Notifications.
-     */
-    cursor?: NotificationWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Notifications from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Notifications.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Notifications.
-     */
-    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
-  }
-
-  /**
-   * Notification create
-   */
-  export type NotificationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
-     * The data needed to create a Notification.
-     */
-    data: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
-  }
-
-  /**
-   * Notification createMany
-   */
-  export type NotificationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many Notifications.
-     */
-    data: NotificationCreateManyInput | NotificationCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * Notification createManyAndReturn
-   */
-  export type NotificationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * The data used to create many Notifications.
-     */
-    data: NotificationCreateManyInput | NotificationCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * Notification update
-   */
-  export type NotificationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
-     * The data needed to update a Notification.
-     */
-    data: XOR<NotificationUpdateInput, NotificationUncheckedUpdateInput>
-    /**
-     * Choose, which Notification to update.
-     */
-    where: NotificationWhereUniqueInput
-  }
-
-  /**
-   * Notification updateMany
-   */
-  export type NotificationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update Notifications.
-     */
-    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyInput>
-    /**
-     * Filter which Notifications to update
-     */
-    where?: NotificationWhereInput
-    /**
-     * Limit how many Notifications to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * Notification updateManyAndReturn
-   */
-  export type NotificationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * The data used to update Notifications.
-     */
-    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyInput>
-    /**
-     * Filter which Notifications to update
-     */
-    where?: NotificationWhereInput
-    /**
-     * Limit how many Notifications to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * Notification upsert
-   */
-  export type NotificationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
-     * The filter to search for the Notification to update in case it exists.
-     */
-    where: NotificationWhereUniqueInput
-    /**
-     * In case the Notification found by the `where` argument doesn't exist, create a new Notification with this data.
-     */
-    create: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
-    /**
-     * In case the Notification was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<NotificationUpdateInput, NotificationUncheckedUpdateInput>
-  }
-
-  /**
-   * Notification delete
-   */
-  export type NotificationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
-     * Filter which Notification to delete.
-     */
-    where: NotificationWhereUniqueInput
-  }
-
-  /**
-   * Notification deleteMany
-   */
-  export type NotificationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Notifications to delete
-     */
-    where?: NotificationWhereInput
-    /**
-     * Limit how many Notifications to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * Notification without action
-   */
-  export type NotificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-  }
-
-
-  /**
    * Enums
    */
 
@@ -23020,30 +19160,13 @@ export namespace Prisma {
     role: 'role',
     archetype: 'archetype',
     onboardingStep: 'onboardingStep',
-    onboardingJson: 'onboardingJson',
     preferences: 'preferences',
-    metadata: 'metadata',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    archivedAt: 'archivedAt',
     deletedAt: 'deletedAt'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
-
-
-  export const MembershipScalarFieldEnum: {
-    id: 'id',
-    role: 'role',
-    status: 'status',
-    metadata: 'metadata',
-    joinedAt: 'joinedAt',
-    updatedAt: 'updatedAt',
-    userId: 'userId',
-    tenantId: 'tenantId'
-  };
-
-  export type MembershipScalarFieldEnum = (typeof MembershipScalarFieldEnum)[keyof typeof MembershipScalarFieldEnum]
 
 
   export const ResourceScalarFieldEnum: {
@@ -23064,13 +19187,11 @@ export namespace Prisma {
     coverImageUrl: 'coverImageUrl',
     fileUrl: 'fileUrl',
     metadata: 'metadata',
-    aiMetadata: 'aiMetadata',
     wordCount: 'wordCount',
     estimatedTime: 'estimatedTime',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     publishedAt: 'publishedAt',
-    archivedAt: 'archivedAt',
     deletedAt: 'deletedAt',
     authorId: 'authorId',
     parentId: 'parentId'
@@ -23163,7 +19284,6 @@ export namespace Prisma {
     tenantId: 'tenantId',
     content: 'content',
     status: 'status',
-    metadata: 'metadata',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     deletedAt: 'deletedAt',
@@ -23200,11 +19320,9 @@ export namespace Prisma {
 
   export const FollowScalarFieldEnum: {
     id: 'id',
-    tenantId: 'tenantId',
     followerId: 'followerId',
     followingId: 'followingId',
-    createdAt: 'createdAt',
-    deletedAt: 'deletedAt'
+    createdAt: 'createdAt'
   };
 
   export type FollowScalarFieldEnum = (typeof FollowScalarFieldEnum)[keyof typeof FollowScalarFieldEnum]
@@ -23240,36 +19358,6 @@ export namespace Prisma {
   };
 
   export type ResourceMetricsScalarFieldEnum = (typeof ResourceMetricsScalarFieldEnum)[keyof typeof ResourceMetricsScalarFieldEnum]
-
-
-  export const ActivityScalarFieldEnum: {
-    id: 'id',
-    tenantId: 'tenantId',
-    userId: 'userId',
-    type: 'type',
-    entityId: 'entityId',
-    metadata: 'metadata',
-    createdAt: 'createdAt'
-  };
-
-  export type ActivityScalarFieldEnum = (typeof ActivityScalarFieldEnum)[keyof typeof ActivityScalarFieldEnum]
-
-
-  export const NotificationScalarFieldEnum: {
-    id: 'id',
-    tenantId: 'tenantId',
-    userId: 'userId',
-    type: 'type',
-    title: 'title',
-    body: 'body',
-    entityId: 'entityId',
-    entityType: 'entityType',
-    read: 'read',
-    readAt: 'readAt',
-    createdAt: 'createdAt'
-  };
-
-  export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -23403,20 +19491,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'MemberRole'
-   */
-  export type EnumMemberRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MemberRole'>
-    
-
-
-  /**
-   * Reference to a field of type 'MemberRole[]'
-   */
-  export type ListEnumMemberRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MemberRole[]'>
-    
-
-
-  /**
    * Reference to a field of type 'ResourceTypeRenderer'
    */
   export type EnumResourceTypeRendererFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ResourceTypeRenderer'>
@@ -23487,6 +19561,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'ReactionType'
+   */
+  export type EnumReactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReactionType'>
+    
+
+
+  /**
+   * Reference to a field of type 'ReactionType[]'
+   */
+  export type ListEnumReactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReactionType[]'>
+    
+
+
+  /**
    * Reference to a field of type 'UsageEvent'
    */
   export type EnumUsageEventFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UsageEvent'>
@@ -23512,41 +19600,6 @@ export namespace Prisma {
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
-
-
-  /**
-   * Reference to a field of type 'ActivityType'
-   */
-  export type EnumActivityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ActivityType'>
-    
-
-
-  /**
-   * Reference to a field of type 'ActivityType[]'
-   */
-  export type ListEnumActivityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ActivityType[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'NotificationType'
-   */
-  export type EnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType'>
-    
-
-
-  /**
-   * Reference to a field of type 'NotificationType[]'
-   */
-  export type ListEnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
-    
   /**
    * Deep Input Types
    */
@@ -23557,7 +19610,7 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     id?: StringFilter<"User"> | string
-    tenantId?: StringNullableFilter<"User"> | string | null
+    tenantId?: StringFilter<"User"> | string
     identityId?: StringFilter<"User"> | string
     username?: StringFilter<"User"> | string
     displayName?: StringNullableFilter<"User"> | string | null
@@ -23566,12 +19619,9 @@ export namespace Prisma {
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     archetype?: EnumUserArchetypeFilter<"User"> | $Enums.UserArchetype
     onboardingStep?: IntFilter<"User"> | number
-    onboardingJson?: JsonNullableFilter<"User">
     preferences?: JsonNullableFilter<"User">
-    metadata?: JsonNullableFilter<"User">
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    archivedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     deletedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     resources?: ResourceListRelationFilter
     collections?: CollectionListRelationFilter
@@ -23579,17 +19629,14 @@ export namespace Prisma {
     savedResources?: SavedResourceListRelationFilter
     usageEvents?: ResourceUsageListRelationFilter
     versions?: ResourceVersionListRelationFilter
-    activities?: ActivityListRelationFilter
     reactions?: ReactionListRelationFilter
-    notifications?: NotificationListRelationFilter
     following?: FollowListRelationFilter
     followers?: FollowListRelationFilter
-    memberships?: MembershipListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     identityId?: SortOrder
     username?: SortOrder
     displayName?: SortOrderInput | SortOrder
@@ -23598,12 +19645,9 @@ export namespace Prisma {
     role?: SortOrder
     archetype?: SortOrder
     onboardingStep?: SortOrder
-    onboardingJson?: SortOrderInput | SortOrder
     preferences?: SortOrderInput | SortOrder
-    metadata?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    archivedAt?: SortOrderInput | SortOrder
     deletedAt?: SortOrderInput | SortOrder
     resources?: ResourceOrderByRelationAggregateInput
     collections?: CollectionOrderByRelationAggregateInput
@@ -23611,12 +19655,9 @@ export namespace Prisma {
     savedResources?: SavedResourceOrderByRelationAggregateInput
     usageEvents?: ResourceUsageOrderByRelationAggregateInput
     versions?: ResourceVersionOrderByRelationAggregateInput
-    activities?: ActivityOrderByRelationAggregateInput
     reactions?: ReactionOrderByRelationAggregateInput
-    notifications?: NotificationOrderByRelationAggregateInput
     following?: FollowOrderByRelationAggregateInput
     followers?: FollowOrderByRelationAggregateInput
-    memberships?: MembershipOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -23626,19 +19667,16 @@ export namespace Prisma {
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
-    tenantId?: StringNullableFilter<"User"> | string | null
+    tenantId?: StringFilter<"User"> | string
     displayName?: StringNullableFilter<"User"> | string | null
     avatarUrl?: StringNullableFilter<"User"> | string | null
     bio?: StringNullableFilter<"User"> | string | null
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     archetype?: EnumUserArchetypeFilter<"User"> | $Enums.UserArchetype
     onboardingStep?: IntFilter<"User"> | number
-    onboardingJson?: JsonNullableFilter<"User">
     preferences?: JsonNullableFilter<"User">
-    metadata?: JsonNullableFilter<"User">
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    archivedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     deletedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     resources?: ResourceListRelationFilter
     collections?: CollectionListRelationFilter
@@ -23646,17 +19684,14 @@ export namespace Prisma {
     savedResources?: SavedResourceListRelationFilter
     usageEvents?: ResourceUsageListRelationFilter
     versions?: ResourceVersionListRelationFilter
-    activities?: ActivityListRelationFilter
     reactions?: ReactionListRelationFilter
-    notifications?: NotificationListRelationFilter
     following?: FollowListRelationFilter
     followers?: FollowListRelationFilter
-    memberships?: MembershipListRelationFilter
   }, "id" | "identityId" | "username">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     identityId?: SortOrder
     username?: SortOrder
     displayName?: SortOrderInput | SortOrder
@@ -23665,12 +19700,9 @@ export namespace Prisma {
     role?: SortOrder
     archetype?: SortOrder
     onboardingStep?: SortOrder
-    onboardingJson?: SortOrderInput | SortOrder
     preferences?: SortOrderInput | SortOrder
-    metadata?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    archivedAt?: SortOrderInput | SortOrder
     deletedAt?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
@@ -23684,7 +19716,7 @@ export namespace Prisma {
     OR?: UserScalarWhereWithAggregatesInput[]
     NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"User"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"User"> | string | null
+    tenantId?: StringWithAggregatesFilter<"User"> | string
     identityId?: StringWithAggregatesFilter<"User"> | string
     username?: StringWithAggregatesFilter<"User"> | string
     displayName?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -23693,84 +19725,10 @@ export namespace Prisma {
     role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
     archetype?: EnumUserArchetypeWithAggregatesFilter<"User"> | $Enums.UserArchetype
     onboardingStep?: IntWithAggregatesFilter<"User"> | number
-    onboardingJson?: JsonNullableWithAggregatesFilter<"User">
     preferences?: JsonNullableWithAggregatesFilter<"User">
-    metadata?: JsonNullableWithAggregatesFilter<"User">
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
-    archivedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     deletedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
-  }
-
-  export type MembershipWhereInput = {
-    AND?: MembershipWhereInput | MembershipWhereInput[]
-    OR?: MembershipWhereInput[]
-    NOT?: MembershipWhereInput | MembershipWhereInput[]
-    id?: StringFilter<"Membership"> | string
-    role?: EnumMemberRoleFilter<"Membership"> | $Enums.MemberRole
-    status?: StringFilter<"Membership"> | string
-    metadata?: JsonNullableFilter<"Membership">
-    joinedAt?: DateTimeFilter<"Membership"> | Date | string
-    updatedAt?: DateTimeFilter<"Membership"> | Date | string
-    userId?: StringFilter<"Membership"> | string
-    tenantId?: StringFilter<"Membership"> | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }
-
-  export type MembershipOrderByWithRelationInput = {
-    id?: SortOrder
-    role?: SortOrder
-    status?: SortOrder
-    metadata?: SortOrderInput | SortOrder
-    joinedAt?: SortOrder
-    updatedAt?: SortOrder
-    userId?: SortOrder
-    tenantId?: SortOrder
-    user?: UserOrderByWithRelationInput
-  }
-
-  export type MembershipWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    userId_tenantId?: MembershipUserIdTenantIdCompoundUniqueInput
-    AND?: MembershipWhereInput | MembershipWhereInput[]
-    OR?: MembershipWhereInput[]
-    NOT?: MembershipWhereInput | MembershipWhereInput[]
-    role?: EnumMemberRoleFilter<"Membership"> | $Enums.MemberRole
-    status?: StringFilter<"Membership"> | string
-    metadata?: JsonNullableFilter<"Membership">
-    joinedAt?: DateTimeFilter<"Membership"> | Date | string
-    updatedAt?: DateTimeFilter<"Membership"> | Date | string
-    userId?: StringFilter<"Membership"> | string
-    tenantId?: StringFilter<"Membership"> | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id" | "userId_tenantId">
-
-  export type MembershipOrderByWithAggregationInput = {
-    id?: SortOrder
-    role?: SortOrder
-    status?: SortOrder
-    metadata?: SortOrderInput | SortOrder
-    joinedAt?: SortOrder
-    updatedAt?: SortOrder
-    userId?: SortOrder
-    tenantId?: SortOrder
-    _count?: MembershipCountOrderByAggregateInput
-    _max?: MembershipMaxOrderByAggregateInput
-    _min?: MembershipMinOrderByAggregateInput
-  }
-
-  export type MembershipScalarWhereWithAggregatesInput = {
-    AND?: MembershipScalarWhereWithAggregatesInput | MembershipScalarWhereWithAggregatesInput[]
-    OR?: MembershipScalarWhereWithAggregatesInput[]
-    NOT?: MembershipScalarWhereWithAggregatesInput | MembershipScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"Membership"> | string
-    role?: EnumMemberRoleWithAggregatesFilter<"Membership"> | $Enums.MemberRole
-    status?: StringWithAggregatesFilter<"Membership"> | string
-    metadata?: JsonNullableWithAggregatesFilter<"Membership">
-    joinedAt?: DateTimeWithAggregatesFilter<"Membership"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Membership"> | Date | string
-    userId?: StringWithAggregatesFilter<"Membership"> | string
-    tenantId?: StringWithAggregatesFilter<"Membership"> | string
   }
 
   export type ResourceWhereInput = {
@@ -23778,8 +19736,8 @@ export namespace Prisma {
     OR?: ResourceWhereInput[]
     NOT?: ResourceWhereInput | ResourceWhereInput[]
     id?: StringFilter<"Resource"> | string
-    tenantId?: StringNullableFilter<"Resource"> | string | null
-    slug?: StringNullableFilter<"Resource"> | string | null
+    tenantId?: StringFilter<"Resource"> | string
+    slug?: StringFilter<"Resource"> | string
     title?: StringNullableFilter<"Resource"> | string | null
     description?: StringNullableFilter<"Resource"> | string | null
     excerpt?: StringNullableFilter<"Resource"> | string | null
@@ -23794,13 +19752,11 @@ export namespace Prisma {
     coverImageUrl?: StringNullableFilter<"Resource"> | string | null
     fileUrl?: StringNullableFilter<"Resource"> | string | null
     metadata?: JsonNullableFilter<"Resource">
-    aiMetadata?: JsonNullableFilter<"Resource">
     wordCount?: IntNullableFilter<"Resource"> | number | null
     estimatedTime?: IntNullableFilter<"Resource"> | number | null
     createdAt?: DateTimeFilter<"Resource"> | Date | string
     updatedAt?: DateTimeFilter<"Resource"> | Date | string
     publishedAt?: DateTimeNullableFilter<"Resource"> | Date | string | null
-    archivedAt?: DateTimeNullableFilter<"Resource"> | Date | string | null
     deletedAt?: DateTimeNullableFilter<"Resource"> | Date | string | null
     authorId?: StringFilter<"Resource"> | string
     parentId?: StringNullableFilter<"Resource"> | string | null
@@ -23821,8 +19777,8 @@ export namespace Prisma {
 
   export type ResourceOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
-    slug?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
+    slug?: SortOrder
     title?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     excerpt?: SortOrderInput | SortOrder
@@ -23837,13 +19793,11 @@ export namespace Prisma {
     coverImageUrl?: SortOrderInput | SortOrder
     fileUrl?: SortOrderInput | SortOrder
     metadata?: SortOrderInput | SortOrder
-    aiMetadata?: SortOrderInput | SortOrder
     wordCount?: SortOrderInput | SortOrder
     estimatedTime?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     publishedAt?: SortOrderInput | SortOrder
-    archivedAt?: SortOrderInput | SortOrder
     deletedAt?: SortOrderInput | SortOrder
     authorId?: SortOrder
     parentId?: SortOrderInput | SortOrder
@@ -23868,8 +19822,8 @@ export namespace Prisma {
     AND?: ResourceWhereInput | ResourceWhereInput[]
     OR?: ResourceWhereInput[]
     NOT?: ResourceWhereInput | ResourceWhereInput[]
-    tenantId?: StringNullableFilter<"Resource"> | string | null
-    slug?: StringNullableFilter<"Resource"> | string | null
+    tenantId?: StringFilter<"Resource"> | string
+    slug?: StringFilter<"Resource"> | string
     title?: StringNullableFilter<"Resource"> | string | null
     description?: StringNullableFilter<"Resource"> | string | null
     excerpt?: StringNullableFilter<"Resource"> | string | null
@@ -23884,13 +19838,11 @@ export namespace Prisma {
     coverImageUrl?: StringNullableFilter<"Resource"> | string | null
     fileUrl?: StringNullableFilter<"Resource"> | string | null
     metadata?: JsonNullableFilter<"Resource">
-    aiMetadata?: JsonNullableFilter<"Resource">
     wordCount?: IntNullableFilter<"Resource"> | number | null
     estimatedTime?: IntNullableFilter<"Resource"> | number | null
     createdAt?: DateTimeFilter<"Resource"> | Date | string
     updatedAt?: DateTimeFilter<"Resource"> | Date | string
     publishedAt?: DateTimeNullableFilter<"Resource"> | Date | string | null
-    archivedAt?: DateTimeNullableFilter<"Resource"> | Date | string | null
     deletedAt?: DateTimeNullableFilter<"Resource"> | Date | string | null
     authorId?: StringFilter<"Resource"> | string
     parentId?: StringNullableFilter<"Resource"> | string | null
@@ -23911,8 +19863,8 @@ export namespace Prisma {
 
   export type ResourceOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
-    slug?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
+    slug?: SortOrder
     title?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     excerpt?: SortOrderInput | SortOrder
@@ -23927,13 +19879,11 @@ export namespace Prisma {
     coverImageUrl?: SortOrderInput | SortOrder
     fileUrl?: SortOrderInput | SortOrder
     metadata?: SortOrderInput | SortOrder
-    aiMetadata?: SortOrderInput | SortOrder
     wordCount?: SortOrderInput | SortOrder
     estimatedTime?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     publishedAt?: SortOrderInput | SortOrder
-    archivedAt?: SortOrderInput | SortOrder
     deletedAt?: SortOrderInput | SortOrder
     authorId?: SortOrder
     parentId?: SortOrderInput | SortOrder
@@ -23949,8 +19899,8 @@ export namespace Prisma {
     OR?: ResourceScalarWhereWithAggregatesInput[]
     NOT?: ResourceScalarWhereWithAggregatesInput | ResourceScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Resource"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"Resource"> | string | null
-    slug?: StringNullableWithAggregatesFilter<"Resource"> | string | null
+    tenantId?: StringWithAggregatesFilter<"Resource"> | string
+    slug?: StringWithAggregatesFilter<"Resource"> | string
     title?: StringNullableWithAggregatesFilter<"Resource"> | string | null
     description?: StringNullableWithAggregatesFilter<"Resource"> | string | null
     excerpt?: StringNullableWithAggregatesFilter<"Resource"> | string | null
@@ -23965,13 +19915,11 @@ export namespace Prisma {
     coverImageUrl?: StringNullableWithAggregatesFilter<"Resource"> | string | null
     fileUrl?: StringNullableWithAggregatesFilter<"Resource"> | string | null
     metadata?: JsonNullableWithAggregatesFilter<"Resource">
-    aiMetadata?: JsonNullableWithAggregatesFilter<"Resource">
     wordCount?: IntNullableWithAggregatesFilter<"Resource"> | number | null
     estimatedTime?: IntNullableWithAggregatesFilter<"Resource"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"Resource"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Resource"> | Date | string
     publishedAt?: DateTimeNullableWithAggregatesFilter<"Resource"> | Date | string | null
-    archivedAt?: DateTimeNullableWithAggregatesFilter<"Resource"> | Date | string | null
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Resource"> | Date | string | null
     authorId?: StringWithAggregatesFilter<"Resource"> | string
     parentId?: StringNullableWithAggregatesFilter<"Resource"> | string | null
@@ -23982,7 +19930,7 @@ export namespace Prisma {
     OR?: RelationWhereInput[]
     NOT?: RelationWhereInput | RelationWhereInput[]
     id?: StringFilter<"Relation"> | string
-    tenantId?: StringNullableFilter<"Relation"> | string | null
+    tenantId?: StringFilter<"Relation"> | string
     type?: EnumRelationTypeFilter<"Relation"> | $Enums.RelationType
     fromId?: StringFilter<"Relation"> | string
     toId?: StringFilter<"Relation"> | string
@@ -23994,7 +19942,7 @@ export namespace Prisma {
 
   export type RelationOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     type?: SortOrder
     fromId?: SortOrder
     toId?: SortOrder
@@ -24010,7 +19958,7 @@ export namespace Prisma {
     AND?: RelationWhereInput | RelationWhereInput[]
     OR?: RelationWhereInput[]
     NOT?: RelationWhereInput | RelationWhereInput[]
-    tenantId?: StringNullableFilter<"Relation"> | string | null
+    tenantId?: StringFilter<"Relation"> | string
     type?: EnumRelationTypeFilter<"Relation"> | $Enums.RelationType
     fromId?: StringFilter<"Relation"> | string
     toId?: StringFilter<"Relation"> | string
@@ -24022,7 +19970,7 @@ export namespace Prisma {
 
   export type RelationOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     type?: SortOrder
     fromId?: SortOrder
     toId?: SortOrder
@@ -24038,7 +19986,7 @@ export namespace Prisma {
     OR?: RelationScalarWhereWithAggregatesInput[]
     NOT?: RelationScalarWhereWithAggregatesInput | RelationScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Relation"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"Relation"> | string | null
+    tenantId?: StringWithAggregatesFilter<"Relation"> | string
     type?: EnumRelationTypeWithAggregatesFilter<"Relation"> | $Enums.RelationType
     fromId?: StringWithAggregatesFilter<"Relation"> | string
     toId?: StringWithAggregatesFilter<"Relation"> | string
@@ -24051,7 +19999,7 @@ export namespace Prisma {
     OR?: ResourceVersionWhereInput[]
     NOT?: ResourceVersionWhereInput | ResourceVersionWhereInput[]
     id?: StringFilter<"ResourceVersion"> | string
-    tenantId?: StringNullableFilter<"ResourceVersion"> | string | null
+    tenantId?: StringFilter<"ResourceVersion"> | string
     resourceId?: StringFilter<"ResourceVersion"> | string
     authorId?: StringFilter<"ResourceVersion"> | string
     versionNumber?: IntFilter<"ResourceVersion"> | number
@@ -24066,7 +20014,7 @@ export namespace Prisma {
 
   export type ResourceVersionOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     resourceId?: SortOrder
     authorId?: SortOrder
     versionNumber?: SortOrder
@@ -24085,7 +20033,7 @@ export namespace Prisma {
     AND?: ResourceVersionWhereInput | ResourceVersionWhereInput[]
     OR?: ResourceVersionWhereInput[]
     NOT?: ResourceVersionWhereInput | ResourceVersionWhereInput[]
-    tenantId?: StringNullableFilter<"ResourceVersion"> | string | null
+    tenantId?: StringFilter<"ResourceVersion"> | string
     resourceId?: StringFilter<"ResourceVersion"> | string
     authorId?: StringFilter<"ResourceVersion"> | string
     versionNumber?: IntFilter<"ResourceVersion"> | number
@@ -24100,7 +20048,7 @@ export namespace Prisma {
 
   export type ResourceVersionOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     resourceId?: SortOrder
     authorId?: SortOrder
     versionNumber?: SortOrder
@@ -24121,7 +20069,7 @@ export namespace Prisma {
     OR?: ResourceVersionScalarWhereWithAggregatesInput[]
     NOT?: ResourceVersionScalarWhereWithAggregatesInput | ResourceVersionScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"ResourceVersion"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"ResourceVersion"> | string | null
+    tenantId?: StringWithAggregatesFilter<"ResourceVersion"> | string
     resourceId?: StringWithAggregatesFilter<"ResourceVersion"> | string
     authorId?: StringWithAggregatesFilter<"ResourceVersion"> | string
     versionNumber?: IntWithAggregatesFilter<"ResourceVersion"> | number
@@ -24137,7 +20085,7 @@ export namespace Prisma {
     OR?: CollectionWhereInput[]
     NOT?: CollectionWhereInput | CollectionWhereInput[]
     id?: StringFilter<"Collection"> | string
-    tenantId?: StringNullableFilter<"Collection"> | string | null
+    tenantId?: StringFilter<"Collection"> | string
     slug?: StringFilter<"Collection"> | string
     title?: StringFilter<"Collection"> | string
     description?: StringNullableFilter<"Collection"> | string | null
@@ -24156,7 +20104,7 @@ export namespace Prisma {
 
   export type CollectionOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     slug?: SortOrder
     title?: SortOrder
     description?: SortOrderInput | SortOrder
@@ -24179,7 +20127,7 @@ export namespace Prisma {
     AND?: CollectionWhereInput | CollectionWhereInput[]
     OR?: CollectionWhereInput[]
     NOT?: CollectionWhereInput | CollectionWhereInput[]
-    tenantId?: StringNullableFilter<"Collection"> | string | null
+    tenantId?: StringFilter<"Collection"> | string
     slug?: StringFilter<"Collection"> | string
     title?: StringFilter<"Collection"> | string
     description?: StringNullableFilter<"Collection"> | string | null
@@ -24198,7 +20146,7 @@ export namespace Prisma {
 
   export type CollectionOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     slug?: SortOrder
     title?: SortOrder
     description?: SortOrderInput | SortOrder
@@ -24219,7 +20167,7 @@ export namespace Prisma {
     OR?: CollectionScalarWhereWithAggregatesInput[]
     NOT?: CollectionScalarWhereWithAggregatesInput | CollectionScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Collection"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"Collection"> | string | null
+    tenantId?: StringWithAggregatesFilter<"Collection"> | string
     slug?: StringWithAggregatesFilter<"Collection"> | string
     title?: StringWithAggregatesFilter<"Collection"> | string
     description?: StringNullableWithAggregatesFilter<"Collection"> | string | null
@@ -24237,7 +20185,7 @@ export namespace Prisma {
     OR?: CollectionResourceWhereInput[]
     NOT?: CollectionResourceWhereInput | CollectionResourceWhereInput[]
     id?: StringFilter<"CollectionResource"> | string
-    tenantId?: StringNullableFilter<"CollectionResource"> | string | null
+    tenantId?: StringFilter<"CollectionResource"> | string
     collectionId?: StringFilter<"CollectionResource"> | string
     resourceId?: StringFilter<"CollectionResource"> | string
     orderIndex?: IntFilter<"CollectionResource"> | number
@@ -24248,7 +20196,7 @@ export namespace Prisma {
 
   export type CollectionResourceOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     collectionId?: SortOrder
     resourceId?: SortOrder
     orderIndex?: SortOrder
@@ -24263,7 +20211,7 @@ export namespace Prisma {
     AND?: CollectionResourceWhereInput | CollectionResourceWhereInput[]
     OR?: CollectionResourceWhereInput[]
     NOT?: CollectionResourceWhereInput | CollectionResourceWhereInput[]
-    tenantId?: StringNullableFilter<"CollectionResource"> | string | null
+    tenantId?: StringFilter<"CollectionResource"> | string
     collectionId?: StringFilter<"CollectionResource"> | string
     resourceId?: StringFilter<"CollectionResource"> | string
     orderIndex?: IntFilter<"CollectionResource"> | number
@@ -24274,7 +20222,7 @@ export namespace Prisma {
 
   export type CollectionResourceOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     collectionId?: SortOrder
     resourceId?: SortOrder
     orderIndex?: SortOrder
@@ -24291,7 +20239,7 @@ export namespace Prisma {
     OR?: CollectionResourceScalarWhereWithAggregatesInput[]
     NOT?: CollectionResourceScalarWhereWithAggregatesInput | CollectionResourceScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"CollectionResource"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"CollectionResource"> | string | null
+    tenantId?: StringWithAggregatesFilter<"CollectionResource"> | string
     collectionId?: StringWithAggregatesFilter<"CollectionResource"> | string
     resourceId?: StringWithAggregatesFilter<"CollectionResource"> | string
     orderIndex?: IntWithAggregatesFilter<"CollectionResource"> | number
@@ -24303,7 +20251,7 @@ export namespace Prisma {
     OR?: TagWhereInput[]
     NOT?: TagWhereInput | TagWhereInput[]
     id?: StringFilter<"Tag"> | string
-    tenantId?: StringNullableFilter<"Tag"> | string | null
+    tenantId?: StringFilter<"Tag"> | string
     name?: StringFilter<"Tag"> | string
     slug?: StringFilter<"Tag"> | string
     createdAt?: DateTimeFilter<"Tag"> | Date | string
@@ -24312,7 +20260,7 @@ export namespace Prisma {
 
   export type TagOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     name?: SortOrder
     slug?: SortOrder
     createdAt?: SortOrder
@@ -24326,7 +20274,7 @@ export namespace Prisma {
     AND?: TagWhereInput | TagWhereInput[]
     OR?: TagWhereInput[]
     NOT?: TagWhereInput | TagWhereInput[]
-    tenantId?: StringNullableFilter<"Tag"> | string | null
+    tenantId?: StringFilter<"Tag"> | string
     name?: StringFilter<"Tag"> | string
     slug?: StringFilter<"Tag"> | string
     createdAt?: DateTimeFilter<"Tag"> | Date | string
@@ -24335,7 +20283,7 @@ export namespace Prisma {
 
   export type TagOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     name?: SortOrder
     slug?: SortOrder
     createdAt?: SortOrder
@@ -24349,7 +20297,7 @@ export namespace Prisma {
     OR?: TagScalarWhereWithAggregatesInput[]
     NOT?: TagScalarWhereWithAggregatesInput | TagScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Tag"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"Tag"> | string | null
+    tenantId?: StringWithAggregatesFilter<"Tag"> | string
     name?: StringWithAggregatesFilter<"Tag"> | string
     slug?: StringWithAggregatesFilter<"Tag"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Tag"> | Date | string
@@ -24409,10 +20357,9 @@ export namespace Prisma {
     OR?: CommentWhereInput[]
     NOT?: CommentWhereInput | CommentWhereInput[]
     id?: StringFilter<"Comment"> | string
-    tenantId?: StringNullableFilter<"Comment"> | string | null
+    tenantId?: StringFilter<"Comment"> | string
     content?: StringFilter<"Comment"> | string
     status?: EnumCommentStatusFilter<"Comment"> | $Enums.CommentStatus
-    metadata?: JsonNullableFilter<"Comment">
     createdAt?: DateTimeFilter<"Comment"> | Date | string
     updatedAt?: DateTimeFilter<"Comment"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Comment"> | Date | string | null
@@ -24427,10 +20374,9 @@ export namespace Prisma {
 
   export type CommentOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     content?: SortOrder
     status?: SortOrder
-    metadata?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
@@ -24448,10 +20394,9 @@ export namespace Prisma {
     AND?: CommentWhereInput | CommentWhereInput[]
     OR?: CommentWhereInput[]
     NOT?: CommentWhereInput | CommentWhereInput[]
-    tenantId?: StringNullableFilter<"Comment"> | string | null
+    tenantId?: StringFilter<"Comment"> | string
     content?: StringFilter<"Comment"> | string
     status?: EnumCommentStatusFilter<"Comment"> | $Enums.CommentStatus
-    metadata?: JsonNullableFilter<"Comment">
     createdAt?: DateTimeFilter<"Comment"> | Date | string
     updatedAt?: DateTimeFilter<"Comment"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Comment"> | Date | string | null
@@ -24466,10 +20411,9 @@ export namespace Prisma {
 
   export type CommentOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     content?: SortOrder
     status?: SortOrder
-    metadata?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
@@ -24486,10 +20430,9 @@ export namespace Prisma {
     OR?: CommentScalarWhereWithAggregatesInput[]
     NOT?: CommentScalarWhereWithAggregatesInput | CommentScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Comment"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"Comment"> | string | null
+    tenantId?: StringWithAggregatesFilter<"Comment"> | string
     content?: StringWithAggregatesFilter<"Comment"> | string
     status?: EnumCommentStatusWithAggregatesFilter<"Comment"> | $Enums.CommentStatus
-    metadata?: JsonNullableWithAggregatesFilter<"Comment">
     createdAt?: DateTimeWithAggregatesFilter<"Comment"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Comment"> | Date | string
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Comment"> | Date | string | null
@@ -24503,7 +20446,7 @@ export namespace Prisma {
     OR?: SavedResourceWhereInput[]
     NOT?: SavedResourceWhereInput | SavedResourceWhereInput[]
     id?: StringFilter<"SavedResource"> | string
-    tenantId?: StringNullableFilter<"SavedResource"> | string | null
+    tenantId?: StringFilter<"SavedResource"> | string
     userId?: StringFilter<"SavedResource"> | string
     resourceId?: StringFilter<"SavedResource"> | string
     createdAt?: DateTimeFilter<"SavedResource"> | Date | string
@@ -24513,7 +20456,7 @@ export namespace Prisma {
 
   export type SavedResourceOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     userId?: SortOrder
     resourceId?: SortOrder
     createdAt?: SortOrder
@@ -24527,7 +20470,7 @@ export namespace Prisma {
     AND?: SavedResourceWhereInput | SavedResourceWhereInput[]
     OR?: SavedResourceWhereInput[]
     NOT?: SavedResourceWhereInput | SavedResourceWhereInput[]
-    tenantId?: StringNullableFilter<"SavedResource"> | string | null
+    tenantId?: StringFilter<"SavedResource"> | string
     userId?: StringFilter<"SavedResource"> | string
     resourceId?: StringFilter<"SavedResource"> | string
     createdAt?: DateTimeFilter<"SavedResource"> | Date | string
@@ -24537,7 +20480,7 @@ export namespace Prisma {
 
   export type SavedResourceOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     userId?: SortOrder
     resourceId?: SortOrder
     createdAt?: SortOrder
@@ -24551,7 +20494,7 @@ export namespace Prisma {
     OR?: SavedResourceScalarWhereWithAggregatesInput[]
     NOT?: SavedResourceScalarWhereWithAggregatesInput | SavedResourceScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"SavedResource"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"SavedResource"> | string | null
+    tenantId?: StringWithAggregatesFilter<"SavedResource"> | string
     userId?: StringWithAggregatesFilter<"SavedResource"> | string
     resourceId?: StringWithAggregatesFilter<"SavedResource"> | string
     createdAt?: DateTimeWithAggregatesFilter<"SavedResource"> | Date | string
@@ -24562,10 +20505,10 @@ export namespace Prisma {
     OR?: ReactionWhereInput[]
     NOT?: ReactionWhereInput | ReactionWhereInput[]
     id?: StringFilter<"Reaction"> | string
-    tenantId?: StringNullableFilter<"Reaction"> | string | null
+    tenantId?: StringFilter<"Reaction"> | string
     userId?: StringFilter<"Reaction"> | string
     resourceId?: StringFilter<"Reaction"> | string
-    type?: StringFilter<"Reaction"> | string
+    type?: EnumReactionTypeFilter<"Reaction"> | $Enums.ReactionType
     createdAt?: DateTimeFilter<"Reaction"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     resource?: XOR<ResourceScalarRelationFilter, ResourceWhereInput>
@@ -24573,7 +20516,7 @@ export namespace Prisma {
 
   export type ReactionOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     userId?: SortOrder
     resourceId?: SortOrder
     type?: SortOrder
@@ -24588,10 +20531,10 @@ export namespace Prisma {
     AND?: ReactionWhereInput | ReactionWhereInput[]
     OR?: ReactionWhereInput[]
     NOT?: ReactionWhereInput | ReactionWhereInput[]
-    tenantId?: StringNullableFilter<"Reaction"> | string | null
+    tenantId?: StringFilter<"Reaction"> | string
     userId?: StringFilter<"Reaction"> | string
     resourceId?: StringFilter<"Reaction"> | string
-    type?: StringFilter<"Reaction"> | string
+    type?: EnumReactionTypeFilter<"Reaction"> | $Enums.ReactionType
     createdAt?: DateTimeFilter<"Reaction"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     resource?: XOR<ResourceScalarRelationFilter, ResourceWhereInput>
@@ -24599,7 +20542,7 @@ export namespace Prisma {
 
   export type ReactionOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     userId?: SortOrder
     resourceId?: SortOrder
     type?: SortOrder
@@ -24614,10 +20557,10 @@ export namespace Prisma {
     OR?: ReactionScalarWhereWithAggregatesInput[]
     NOT?: ReactionScalarWhereWithAggregatesInput | ReactionScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Reaction"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"Reaction"> | string | null
+    tenantId?: StringWithAggregatesFilter<"Reaction"> | string
     userId?: StringWithAggregatesFilter<"Reaction"> | string
     resourceId?: StringWithAggregatesFilter<"Reaction"> | string
-    type?: StringWithAggregatesFilter<"Reaction"> | string
+    type?: EnumReactionTypeWithAggregatesFilter<"Reaction"> | $Enums.ReactionType
     createdAt?: DateTimeWithAggregatesFilter<"Reaction"> | Date | string
   }
 
@@ -24626,22 +20569,18 @@ export namespace Prisma {
     OR?: FollowWhereInput[]
     NOT?: FollowWhereInput | FollowWhereInput[]
     id?: StringFilter<"Follow"> | string
-    tenantId?: StringNullableFilter<"Follow"> | string | null
     followerId?: StringFilter<"Follow"> | string
     followingId?: StringFilter<"Follow"> | string
     createdAt?: DateTimeFilter<"Follow"> | Date | string
-    deletedAt?: DateTimeNullableFilter<"Follow"> | Date | string | null
     follower?: XOR<UserScalarRelationFilter, UserWhereInput>
     following?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type FollowOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
     followerId?: SortOrder
     followingId?: SortOrder
     createdAt?: SortOrder
-    deletedAt?: SortOrderInput | SortOrder
     follower?: UserOrderByWithRelationInput
     following?: UserOrderByWithRelationInput
   }
@@ -24652,22 +20591,18 @@ export namespace Prisma {
     AND?: FollowWhereInput | FollowWhereInput[]
     OR?: FollowWhereInput[]
     NOT?: FollowWhereInput | FollowWhereInput[]
-    tenantId?: StringNullableFilter<"Follow"> | string | null
     followerId?: StringFilter<"Follow"> | string
     followingId?: StringFilter<"Follow"> | string
     createdAt?: DateTimeFilter<"Follow"> | Date | string
-    deletedAt?: DateTimeNullableFilter<"Follow"> | Date | string | null
     follower?: XOR<UserScalarRelationFilter, UserWhereInput>
     following?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "followerId_followingId">
 
   export type FollowOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
     followerId?: SortOrder
     followingId?: SortOrder
     createdAt?: SortOrder
-    deletedAt?: SortOrderInput | SortOrder
     _count?: FollowCountOrderByAggregateInput
     _max?: FollowMaxOrderByAggregateInput
     _min?: FollowMinOrderByAggregateInput
@@ -24678,11 +20613,9 @@ export namespace Prisma {
     OR?: FollowScalarWhereWithAggregatesInput[]
     NOT?: FollowScalarWhereWithAggregatesInput | FollowScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Follow"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"Follow"> | string | null
     followerId?: StringWithAggregatesFilter<"Follow"> | string
     followingId?: StringWithAggregatesFilter<"Follow"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Follow"> | Date | string
-    deletedAt?: DateTimeNullableWithAggregatesFilter<"Follow"> | Date | string | null
   }
 
   export type ResourceUsageWhereInput = {
@@ -24690,7 +20623,7 @@ export namespace Prisma {
     OR?: ResourceUsageWhereInput[]
     NOT?: ResourceUsageWhereInput | ResourceUsageWhereInput[]
     id?: StringFilter<"ResourceUsage"> | string
-    tenantId?: StringNullableFilter<"ResourceUsage"> | string | null
+    tenantId?: StringFilter<"ResourceUsage"> | string
     resourceId?: StringFilter<"ResourceUsage"> | string
     actorId?: StringNullableFilter<"ResourceUsage"> | string | null
     event?: EnumUsageEventFilter<"ResourceUsage"> | $Enums.UsageEvent
@@ -24703,7 +20636,7 @@ export namespace Prisma {
 
   export type ResourceUsageOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     resourceId?: SortOrder
     actorId?: SortOrderInput | SortOrder
     event?: SortOrder
@@ -24719,7 +20652,7 @@ export namespace Prisma {
     AND?: ResourceUsageWhereInput | ResourceUsageWhereInput[]
     OR?: ResourceUsageWhereInput[]
     NOT?: ResourceUsageWhereInput | ResourceUsageWhereInput[]
-    tenantId?: StringNullableFilter<"ResourceUsage"> | string | null
+    tenantId?: StringFilter<"ResourceUsage"> | string
     resourceId?: StringFilter<"ResourceUsage"> | string
     actorId?: StringNullableFilter<"ResourceUsage"> | string | null
     event?: EnumUsageEventFilter<"ResourceUsage"> | $Enums.UsageEvent
@@ -24732,7 +20665,7 @@ export namespace Prisma {
 
   export type ResourceUsageOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     resourceId?: SortOrder
     actorId?: SortOrderInput | SortOrder
     event?: SortOrder
@@ -24749,7 +20682,7 @@ export namespace Prisma {
     OR?: ResourceUsageScalarWhereWithAggregatesInput[]
     NOT?: ResourceUsageScalarWhereWithAggregatesInput | ResourceUsageScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"ResourceUsage"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"ResourceUsage"> | string | null
+    tenantId?: StringWithAggregatesFilter<"ResourceUsage"> | string
     resourceId?: StringWithAggregatesFilter<"ResourceUsage"> | string
     actorId?: StringNullableWithAggregatesFilter<"ResourceUsage"> | string | null
     event?: EnumUsageEventWithAggregatesFilter<"ResourceUsage"> | $Enums.UsageEvent
@@ -24763,7 +20696,7 @@ export namespace Prisma {
     OR?: ResourceMetricsWhereInput[]
     NOT?: ResourceMetricsWhereInput | ResourceMetricsWhereInput[]
     id?: StringFilter<"ResourceMetrics"> | string
-    tenantId?: StringNullableFilter<"ResourceMetrics"> | string | null
+    tenantId?: StringFilter<"ResourceMetrics"> | string
     resourceId?: StringFilter<"ResourceMetrics"> | string
     views?: IntFilter<"ResourceMetrics"> | number
     opens?: IntFilter<"ResourceMetrics"> | number
@@ -24779,7 +20712,7 @@ export namespace Prisma {
 
   export type ResourceMetricsOrderByWithRelationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     resourceId?: SortOrder
     views?: SortOrder
     opens?: SortOrder
@@ -24799,7 +20732,7 @@ export namespace Prisma {
     AND?: ResourceMetricsWhereInput | ResourceMetricsWhereInput[]
     OR?: ResourceMetricsWhereInput[]
     NOT?: ResourceMetricsWhereInput | ResourceMetricsWhereInput[]
-    tenantId?: StringNullableFilter<"ResourceMetrics"> | string | null
+    tenantId?: StringFilter<"ResourceMetrics"> | string
     views?: IntFilter<"ResourceMetrics"> | number
     opens?: IntFilter<"ResourceMetrics"> | number
     downloads?: IntFilter<"ResourceMetrics"> | number
@@ -24814,7 +20747,7 @@ export namespace Prisma {
 
   export type ResourceMetricsOrderByWithAggregationInput = {
     id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
+    tenantId?: SortOrder
     resourceId?: SortOrder
     views?: SortOrder
     opens?: SortOrder
@@ -24837,7 +20770,7 @@ export namespace Prisma {
     OR?: ResourceMetricsScalarWhereWithAggregatesInput[]
     NOT?: ResourceMetricsScalarWhereWithAggregatesInput | ResourceMetricsScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"ResourceMetrics"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"ResourceMetrics"> | string | null
+    tenantId?: StringWithAggregatesFilter<"ResourceMetrics"> | string
     resourceId?: StringWithAggregatesFilter<"ResourceMetrics"> | string
     views?: IntWithAggregatesFilter<"ResourceMetrics"> | number
     opens?: IntWithAggregatesFilter<"ResourceMetrics"> | number
@@ -24850,159 +20783,9 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"ResourceMetrics"> | Date | string
   }
 
-  export type ActivityWhereInput = {
-    AND?: ActivityWhereInput | ActivityWhereInput[]
-    OR?: ActivityWhereInput[]
-    NOT?: ActivityWhereInput | ActivityWhereInput[]
-    id?: StringFilter<"Activity"> | string
-    tenantId?: StringNullableFilter<"Activity"> | string | null
-    userId?: StringNullableFilter<"Activity"> | string | null
-    type?: EnumActivityTypeFilter<"Activity"> | $Enums.ActivityType
-    entityId?: StringFilter<"Activity"> | string
-    metadata?: JsonNullableFilter<"Activity">
-    createdAt?: DateTimeFilter<"Activity"> | Date | string
-    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
-  }
-
-  export type ActivityOrderByWithRelationInput = {
-    id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
-    userId?: SortOrderInput | SortOrder
-    type?: SortOrder
-    entityId?: SortOrder
-    metadata?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    user?: UserOrderByWithRelationInput
-  }
-
-  export type ActivityWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: ActivityWhereInput | ActivityWhereInput[]
-    OR?: ActivityWhereInput[]
-    NOT?: ActivityWhereInput | ActivityWhereInput[]
-    tenantId?: StringNullableFilter<"Activity"> | string | null
-    userId?: StringNullableFilter<"Activity"> | string | null
-    type?: EnumActivityTypeFilter<"Activity"> | $Enums.ActivityType
-    entityId?: StringFilter<"Activity"> | string
-    metadata?: JsonNullableFilter<"Activity">
-    createdAt?: DateTimeFilter<"Activity"> | Date | string
-    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
-  }, "id">
-
-  export type ActivityOrderByWithAggregationInput = {
-    id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
-    userId?: SortOrderInput | SortOrder
-    type?: SortOrder
-    entityId?: SortOrder
-    metadata?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    _count?: ActivityCountOrderByAggregateInput
-    _max?: ActivityMaxOrderByAggregateInput
-    _min?: ActivityMinOrderByAggregateInput
-  }
-
-  export type ActivityScalarWhereWithAggregatesInput = {
-    AND?: ActivityScalarWhereWithAggregatesInput | ActivityScalarWhereWithAggregatesInput[]
-    OR?: ActivityScalarWhereWithAggregatesInput[]
-    NOT?: ActivityScalarWhereWithAggregatesInput | ActivityScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"Activity"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"Activity"> | string | null
-    userId?: StringNullableWithAggregatesFilter<"Activity"> | string | null
-    type?: EnumActivityTypeWithAggregatesFilter<"Activity"> | $Enums.ActivityType
-    entityId?: StringWithAggregatesFilter<"Activity"> | string
-    metadata?: JsonNullableWithAggregatesFilter<"Activity">
-    createdAt?: DateTimeWithAggregatesFilter<"Activity"> | Date | string
-  }
-
-  export type NotificationWhereInput = {
-    AND?: NotificationWhereInput | NotificationWhereInput[]
-    OR?: NotificationWhereInput[]
-    NOT?: NotificationWhereInput | NotificationWhereInput[]
-    id?: StringFilter<"Notification"> | string
-    tenantId?: StringNullableFilter<"Notification"> | string | null
-    userId?: StringFilter<"Notification"> | string
-    type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
-    title?: StringFilter<"Notification"> | string
-    body?: StringNullableFilter<"Notification"> | string | null
-    entityId?: StringNullableFilter<"Notification"> | string | null
-    entityType?: StringNullableFilter<"Notification"> | string | null
-    read?: BoolFilter<"Notification"> | boolean
-    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    createdAt?: DateTimeFilter<"Notification"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }
-
-  export type NotificationOrderByWithRelationInput = {
-    id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
-    userId?: SortOrder
-    type?: SortOrder
-    title?: SortOrder
-    body?: SortOrderInput | SortOrder
-    entityId?: SortOrderInput | SortOrder
-    entityType?: SortOrderInput | SortOrder
-    read?: SortOrder
-    readAt?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    user?: UserOrderByWithRelationInput
-  }
-
-  export type NotificationWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: NotificationWhereInput | NotificationWhereInput[]
-    OR?: NotificationWhereInput[]
-    NOT?: NotificationWhereInput | NotificationWhereInput[]
-    tenantId?: StringNullableFilter<"Notification"> | string | null
-    userId?: StringFilter<"Notification"> | string
-    type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
-    title?: StringFilter<"Notification"> | string
-    body?: StringNullableFilter<"Notification"> | string | null
-    entityId?: StringNullableFilter<"Notification"> | string | null
-    entityType?: StringNullableFilter<"Notification"> | string | null
-    read?: BoolFilter<"Notification"> | boolean
-    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    createdAt?: DateTimeFilter<"Notification"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id">
-
-  export type NotificationOrderByWithAggregationInput = {
-    id?: SortOrder
-    tenantId?: SortOrderInput | SortOrder
-    userId?: SortOrder
-    type?: SortOrder
-    title?: SortOrder
-    body?: SortOrderInput | SortOrder
-    entityId?: SortOrderInput | SortOrder
-    entityType?: SortOrderInput | SortOrder
-    read?: SortOrder
-    readAt?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    _count?: NotificationCountOrderByAggregateInput
-    _max?: NotificationMaxOrderByAggregateInput
-    _min?: NotificationMinOrderByAggregateInput
-  }
-
-  export type NotificationScalarWhereWithAggregatesInput = {
-    AND?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
-    OR?: NotificationScalarWhereWithAggregatesInput[]
-    NOT?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"Notification"> | string
-    tenantId?: StringNullableWithAggregatesFilter<"Notification"> | string | null
-    userId?: StringWithAggregatesFilter<"Notification"> | string
-    type?: EnumNotificationTypeWithAggregatesFilter<"Notification"> | $Enums.NotificationType
-    title?: StringWithAggregatesFilter<"Notification"> | string
-    body?: StringNullableWithAggregatesFilter<"Notification"> | string | null
-    entityId?: StringNullableWithAggregatesFilter<"Notification"> | string | null
-    entityType?: StringNullableWithAggregatesFilter<"Notification"> | string | null
-    read?: BoolWithAggregatesFilter<"Notification"> | boolean
-    readAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
-  }
-
   export type UserCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -25011,12 +20794,9 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceCreateNestedManyWithoutAuthorInput
     collections?: CollectionCreateNestedManyWithoutAuthorInput
@@ -25024,17 +20804,14 @@ export namespace Prisma {
     savedResources?: SavedResourceCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageCreateNestedManyWithoutUserInput
     versions?: ResourceVersionCreateNestedManyWithoutAuthorInput
-    activities?: ActivityCreateNestedManyWithoutUserInput
     reactions?: ReactionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
     following?: FollowCreateNestedManyWithoutFollowerInput
     followers?: FollowCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -25043,12 +20820,9 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceUncheckedCreateNestedManyWithoutAuthorInput
     collections?: CollectionUncheckedCreateNestedManyWithoutAuthorInput
@@ -25056,17 +20830,14 @@ export namespace Prisma {
     savedResources?: SavedResourceUncheckedCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageUncheckedCreateNestedManyWithoutUserInput
     versions?: ResourceVersionUncheckedCreateNestedManyWithoutAuthorInput
-    activities?: ActivityUncheckedCreateNestedManyWithoutUserInput
     reactions?: ReactionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25075,12 +20846,9 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUpdateManyWithoutAuthorNestedInput
@@ -25088,17 +20856,14 @@ export namespace Prisma {
     savedResources?: SavedResourceUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUpdateManyWithoutUserNestedInput
     reactions?: ReactionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
     following?: FollowUpdateManyWithoutFollowerNestedInput
     followers?: FollowUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25107,12 +20872,9 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUncheckedUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUncheckedUpdateManyWithoutAuthorNestedInput
@@ -25120,17 +20882,14 @@ export namespace Prisma {
     savedResources?: SavedResourceUncheckedUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUncheckedUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUncheckedUpdateManyWithoutUserNestedInput
     reactions?: ReactionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -25139,18 +20898,15 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
   }
 
   export type UserUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25159,18 +20915,15 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25179,95 +20932,16 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type MembershipCreateInput = {
-    id?: string
-    role?: $Enums.MemberRole
-    status?: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    joinedAt?: Date | string
-    updatedAt?: Date | string
-    tenantId: string
-    user: UserCreateNestedOneWithoutMembershipsInput
-  }
-
-  export type MembershipUncheckedCreateInput = {
-    id?: string
-    role?: $Enums.MemberRole
-    status?: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    joinedAt?: Date | string
-    updatedAt?: Date | string
-    userId: string
-    tenantId: string
-  }
-
-  export type MembershipUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    role?: EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
-    status?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    tenantId?: StringFieldUpdateOperationsInput | string
-    user?: UserUpdateOneRequiredWithoutMembershipsNestedInput
-  }
-
-  export type MembershipUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    role?: EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
-    status?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type MembershipCreateManyInput = {
-    id?: string
-    role?: $Enums.MemberRole
-    status?: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    joinedAt?: Date | string
-    updatedAt?: Date | string
-    userId: string
-    tenantId: string
-  }
-
-  export type MembershipUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    role?: EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
-    status?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    tenantId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type MembershipUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    role?: EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
-    status?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ResourceCreateInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -25282,13 +20956,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     author: UserCreateNestedOneWithoutResourcesInput
     parent?: ResourceCreateNestedOneWithoutChildrenInput
@@ -25307,8 +20979,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedCreateInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -25323,13 +20995,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
     parentId?: string | null
@@ -25348,8 +21018,8 @@ export namespace Prisma {
 
   export type ResourceUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25364,13 +21034,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     author?: UserUpdateOneRequiredWithoutResourcesNestedInput
     parent?: ResourceUpdateOneWithoutChildrenNestedInput
@@ -25389,8 +21057,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25405,13 +21073,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25430,8 +21096,8 @@ export namespace Prisma {
 
   export type ResourceCreateManyInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -25446,13 +21112,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
     parentId?: string | null
@@ -25460,8 +21124,8 @@ export namespace Prisma {
 
   export type ResourceUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25476,20 +21140,18 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ResourceUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25504,13 +21166,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25518,7 +21178,7 @@ export namespace Prisma {
 
   export type RelationCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     type: $Enums.RelationType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
@@ -25528,7 +21188,7 @@ export namespace Prisma {
 
   export type RelationUncheckedCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     type: $Enums.RelationType
     fromId: string
     toId: string
@@ -25538,7 +21198,7 @@ export namespace Prisma {
 
   export type RelationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     type?: EnumRelationTypeFieldUpdateOperationsInput | $Enums.RelationType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25548,7 +21208,7 @@ export namespace Prisma {
 
   export type RelationUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     type?: EnumRelationTypeFieldUpdateOperationsInput | $Enums.RelationType
     fromId?: StringFieldUpdateOperationsInput | string
     toId?: StringFieldUpdateOperationsInput | string
@@ -25558,7 +21218,7 @@ export namespace Prisma {
 
   export type RelationCreateManyInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     type: $Enums.RelationType
     fromId: string
     toId: string
@@ -25568,7 +21228,7 @@ export namespace Prisma {
 
   export type RelationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     type?: EnumRelationTypeFieldUpdateOperationsInput | $Enums.RelationType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25576,7 +21236,7 @@ export namespace Prisma {
 
   export type RelationUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     type?: EnumRelationTypeFieldUpdateOperationsInput | $Enums.RelationType
     fromId?: StringFieldUpdateOperationsInput | string
     toId?: StringFieldUpdateOperationsInput | string
@@ -25586,7 +21246,7 @@ export namespace Prisma {
 
   export type ResourceVersionCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     versionNumber: number
     titleSnapshot: string
     contentSnapshot?: NullableJsonNullValueInput | InputJsonValue
@@ -25599,7 +21259,7 @@ export namespace Prisma {
 
   export type ResourceVersionUncheckedCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
     authorId: string
     versionNumber: number
@@ -25612,7 +21272,7 @@ export namespace Prisma {
 
   export type ResourceVersionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     versionNumber?: IntFieldUpdateOperationsInput | number
     titleSnapshot?: StringFieldUpdateOperationsInput | string
     contentSnapshot?: NullableJsonNullValueInput | InputJsonValue
@@ -25625,7 +21285,7 @@ export namespace Prisma {
 
   export type ResourceVersionUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
     versionNumber?: IntFieldUpdateOperationsInput | number
@@ -25638,7 +21298,7 @@ export namespace Prisma {
 
   export type ResourceVersionCreateManyInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
     authorId: string
     versionNumber: number
@@ -25651,7 +21311,7 @@ export namespace Prisma {
 
   export type ResourceVersionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     versionNumber?: IntFieldUpdateOperationsInput | number
     titleSnapshot?: StringFieldUpdateOperationsInput | string
     contentSnapshot?: NullableJsonNullValueInput | InputJsonValue
@@ -25662,7 +21322,7 @@ export namespace Prisma {
 
   export type ResourceVersionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
     versionNumber?: IntFieldUpdateOperationsInput | number
@@ -25675,7 +21335,7 @@ export namespace Prisma {
 
   export type CollectionCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     slug: string
     title: string
     description?: string | null
@@ -25692,7 +21352,7 @@ export namespace Prisma {
 
   export type CollectionUncheckedCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     slug: string
     title: string
     description?: string | null
@@ -25709,7 +21369,7 @@ export namespace Prisma {
 
   export type CollectionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25726,7 +21386,7 @@ export namespace Prisma {
 
   export type CollectionUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25743,7 +21403,7 @@ export namespace Prisma {
 
   export type CollectionCreateManyInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     slug: string
     title: string
     description?: string | null
@@ -25758,7 +21418,7 @@ export namespace Prisma {
 
   export type CollectionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25771,7 +21431,7 @@ export namespace Prisma {
 
   export type CollectionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25786,7 +21446,7 @@ export namespace Prisma {
 
   export type CollectionResourceCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     orderIndex: number
     addedAt?: Date | string
     collection: CollectionCreateNestedOneWithoutResourcesInput
@@ -25795,7 +21455,7 @@ export namespace Prisma {
 
   export type CollectionResourceUncheckedCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     collectionId: string
     resourceId: string
     orderIndex: number
@@ -25804,7 +21464,7 @@ export namespace Prisma {
 
   export type CollectionResourceUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     orderIndex?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     collection?: CollectionUpdateOneRequiredWithoutResourcesNestedInput
@@ -25813,7 +21473,7 @@ export namespace Prisma {
 
   export type CollectionResourceUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     collectionId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     orderIndex?: IntFieldUpdateOperationsInput | number
@@ -25822,7 +21482,7 @@ export namespace Prisma {
 
   export type CollectionResourceCreateManyInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     collectionId: string
     resourceId: string
     orderIndex: number
@@ -25831,14 +21491,14 @@ export namespace Prisma {
 
   export type CollectionResourceUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     orderIndex?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CollectionResourceUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     collectionId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     orderIndex?: IntFieldUpdateOperationsInput | number
@@ -25847,7 +21507,7 @@ export namespace Prisma {
 
   export type TagCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     name: string
     slug: string
     createdAt?: Date | string
@@ -25856,7 +21516,7 @@ export namespace Prisma {
 
   export type TagUncheckedCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     name: string
     slug: string
     createdAt?: Date | string
@@ -25865,7 +21525,7 @@ export namespace Prisma {
 
   export type TagUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25874,7 +21534,7 @@ export namespace Prisma {
 
   export type TagUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25883,7 +21543,7 @@ export namespace Prisma {
 
   export type TagCreateManyInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     name: string
     slug: string
     createdAt?: Date | string
@@ -25891,7 +21551,7 @@ export namespace Prisma {
 
   export type TagUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25899,7 +21559,7 @@ export namespace Prisma {
 
   export type TagUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25947,10 +21607,9 @@ export namespace Prisma {
 
   export type CommentCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     content: string
     status?: $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -25962,10 +21621,9 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     content: string
     status?: $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -25977,10 +21635,9 @@ export namespace Prisma {
 
   export type CommentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -25992,10 +21649,9 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26007,10 +21663,9 @@ export namespace Prisma {
 
   export type CommentCreateManyInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     content: string
     status?: $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -26021,10 +21676,9 @@ export namespace Prisma {
 
   export type CommentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26032,10 +21686,9 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26046,7 +21699,7 @@ export namespace Prisma {
 
   export type SavedResourceCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutSavedResourcesInput
     resource: ResourceCreateNestedOneWithoutSavedByInput
@@ -26054,7 +21707,7 @@ export namespace Prisma {
 
   export type SavedResourceUncheckedCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     userId: string
     resourceId: string
     createdAt?: Date | string
@@ -26062,7 +21715,7 @@ export namespace Prisma {
 
   export type SavedResourceUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutSavedResourcesNestedInput
     resource?: ResourceUpdateOneRequiredWithoutSavedByNestedInput
@@ -26070,7 +21723,7 @@ export namespace Prisma {
 
   export type SavedResourceUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26078,7 +21731,7 @@ export namespace Prisma {
 
   export type SavedResourceCreateManyInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     userId: string
     resourceId: string
     createdAt?: Date | string
@@ -26086,13 +21739,13 @@ export namespace Prisma {
 
   export type SavedResourceUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SavedResourceUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26100,8 +21753,8 @@ export namespace Prisma {
 
   export type ReactionCreateInput = {
     id?: string
-    tenantId?: string | null
-    type?: string
+    tenantId?: string
+    type?: $Enums.ReactionType
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutReactionsInput
     resource: ResourceCreateNestedOneWithoutReactionsInput
@@ -26109,17 +21762,17 @@ export namespace Prisma {
 
   export type ReactionUncheckedCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     userId: string
     resourceId: string
-    type?: string
+    type?: $Enums.ReactionType
     createdAt?: Date | string
   }
 
   export type ReactionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    type?: EnumReactionTypeFieldUpdateOperationsInput | $Enums.ReactionType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutReactionsNestedInput
     resource?: ResourceUpdateOneRequiredWithoutReactionsNestedInput
@@ -26127,102 +21780,88 @@ export namespace Prisma {
 
   export type ReactionUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
-    type?: StringFieldUpdateOperationsInput | string
+    type?: EnumReactionTypeFieldUpdateOperationsInput | $Enums.ReactionType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ReactionCreateManyInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     userId: string
     resourceId: string
-    type?: string
+    type?: $Enums.ReactionType
     createdAt?: Date | string
   }
 
   export type ReactionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    type?: EnumReactionTypeFieldUpdateOperationsInput | $Enums.ReactionType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ReactionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
-    type?: StringFieldUpdateOperationsInput | string
+    type?: EnumReactionTypeFieldUpdateOperationsInput | $Enums.ReactionType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type FollowCreateInput = {
     id?: string
-    tenantId?: string | null
     createdAt?: Date | string
-    deletedAt?: Date | string | null
     follower: UserCreateNestedOneWithoutFollowingInput
     following: UserCreateNestedOneWithoutFollowersInput
   }
 
   export type FollowUncheckedCreateInput = {
     id?: string
-    tenantId?: string | null
     followerId: string
     followingId: string
     createdAt?: Date | string
-    deletedAt?: Date | string | null
   }
 
   export type FollowUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     follower?: UserUpdateOneRequiredWithoutFollowingNestedInput
     following?: UserUpdateOneRequiredWithoutFollowersNestedInput
   }
 
   export type FollowUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     followerId?: StringFieldUpdateOperationsInput | string
     followingId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type FollowCreateManyInput = {
     id?: string
-    tenantId?: string | null
     followerId: string
     followingId: string
     createdAt?: Date | string
-    deletedAt?: Date | string | null
   }
 
   export type FollowUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type FollowUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     followerId?: StringFieldUpdateOperationsInput | string
     followingId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ResourceUsageCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     event: $Enums.UsageEvent
     sessionId?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -26233,7 +21872,7 @@ export namespace Prisma {
 
   export type ResourceUsageUncheckedCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
     actorId?: string | null
     event: $Enums.UsageEvent
@@ -26244,7 +21883,7 @@ export namespace Prisma {
 
   export type ResourceUsageUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     event?: EnumUsageEventFieldUpdateOperationsInput | $Enums.UsageEvent
     sessionId?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -26255,7 +21894,7 @@ export namespace Prisma {
 
   export type ResourceUsageUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     actorId?: NullableStringFieldUpdateOperationsInput | string | null
     event?: EnumUsageEventFieldUpdateOperationsInput | $Enums.UsageEvent
@@ -26266,7 +21905,7 @@ export namespace Prisma {
 
   export type ResourceUsageCreateManyInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
     actorId?: string | null
     event: $Enums.UsageEvent
@@ -26277,7 +21916,7 @@ export namespace Prisma {
 
   export type ResourceUsageUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     event?: EnumUsageEventFieldUpdateOperationsInput | $Enums.UsageEvent
     sessionId?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -26286,7 +21925,7 @@ export namespace Prisma {
 
   export type ResourceUsageUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     actorId?: NullableStringFieldUpdateOperationsInput | string | null
     event?: EnumUsageEventFieldUpdateOperationsInput | $Enums.UsageEvent
@@ -26297,7 +21936,7 @@ export namespace Prisma {
 
   export type ResourceMetricsCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     views?: number
     opens?: number
     downloads?: number
@@ -26312,7 +21951,7 @@ export namespace Prisma {
 
   export type ResourceMetricsUncheckedCreateInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
     views?: number
     opens?: number
@@ -26327,7 +21966,7 @@ export namespace Prisma {
 
   export type ResourceMetricsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     views?: IntFieldUpdateOperationsInput | number
     opens?: IntFieldUpdateOperationsInput | number
     downloads?: IntFieldUpdateOperationsInput | number
@@ -26342,7 +21981,7 @@ export namespace Prisma {
 
   export type ResourceMetricsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     views?: IntFieldUpdateOperationsInput | number
     opens?: IntFieldUpdateOperationsInput | number
@@ -26357,7 +21996,7 @@ export namespace Prisma {
 
   export type ResourceMetricsCreateManyInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
     views?: number
     opens?: number
@@ -26372,7 +22011,7 @@ export namespace Prisma {
 
   export type ResourceMetricsUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     views?: IntFieldUpdateOperationsInput | number
     opens?: IntFieldUpdateOperationsInput | number
     downloads?: IntFieldUpdateOperationsInput | number
@@ -26386,7 +22025,7 @@ export namespace Prisma {
 
   export type ResourceMetricsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     views?: IntFieldUpdateOperationsInput | number
     opens?: IntFieldUpdateOperationsInput | number
@@ -26397,172 +22036,6 @@ export namespace Prisma {
     comments?: IntFieldUpdateOperationsInput | number
     engagementScore?: FloatFieldUpdateOperationsInput | number
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ActivityCreateInput = {
-    id?: string
-    tenantId?: string | null
-    type: $Enums.ActivityType
-    entityId: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    user?: UserCreateNestedOneWithoutActivitiesInput
-  }
-
-  export type ActivityUncheckedCreateInput = {
-    id?: string
-    tenantId?: string | null
-    userId?: string | null
-    type: $Enums.ActivityType
-    entityId: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-  }
-
-  export type ActivityUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
-    entityId?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneWithoutActivitiesNestedInput
-  }
-
-  export type ActivityUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
-    entityId?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ActivityCreateManyInput = {
-    id?: string
-    tenantId?: string | null
-    userId?: string | null
-    type: $Enums.ActivityType
-    entityId: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-  }
-
-  export type ActivityUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
-    entityId?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ActivityUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
-    entityId?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationCreateInput = {
-    id?: string
-    tenantId?: string | null
-    type: $Enums.NotificationType
-    title: string
-    body?: string | null
-    entityId?: string | null
-    entityType?: string | null
-    read?: boolean
-    readAt?: Date | string | null
-    createdAt?: Date | string
-    user: UserCreateNestedOneWithoutNotificationsInput
-  }
-
-  export type NotificationUncheckedCreateInput = {
-    id?: string
-    tenantId?: string | null
-    userId: string
-    type: $Enums.NotificationType
-    title: string
-    body?: string | null
-    entityId?: string | null
-    entityType?: string | null
-    read?: boolean
-    readAt?: Date | string | null
-    createdAt?: Date | string
-  }
-
-  export type NotificationUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    body?: NullableStringFieldUpdateOperationsInput | string | null
-    entityId?: NullableStringFieldUpdateOperationsInput | string | null
-    entityType?: NullableStringFieldUpdateOperationsInput | string | null
-    read?: BoolFieldUpdateOperationsInput | boolean
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
-  }
-
-  export type NotificationUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    body?: NullableStringFieldUpdateOperationsInput | string | null
-    entityId?: NullableStringFieldUpdateOperationsInput | string | null
-    entityType?: NullableStringFieldUpdateOperationsInput | string | null
-    read?: BoolFieldUpdateOperationsInput | boolean
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationCreateManyInput = {
-    id?: string
-    tenantId?: string | null
-    userId: string
-    type: $Enums.NotificationType
-    title: string
-    body?: string | null
-    entityId?: string | null
-    entityType?: string | null
-    read?: boolean
-    readAt?: Date | string | null
-    createdAt?: Date | string
-  }
-
-  export type NotificationUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    body?: NullableStringFieldUpdateOperationsInput | string | null
-    entityId?: NullableStringFieldUpdateOperationsInput | string | null
-    entityType?: NullableStringFieldUpdateOperationsInput | string | null
-    read?: BoolFieldUpdateOperationsInput | boolean
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    body?: NullableStringFieldUpdateOperationsInput | string | null
-    entityId?: NullableStringFieldUpdateOperationsInput | string | null
-    entityType?: NullableStringFieldUpdateOperationsInput | string | null
-    read?: BoolFieldUpdateOperationsInput | boolean
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -26701,34 +22174,16 @@ export namespace Prisma {
     none?: ResourceVersionWhereInput
   }
 
-  export type ActivityListRelationFilter = {
-    every?: ActivityWhereInput
-    some?: ActivityWhereInput
-    none?: ActivityWhereInput
-  }
-
   export type ReactionListRelationFilter = {
     every?: ReactionWhereInput
     some?: ReactionWhereInput
     none?: ReactionWhereInput
   }
 
-  export type NotificationListRelationFilter = {
-    every?: NotificationWhereInput
-    some?: NotificationWhereInput
-    none?: NotificationWhereInput
-  }
-
   export type FollowListRelationFilter = {
     every?: FollowWhereInput
     some?: FollowWhereInput
     none?: FollowWhereInput
-  }
-
-  export type MembershipListRelationFilter = {
-    every?: MembershipWhereInput
-    some?: MembershipWhereInput
-    none?: MembershipWhereInput
   }
 
   export type SortOrderInput = {
@@ -26760,23 +22215,11 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type ActivityOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type ReactionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
-  export type NotificationOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type FollowOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type MembershipOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -26791,12 +22234,9 @@ export namespace Prisma {
     role?: SortOrder
     archetype?: SortOrder
     onboardingStep?: SortOrder
-    onboardingJson?: SortOrder
     preferences?: SortOrder
-    metadata?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    archivedAt?: SortOrder
     deletedAt?: SortOrder
   }
 
@@ -26817,7 +22257,6 @@ export namespace Prisma {
     onboardingStep?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    archivedAt?: SortOrder
     deletedAt?: SortOrder
   }
 
@@ -26834,7 +22273,6 @@ export namespace Prisma {
     onboardingStep?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    archivedAt?: SortOrder
     deletedAt?: SortOrder
   }
 
@@ -26968,64 +22406,6 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type EnumMemberRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.MemberRole | EnumMemberRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.MemberRole[] | ListEnumMemberRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.MemberRole[] | ListEnumMemberRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumMemberRoleFilter<$PrismaModel> | $Enums.MemberRole
-  }
-
-  export type UserScalarRelationFilter = {
-    is?: UserWhereInput
-    isNot?: UserWhereInput
-  }
-
-  export type MembershipUserIdTenantIdCompoundUniqueInput = {
-    userId: string
-    tenantId: string
-  }
-
-  export type MembershipCountOrderByAggregateInput = {
-    id?: SortOrder
-    role?: SortOrder
-    status?: SortOrder
-    metadata?: SortOrder
-    joinedAt?: SortOrder
-    updatedAt?: SortOrder
-    userId?: SortOrder
-    tenantId?: SortOrder
-  }
-
-  export type MembershipMaxOrderByAggregateInput = {
-    id?: SortOrder
-    role?: SortOrder
-    status?: SortOrder
-    joinedAt?: SortOrder
-    updatedAt?: SortOrder
-    userId?: SortOrder
-    tenantId?: SortOrder
-  }
-
-  export type MembershipMinOrderByAggregateInput = {
-    id?: SortOrder
-    role?: SortOrder
-    status?: SortOrder
-    joinedAt?: SortOrder
-    updatedAt?: SortOrder
-    userId?: SortOrder
-    tenantId?: SortOrder
-  }
-
-  export type EnumMemberRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.MemberRole | EnumMemberRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.MemberRole[] | ListEnumMemberRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.MemberRole[] | ListEnumMemberRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumMemberRoleWithAggregatesFilter<$PrismaModel> | $Enums.MemberRole
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumMemberRoleFilter<$PrismaModel>
-    _max?: NestedEnumMemberRoleFilter<$PrismaModel>
-  }
-
   export type EnumResourceTypeRendererFilter<$PrismaModel = never> = {
     equals?: $Enums.ResourceTypeRenderer | EnumResourceTypeRendererFieldRefInput<$PrismaModel>
     in?: $Enums.ResourceTypeRenderer[] | ListEnumResourceTypeRendererFieldRefInput<$PrismaModel>
@@ -27056,6 +22436,11 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
   }
 
   export type ResourceNullableScalarRelationFilter = {
@@ -27122,13 +22507,11 @@ export namespace Prisma {
     coverImageUrl?: SortOrder
     fileUrl?: SortOrder
     metadata?: SortOrder
-    aiMetadata?: SortOrder
     wordCount?: SortOrder
     estimatedTime?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     publishedAt?: SortOrder
-    archivedAt?: SortOrder
     deletedAt?: SortOrder
     authorId?: SortOrder
     parentId?: SortOrder
@@ -27159,7 +22542,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     publishedAt?: SortOrder
-    archivedAt?: SortOrder
     deletedAt?: SortOrder
     authorId?: SortOrder
     parentId?: SortOrder
@@ -27185,7 +22567,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     publishedAt?: SortOrder
-    archivedAt?: SortOrder
     deletedAt?: SortOrder
     authorId?: SortOrder
     parentId?: SortOrder
@@ -27524,7 +22905,6 @@ export namespace Prisma {
     tenantId?: SortOrder
     content?: SortOrder
     status?: SortOrder
-    metadata?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     deletedAt?: SortOrder
@@ -27598,10 +22978,17 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type EnumReactionTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReactionType | EnumReactionTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ReactionType[] | ListEnumReactionTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReactionType[] | ListEnumReactionTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumReactionTypeFilter<$PrismaModel> | $Enums.ReactionType
+  }
+
   export type ReactionUserIdResourceIdTypeCompoundUniqueInput = {
     userId: string
     resourceId: string
-    type: string
+    type: $Enums.ReactionType
   }
 
   export type ReactionCountOrderByAggregateInput = {
@@ -27631,6 +23018,16 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type EnumReactionTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReactionType | EnumReactionTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ReactionType[] | ListEnumReactionTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReactionType[] | ListEnumReactionTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumReactionTypeWithAggregatesFilter<$PrismaModel> | $Enums.ReactionType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReactionTypeFilter<$PrismaModel>
+    _max?: NestedEnumReactionTypeFilter<$PrismaModel>
+  }
+
   export type FollowFollowerIdFollowingIdCompoundUniqueInput = {
     followerId: string
     followingId: string
@@ -27638,29 +23035,23 @@ export namespace Prisma {
 
   export type FollowCountOrderByAggregateInput = {
     id?: SortOrder
-    tenantId?: SortOrder
     followerId?: SortOrder
     followingId?: SortOrder
     createdAt?: SortOrder
-    deletedAt?: SortOrder
   }
 
   export type FollowMaxOrderByAggregateInput = {
     id?: SortOrder
-    tenantId?: SortOrder
     followerId?: SortOrder
     followingId?: SortOrder
     createdAt?: SortOrder
-    deletedAt?: SortOrder
   }
 
   export type FollowMinOrderByAggregateInput = {
     id?: SortOrder
-    tenantId?: SortOrder
     followerId?: SortOrder
     followingId?: SortOrder
     createdAt?: SortOrder
-    deletedAt?: SortOrder
   }
 
   export type EnumUsageEventFilter<$PrismaModel = never> = {
@@ -27810,123 +23201,6 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
-  export type EnumActivityTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.ActivityType | EnumActivityTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.ActivityType[] | ListEnumActivityTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ActivityType[] | ListEnumActivityTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumActivityTypeFilter<$PrismaModel> | $Enums.ActivityType
-  }
-
-  export type ActivityCountOrderByAggregateInput = {
-    id?: SortOrder
-    tenantId?: SortOrder
-    userId?: SortOrder
-    type?: SortOrder
-    entityId?: SortOrder
-    metadata?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type ActivityMaxOrderByAggregateInput = {
-    id?: SortOrder
-    tenantId?: SortOrder
-    userId?: SortOrder
-    type?: SortOrder
-    entityId?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type ActivityMinOrderByAggregateInput = {
-    id?: SortOrder
-    tenantId?: SortOrder
-    userId?: SortOrder
-    type?: SortOrder
-    entityId?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type EnumActivityTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ActivityType | EnumActivityTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.ActivityType[] | ListEnumActivityTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ActivityType[] | ListEnumActivityTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumActivityTypeWithAggregatesFilter<$PrismaModel> | $Enums.ActivityType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumActivityTypeFilter<$PrismaModel>
-    _max?: NestedEnumActivityTypeFilter<$PrismaModel>
-  }
-
-  export type EnumNotificationTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationType | EnumNotificationTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationTypeFilter<$PrismaModel> | $Enums.NotificationType
-  }
-
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NotificationCountOrderByAggregateInput = {
-    id?: SortOrder
-    tenantId?: SortOrder
-    userId?: SortOrder
-    type?: SortOrder
-    title?: SortOrder
-    body?: SortOrder
-    entityId?: SortOrder
-    entityType?: SortOrder
-    read?: SortOrder
-    readAt?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type NotificationMaxOrderByAggregateInput = {
-    id?: SortOrder
-    tenantId?: SortOrder
-    userId?: SortOrder
-    type?: SortOrder
-    title?: SortOrder
-    body?: SortOrder
-    entityId?: SortOrder
-    entityType?: SortOrder
-    read?: SortOrder
-    readAt?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type NotificationMinOrderByAggregateInput = {
-    id?: SortOrder
-    tenantId?: SortOrder
-    userId?: SortOrder
-    type?: SortOrder
-    title?: SortOrder
-    body?: SortOrder
-    entityId?: SortOrder
-    entityType?: SortOrder
-    read?: SortOrder
-    readAt?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type EnumNotificationTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationType | EnumNotificationTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationTypeWithAggregatesFilter<$PrismaModel> | $Enums.NotificationType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumNotificationTypeFilter<$PrismaModel>
-    _max?: NestedEnumNotificationTypeFilter<$PrismaModel>
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type ResourceCreateNestedManyWithoutAuthorInput = {
     create?: XOR<ResourceCreateWithoutAuthorInput, ResourceUncheckedCreateWithoutAuthorInput> | ResourceCreateWithoutAuthorInput[] | ResourceUncheckedCreateWithoutAuthorInput[]
     connectOrCreate?: ResourceCreateOrConnectWithoutAuthorInput | ResourceCreateOrConnectWithoutAuthorInput[]
@@ -27969,25 +23243,11 @@ export namespace Prisma {
     connect?: ResourceVersionWhereUniqueInput | ResourceVersionWhereUniqueInput[]
   }
 
-  export type ActivityCreateNestedManyWithoutUserInput = {
-    create?: XOR<ActivityCreateWithoutUserInput, ActivityUncheckedCreateWithoutUserInput> | ActivityCreateWithoutUserInput[] | ActivityUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ActivityCreateOrConnectWithoutUserInput | ActivityCreateOrConnectWithoutUserInput[]
-    createMany?: ActivityCreateManyUserInputEnvelope
-    connect?: ActivityWhereUniqueInput | ActivityWhereUniqueInput[]
-  }
-
   export type ReactionCreateNestedManyWithoutUserInput = {
     create?: XOR<ReactionCreateWithoutUserInput, ReactionUncheckedCreateWithoutUserInput> | ReactionCreateWithoutUserInput[] | ReactionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReactionCreateOrConnectWithoutUserInput | ReactionCreateOrConnectWithoutUserInput[]
     createMany?: ReactionCreateManyUserInputEnvelope
     connect?: ReactionWhereUniqueInput | ReactionWhereUniqueInput[]
-  }
-
-  export type NotificationCreateNestedManyWithoutUserInput = {
-    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
-    createMany?: NotificationCreateManyUserInputEnvelope
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
   export type FollowCreateNestedManyWithoutFollowerInput = {
@@ -28002,13 +23262,6 @@ export namespace Prisma {
     connectOrCreate?: FollowCreateOrConnectWithoutFollowingInput | FollowCreateOrConnectWithoutFollowingInput[]
     createMany?: FollowCreateManyFollowingInputEnvelope
     connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
-  }
-
-  export type MembershipCreateNestedManyWithoutUserInput = {
-    create?: XOR<MembershipCreateWithoutUserInput, MembershipUncheckedCreateWithoutUserInput> | MembershipCreateWithoutUserInput[] | MembershipUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: MembershipCreateOrConnectWithoutUserInput | MembershipCreateOrConnectWithoutUserInput[]
-    createMany?: MembershipCreateManyUserInputEnvelope
-    connect?: MembershipWhereUniqueInput | MembershipWhereUniqueInput[]
   }
 
   export type ResourceUncheckedCreateNestedManyWithoutAuthorInput = {
@@ -28053,25 +23306,11 @@ export namespace Prisma {
     connect?: ResourceVersionWhereUniqueInput | ResourceVersionWhereUniqueInput[]
   }
 
-  export type ActivityUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<ActivityCreateWithoutUserInput, ActivityUncheckedCreateWithoutUserInput> | ActivityCreateWithoutUserInput[] | ActivityUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ActivityCreateOrConnectWithoutUserInput | ActivityCreateOrConnectWithoutUserInput[]
-    createMany?: ActivityCreateManyUserInputEnvelope
-    connect?: ActivityWhereUniqueInput | ActivityWhereUniqueInput[]
-  }
-
   export type ReactionUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<ReactionCreateWithoutUserInput, ReactionUncheckedCreateWithoutUserInput> | ReactionCreateWithoutUserInput[] | ReactionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReactionCreateOrConnectWithoutUserInput | ReactionCreateOrConnectWithoutUserInput[]
     createMany?: ReactionCreateManyUserInputEnvelope
     connect?: ReactionWhereUniqueInput | ReactionWhereUniqueInput[]
-  }
-
-  export type NotificationUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
-    createMany?: NotificationCreateManyUserInputEnvelope
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
   export type FollowUncheckedCreateNestedManyWithoutFollowerInput = {
@@ -28086,13 +23325,6 @@ export namespace Prisma {
     connectOrCreate?: FollowCreateOrConnectWithoutFollowingInput | FollowCreateOrConnectWithoutFollowingInput[]
     createMany?: FollowCreateManyFollowingInputEnvelope
     connect?: FollowWhereUniqueInput | FollowWhereUniqueInput[]
-  }
-
-  export type MembershipUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<MembershipCreateWithoutUserInput, MembershipUncheckedCreateWithoutUserInput> | MembershipCreateWithoutUserInput[] | MembershipUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: MembershipCreateOrConnectWithoutUserInput | MembershipCreateOrConnectWithoutUserInput[]
-    createMany?: MembershipCreateManyUserInputEnvelope
-    connect?: MembershipWhereUniqueInput | MembershipWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -28211,20 +23443,6 @@ export namespace Prisma {
     deleteMany?: ResourceVersionScalarWhereInput | ResourceVersionScalarWhereInput[]
   }
 
-  export type ActivityUpdateManyWithoutUserNestedInput = {
-    create?: XOR<ActivityCreateWithoutUserInput, ActivityUncheckedCreateWithoutUserInput> | ActivityCreateWithoutUserInput[] | ActivityUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ActivityCreateOrConnectWithoutUserInput | ActivityCreateOrConnectWithoutUserInput[]
-    upsert?: ActivityUpsertWithWhereUniqueWithoutUserInput | ActivityUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: ActivityCreateManyUserInputEnvelope
-    set?: ActivityWhereUniqueInput | ActivityWhereUniqueInput[]
-    disconnect?: ActivityWhereUniqueInput | ActivityWhereUniqueInput[]
-    delete?: ActivityWhereUniqueInput | ActivityWhereUniqueInput[]
-    connect?: ActivityWhereUniqueInput | ActivityWhereUniqueInput[]
-    update?: ActivityUpdateWithWhereUniqueWithoutUserInput | ActivityUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: ActivityUpdateManyWithWhereWithoutUserInput | ActivityUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: ActivityScalarWhereInput | ActivityScalarWhereInput[]
-  }
-
   export type ReactionUpdateManyWithoutUserNestedInput = {
     create?: XOR<ReactionCreateWithoutUserInput, ReactionUncheckedCreateWithoutUserInput> | ReactionCreateWithoutUserInput[] | ReactionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReactionCreateOrConnectWithoutUserInput | ReactionCreateOrConnectWithoutUserInput[]
@@ -28237,20 +23455,6 @@ export namespace Prisma {
     update?: ReactionUpdateWithWhereUniqueWithoutUserInput | ReactionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ReactionUpdateManyWithWhereWithoutUserInput | ReactionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ReactionScalarWhereInput | ReactionScalarWhereInput[]
-  }
-
-  export type NotificationUpdateManyWithoutUserNestedInput = {
-    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
-    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: NotificationCreateManyUserInputEnvelope
-    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
   export type FollowUpdateManyWithoutFollowerNestedInput = {
@@ -28279,20 +23483,6 @@ export namespace Prisma {
     update?: FollowUpdateWithWhereUniqueWithoutFollowingInput | FollowUpdateWithWhereUniqueWithoutFollowingInput[]
     updateMany?: FollowUpdateManyWithWhereWithoutFollowingInput | FollowUpdateManyWithWhereWithoutFollowingInput[]
     deleteMany?: FollowScalarWhereInput | FollowScalarWhereInput[]
-  }
-
-  export type MembershipUpdateManyWithoutUserNestedInput = {
-    create?: XOR<MembershipCreateWithoutUserInput, MembershipUncheckedCreateWithoutUserInput> | MembershipCreateWithoutUserInput[] | MembershipUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: MembershipCreateOrConnectWithoutUserInput | MembershipCreateOrConnectWithoutUserInput[]
-    upsert?: MembershipUpsertWithWhereUniqueWithoutUserInput | MembershipUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: MembershipCreateManyUserInputEnvelope
-    set?: MembershipWhereUniqueInput | MembershipWhereUniqueInput[]
-    disconnect?: MembershipWhereUniqueInput | MembershipWhereUniqueInput[]
-    delete?: MembershipWhereUniqueInput | MembershipWhereUniqueInput[]
-    connect?: MembershipWhereUniqueInput | MembershipWhereUniqueInput[]
-    update?: MembershipUpdateWithWhereUniqueWithoutUserInput | MembershipUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: MembershipUpdateManyWithWhereWithoutUserInput | MembershipUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: MembershipScalarWhereInput | MembershipScalarWhereInput[]
   }
 
   export type ResourceUncheckedUpdateManyWithoutAuthorNestedInput = {
@@ -28379,20 +23569,6 @@ export namespace Prisma {
     deleteMany?: ResourceVersionScalarWhereInput | ResourceVersionScalarWhereInput[]
   }
 
-  export type ActivityUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<ActivityCreateWithoutUserInput, ActivityUncheckedCreateWithoutUserInput> | ActivityCreateWithoutUserInput[] | ActivityUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ActivityCreateOrConnectWithoutUserInput | ActivityCreateOrConnectWithoutUserInput[]
-    upsert?: ActivityUpsertWithWhereUniqueWithoutUserInput | ActivityUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: ActivityCreateManyUserInputEnvelope
-    set?: ActivityWhereUniqueInput | ActivityWhereUniqueInput[]
-    disconnect?: ActivityWhereUniqueInput | ActivityWhereUniqueInput[]
-    delete?: ActivityWhereUniqueInput | ActivityWhereUniqueInput[]
-    connect?: ActivityWhereUniqueInput | ActivityWhereUniqueInput[]
-    update?: ActivityUpdateWithWhereUniqueWithoutUserInput | ActivityUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: ActivityUpdateManyWithWhereWithoutUserInput | ActivityUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: ActivityScalarWhereInput | ActivityScalarWhereInput[]
-  }
-
   export type ReactionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ReactionCreateWithoutUserInput, ReactionUncheckedCreateWithoutUserInput> | ReactionCreateWithoutUserInput[] | ReactionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ReactionCreateOrConnectWithoutUserInput | ReactionCreateOrConnectWithoutUserInput[]
@@ -28405,20 +23581,6 @@ export namespace Prisma {
     update?: ReactionUpdateWithWhereUniqueWithoutUserInput | ReactionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ReactionUpdateManyWithWhereWithoutUserInput | ReactionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ReactionScalarWhereInput | ReactionScalarWhereInput[]
-  }
-
-  export type NotificationUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
-    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: NotificationCreateManyUserInputEnvelope
-    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
   export type FollowUncheckedUpdateManyWithoutFollowerNestedInput = {
@@ -28447,38 +23609,6 @@ export namespace Prisma {
     update?: FollowUpdateWithWhereUniqueWithoutFollowingInput | FollowUpdateWithWhereUniqueWithoutFollowingInput[]
     updateMany?: FollowUpdateManyWithWhereWithoutFollowingInput | FollowUpdateManyWithWhereWithoutFollowingInput[]
     deleteMany?: FollowScalarWhereInput | FollowScalarWhereInput[]
-  }
-
-  export type MembershipUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<MembershipCreateWithoutUserInput, MembershipUncheckedCreateWithoutUserInput> | MembershipCreateWithoutUserInput[] | MembershipUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: MembershipCreateOrConnectWithoutUserInput | MembershipCreateOrConnectWithoutUserInput[]
-    upsert?: MembershipUpsertWithWhereUniqueWithoutUserInput | MembershipUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: MembershipCreateManyUserInputEnvelope
-    set?: MembershipWhereUniqueInput | MembershipWhereUniqueInput[]
-    disconnect?: MembershipWhereUniqueInput | MembershipWhereUniqueInput[]
-    delete?: MembershipWhereUniqueInput | MembershipWhereUniqueInput[]
-    connect?: MembershipWhereUniqueInput | MembershipWhereUniqueInput[]
-    update?: MembershipUpdateWithWhereUniqueWithoutUserInput | MembershipUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: MembershipUpdateManyWithWhereWithoutUserInput | MembershipUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: MembershipScalarWhereInput | MembershipScalarWhereInput[]
-  }
-
-  export type UserCreateNestedOneWithoutMembershipsInput = {
-    create?: XOR<UserCreateWithoutMembershipsInput, UserUncheckedCreateWithoutMembershipsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutMembershipsInput
-    connect?: UserWhereUniqueInput
-  }
-
-  export type EnumMemberRoleFieldUpdateOperationsInput = {
-    set?: $Enums.MemberRole
-  }
-
-  export type UserUpdateOneRequiredWithoutMembershipsNestedInput = {
-    create?: XOR<UserCreateWithoutMembershipsInput, UserUncheckedCreateWithoutMembershipsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutMembershipsInput
-    upsert?: UserUpsertWithoutMembershipsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutMembershipsInput, UserUpdateWithoutMembershipsInput>, UserUncheckedUpdateWithoutMembershipsInput>
   }
 
   export type UserCreateNestedOneWithoutResourcesInput = {
@@ -29385,6 +24515,10 @@ export namespace Prisma {
     connect?: ResourceWhereUniqueInput
   }
 
+  export type EnumReactionTypeFieldUpdateOperationsInput = {
+    set?: $Enums.ReactionType
+  }
+
   export type UserUpdateOneRequiredWithoutReactionsNestedInput = {
     create?: XOR<UserCreateWithoutReactionsInput, UserUncheckedCreateWithoutReactionsInput>
     connectOrCreate?: UserCreateOrConnectWithoutReactionsInput
@@ -29483,48 +24617,6 @@ export namespace Prisma {
     upsert?: ResourceUpsertWithoutMetricsInput
     connect?: ResourceWhereUniqueInput
     update?: XOR<XOR<ResourceUpdateToOneWithWhereWithoutMetricsInput, ResourceUpdateWithoutMetricsInput>, ResourceUncheckedUpdateWithoutMetricsInput>
-  }
-
-  export type UserCreateNestedOneWithoutActivitiesInput = {
-    create?: XOR<UserCreateWithoutActivitiesInput, UserUncheckedCreateWithoutActivitiesInput>
-    connectOrCreate?: UserCreateOrConnectWithoutActivitiesInput
-    connect?: UserWhereUniqueInput
-  }
-
-  export type EnumActivityTypeFieldUpdateOperationsInput = {
-    set?: $Enums.ActivityType
-  }
-
-  export type UserUpdateOneWithoutActivitiesNestedInput = {
-    create?: XOR<UserCreateWithoutActivitiesInput, UserUncheckedCreateWithoutActivitiesInput>
-    connectOrCreate?: UserCreateOrConnectWithoutActivitiesInput
-    upsert?: UserUpsertWithoutActivitiesInput
-    disconnect?: UserWhereInput | boolean
-    delete?: UserWhereInput | boolean
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutActivitiesInput, UserUpdateWithoutActivitiesInput>, UserUncheckedUpdateWithoutActivitiesInput>
-  }
-
-  export type UserCreateNestedOneWithoutNotificationsInput = {
-    create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
-    connect?: UserWhereUniqueInput
-  }
-
-  export type EnumNotificationTypeFieldUpdateOperationsInput = {
-    set?: $Enums.NotificationType
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
-  }
-
-  export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
-    create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
-    upsert?: UserUpsertWithoutNotificationsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationsInput, UserUpdateWithoutNotificationsInput>, UserUncheckedUpdateWithoutNotificationsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -29745,23 +24837,6 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type NestedEnumMemberRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.MemberRole | EnumMemberRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.MemberRole[] | ListEnumMemberRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.MemberRole[] | ListEnumMemberRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumMemberRoleFilter<$PrismaModel> | $Enums.MemberRole
-  }
-
-  export type NestedEnumMemberRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.MemberRole | EnumMemberRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.MemberRole[] | ListEnumMemberRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.MemberRole[] | ListEnumMemberRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumMemberRoleWithAggregatesFilter<$PrismaModel> | $Enums.MemberRole
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumMemberRoleFilter<$PrismaModel>
-    _max?: NestedEnumMemberRoleFilter<$PrismaModel>
-  }
-
   export type NestedEnumResourceTypeRendererFilter<$PrismaModel = never> = {
     equals?: $Enums.ResourceTypeRenderer | EnumResourceTypeRendererFieldRefInput<$PrismaModel>
     in?: $Enums.ResourceTypeRenderer[] | ListEnumResourceTypeRendererFieldRefInput<$PrismaModel>
@@ -29874,6 +24949,23 @@ export namespace Prisma {
     _max?: NestedEnumCommentStatusFilter<$PrismaModel>
   }
 
+  export type NestedEnumReactionTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReactionType | EnumReactionTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ReactionType[] | ListEnumReactionTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReactionType[] | ListEnumReactionTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumReactionTypeFilter<$PrismaModel> | $Enums.ReactionType
+  }
+
+  export type NestedEnumReactionTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReactionType | EnumReactionTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ReactionType[] | ListEnumReactionTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReactionType[] | ListEnumReactionTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumReactionTypeWithAggregatesFilter<$PrismaModel> | $Enums.ReactionType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReactionTypeFilter<$PrismaModel>
+    _max?: NestedEnumReactionTypeFilter<$PrismaModel>
+  }
+
   export type NestedEnumUsageEventFilter<$PrismaModel = never> = {
     equals?: $Enums.UsageEvent | EnumUsageEventFieldRefInput<$PrismaModel>
     in?: $Enums.UsageEvent[] | ListEnumUsageEventFieldRefInput<$PrismaModel>
@@ -29907,57 +24999,10 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
-  export type NestedEnumActivityTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.ActivityType | EnumActivityTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.ActivityType[] | ListEnumActivityTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ActivityType[] | ListEnumActivityTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumActivityTypeFilter<$PrismaModel> | $Enums.ActivityType
-  }
-
-  export type NestedEnumActivityTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ActivityType | EnumActivityTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.ActivityType[] | ListEnumActivityTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ActivityType[] | ListEnumActivityTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumActivityTypeWithAggregatesFilter<$PrismaModel> | $Enums.ActivityType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumActivityTypeFilter<$PrismaModel>
-    _max?: NestedEnumActivityTypeFilter<$PrismaModel>
-  }
-
-  export type NestedEnumNotificationTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationType | EnumNotificationTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationTypeFilter<$PrismaModel> | $Enums.NotificationType
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedEnumNotificationTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationType | EnumNotificationTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationTypeWithAggregatesFilter<$PrismaModel> | $Enums.NotificationType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumNotificationTypeFilter<$PrismaModel>
-    _max?: NestedEnumNotificationTypeFilter<$PrismaModel>
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type ResourceCreateWithoutAuthorInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -29972,13 +25017,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     parent?: ResourceCreateNestedOneWithoutChildrenInput
     children?: ResourceCreateNestedManyWithoutParentInput
@@ -29996,8 +25039,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedCreateWithoutAuthorInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -30012,13 +25055,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     parentId?: string | null
     children?: ResourceUncheckedCreateNestedManyWithoutParentInput
@@ -30046,7 +25087,7 @@ export namespace Prisma {
 
   export type CollectionCreateWithoutAuthorInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     slug: string
     title: string
     description?: string | null
@@ -30062,7 +25103,7 @@ export namespace Prisma {
 
   export type CollectionUncheckedCreateWithoutAuthorInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     slug: string
     title: string
     description?: string | null
@@ -30088,10 +25129,9 @@ export namespace Prisma {
 
   export type CommentCreateWithoutAuthorInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     content: string
     status?: $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -30102,10 +25142,9 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateWithoutAuthorInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     content: string
     status?: $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -30126,14 +25165,14 @@ export namespace Prisma {
 
   export type SavedResourceCreateWithoutUserInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     createdAt?: Date | string
     resource: ResourceCreateNestedOneWithoutSavedByInput
   }
 
   export type SavedResourceUncheckedCreateWithoutUserInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
     createdAt?: Date | string
   }
@@ -30150,7 +25189,7 @@ export namespace Prisma {
 
   export type ResourceUsageCreateWithoutUserInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     event: $Enums.UsageEvent
     sessionId?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -30160,7 +25199,7 @@ export namespace Prisma {
 
   export type ResourceUsageUncheckedCreateWithoutUserInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
     event: $Enums.UsageEvent
     sessionId?: string | null
@@ -30180,7 +25219,7 @@ export namespace Prisma {
 
   export type ResourceVersionCreateWithoutAuthorInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     versionNumber: number
     titleSnapshot: string
     contentSnapshot?: NullableJsonNullValueInput | InputJsonValue
@@ -30192,7 +25231,7 @@ export namespace Prisma {
 
   export type ResourceVersionUncheckedCreateWithoutAuthorInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
     versionNumber: number
     titleSnapshot: string
@@ -30212,47 +25251,19 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ActivityCreateWithoutUserInput = {
-    id?: string
-    tenantId?: string | null
-    type: $Enums.ActivityType
-    entityId: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-  }
-
-  export type ActivityUncheckedCreateWithoutUserInput = {
-    id?: string
-    tenantId?: string | null
-    type: $Enums.ActivityType
-    entityId: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-  }
-
-  export type ActivityCreateOrConnectWithoutUserInput = {
-    where: ActivityWhereUniqueInput
-    create: XOR<ActivityCreateWithoutUserInput, ActivityUncheckedCreateWithoutUserInput>
-  }
-
-  export type ActivityCreateManyUserInputEnvelope = {
-    data: ActivityCreateManyUserInput | ActivityCreateManyUserInput[]
-    skipDuplicates?: boolean
-  }
-
   export type ReactionCreateWithoutUserInput = {
     id?: string
-    tenantId?: string | null
-    type?: string
+    tenantId?: string
+    type?: $Enums.ReactionType
     createdAt?: Date | string
     resource: ResourceCreateNestedOneWithoutReactionsInput
   }
 
   export type ReactionUncheckedCreateWithoutUserInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
-    type?: string
+    type?: $Enums.ReactionType
     createdAt?: Date | string
   }
 
@@ -30266,56 +25277,16 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type NotificationCreateWithoutUserInput = {
-    id?: string
-    tenantId?: string | null
-    type: $Enums.NotificationType
-    title: string
-    body?: string | null
-    entityId?: string | null
-    entityType?: string | null
-    read?: boolean
-    readAt?: Date | string | null
-    createdAt?: Date | string
-  }
-
-  export type NotificationUncheckedCreateWithoutUserInput = {
-    id?: string
-    tenantId?: string | null
-    type: $Enums.NotificationType
-    title: string
-    body?: string | null
-    entityId?: string | null
-    entityType?: string | null
-    read?: boolean
-    readAt?: Date | string | null
-    createdAt?: Date | string
-  }
-
-  export type NotificationCreateOrConnectWithoutUserInput = {
-    where: NotificationWhereUniqueInput
-    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
-  }
-
-  export type NotificationCreateManyUserInputEnvelope = {
-    data: NotificationCreateManyUserInput | NotificationCreateManyUserInput[]
-    skipDuplicates?: boolean
-  }
-
   export type FollowCreateWithoutFollowerInput = {
     id?: string
-    tenantId?: string | null
     createdAt?: Date | string
-    deletedAt?: Date | string | null
     following: UserCreateNestedOneWithoutFollowersInput
   }
 
   export type FollowUncheckedCreateWithoutFollowerInput = {
     id?: string
-    tenantId?: string | null
     followingId: string
     createdAt?: Date | string
-    deletedAt?: Date | string | null
   }
 
   export type FollowCreateOrConnectWithoutFollowerInput = {
@@ -30330,18 +25301,14 @@ export namespace Prisma {
 
   export type FollowCreateWithoutFollowingInput = {
     id?: string
-    tenantId?: string | null
     createdAt?: Date | string
-    deletedAt?: Date | string | null
     follower: UserCreateNestedOneWithoutFollowingInput
   }
 
   export type FollowUncheckedCreateWithoutFollowingInput = {
     id?: string
-    tenantId?: string | null
     followerId: string
     createdAt?: Date | string
-    deletedAt?: Date | string | null
   }
 
   export type FollowCreateOrConnectWithoutFollowingInput = {
@@ -30351,36 +25318,6 @@ export namespace Prisma {
 
   export type FollowCreateManyFollowingInputEnvelope = {
     data: FollowCreateManyFollowingInput | FollowCreateManyFollowingInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type MembershipCreateWithoutUserInput = {
-    id?: string
-    role?: $Enums.MemberRole
-    status?: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    joinedAt?: Date | string
-    updatedAt?: Date | string
-    tenantId: string
-  }
-
-  export type MembershipUncheckedCreateWithoutUserInput = {
-    id?: string
-    role?: $Enums.MemberRole
-    status?: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    joinedAt?: Date | string
-    updatedAt?: Date | string
-    tenantId: string
-  }
-
-  export type MembershipCreateOrConnectWithoutUserInput = {
-    where: MembershipWhereUniqueInput
-    create: XOR<MembershipCreateWithoutUserInput, MembershipUncheckedCreateWithoutUserInput>
-  }
-
-  export type MembershipCreateManyUserInputEnvelope = {
-    data: MembershipCreateManyUserInput | MembershipCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -30405,8 +25342,8 @@ export namespace Prisma {
     OR?: ResourceScalarWhereInput[]
     NOT?: ResourceScalarWhereInput | ResourceScalarWhereInput[]
     id?: StringFilter<"Resource"> | string
-    tenantId?: StringNullableFilter<"Resource"> | string | null
-    slug?: StringNullableFilter<"Resource"> | string | null
+    tenantId?: StringFilter<"Resource"> | string
+    slug?: StringFilter<"Resource"> | string
     title?: StringNullableFilter<"Resource"> | string | null
     description?: StringNullableFilter<"Resource"> | string | null
     excerpt?: StringNullableFilter<"Resource"> | string | null
@@ -30421,13 +25358,11 @@ export namespace Prisma {
     coverImageUrl?: StringNullableFilter<"Resource"> | string | null
     fileUrl?: StringNullableFilter<"Resource"> | string | null
     metadata?: JsonNullableFilter<"Resource">
-    aiMetadata?: JsonNullableFilter<"Resource">
     wordCount?: IntNullableFilter<"Resource"> | number | null
     estimatedTime?: IntNullableFilter<"Resource"> | number | null
     createdAt?: DateTimeFilter<"Resource"> | Date | string
     updatedAt?: DateTimeFilter<"Resource"> | Date | string
     publishedAt?: DateTimeNullableFilter<"Resource"> | Date | string | null
-    archivedAt?: DateTimeNullableFilter<"Resource"> | Date | string | null
     deletedAt?: DateTimeNullableFilter<"Resource"> | Date | string | null
     authorId?: StringFilter<"Resource"> | string
     parentId?: StringNullableFilter<"Resource"> | string | null
@@ -30454,7 +25389,7 @@ export namespace Prisma {
     OR?: CollectionScalarWhereInput[]
     NOT?: CollectionScalarWhereInput | CollectionScalarWhereInput[]
     id?: StringFilter<"Collection"> | string
-    tenantId?: StringNullableFilter<"Collection"> | string | null
+    tenantId?: StringFilter<"Collection"> | string
     slug?: StringFilter<"Collection"> | string
     title?: StringFilter<"Collection"> | string
     description?: StringNullableFilter<"Collection"> | string | null
@@ -30488,10 +25423,9 @@ export namespace Prisma {
     OR?: CommentScalarWhereInput[]
     NOT?: CommentScalarWhereInput | CommentScalarWhereInput[]
     id?: StringFilter<"Comment"> | string
-    tenantId?: StringNullableFilter<"Comment"> | string | null
+    tenantId?: StringFilter<"Comment"> | string
     content?: StringFilter<"Comment"> | string
     status?: EnumCommentStatusFilter<"Comment"> | $Enums.CommentStatus
-    metadata?: JsonNullableFilter<"Comment">
     createdAt?: DateTimeFilter<"Comment"> | Date | string
     updatedAt?: DateTimeFilter<"Comment"> | Date | string
     deletedAt?: DateTimeNullableFilter<"Comment"> | Date | string | null
@@ -30521,7 +25455,7 @@ export namespace Prisma {
     OR?: SavedResourceScalarWhereInput[]
     NOT?: SavedResourceScalarWhereInput | SavedResourceScalarWhereInput[]
     id?: StringFilter<"SavedResource"> | string
-    tenantId?: StringNullableFilter<"SavedResource"> | string | null
+    tenantId?: StringFilter<"SavedResource"> | string
     userId?: StringFilter<"SavedResource"> | string
     resourceId?: StringFilter<"SavedResource"> | string
     createdAt?: DateTimeFilter<"SavedResource"> | Date | string
@@ -30548,7 +25482,7 @@ export namespace Prisma {
     OR?: ResourceUsageScalarWhereInput[]
     NOT?: ResourceUsageScalarWhereInput | ResourceUsageScalarWhereInput[]
     id?: StringFilter<"ResourceUsage"> | string
-    tenantId?: StringNullableFilter<"ResourceUsage"> | string | null
+    tenantId?: StringFilter<"ResourceUsage"> | string
     resourceId?: StringFilter<"ResourceUsage"> | string
     actorId?: StringNullableFilter<"ResourceUsage"> | string | null
     event?: EnumUsageEventFilter<"ResourceUsage"> | $Enums.UsageEvent
@@ -30578,7 +25512,7 @@ export namespace Prisma {
     OR?: ResourceVersionScalarWhereInput[]
     NOT?: ResourceVersionScalarWhereInput | ResourceVersionScalarWhereInput[]
     id?: StringFilter<"ResourceVersion"> | string
-    tenantId?: StringNullableFilter<"ResourceVersion"> | string | null
+    tenantId?: StringFilter<"ResourceVersion"> | string
     resourceId?: StringFilter<"ResourceVersion"> | string
     authorId?: StringFilter<"ResourceVersion"> | string
     versionNumber?: IntFilter<"ResourceVersion"> | number
@@ -30587,35 +25521,6 @@ export namespace Prisma {
     metadataSnapshot?: JsonNullableFilter<"ResourceVersion">
     changeSummary?: StringNullableFilter<"ResourceVersion"> | string | null
     createdAt?: DateTimeFilter<"ResourceVersion"> | Date | string
-  }
-
-  export type ActivityUpsertWithWhereUniqueWithoutUserInput = {
-    where: ActivityWhereUniqueInput
-    update: XOR<ActivityUpdateWithoutUserInput, ActivityUncheckedUpdateWithoutUserInput>
-    create: XOR<ActivityCreateWithoutUserInput, ActivityUncheckedCreateWithoutUserInput>
-  }
-
-  export type ActivityUpdateWithWhereUniqueWithoutUserInput = {
-    where: ActivityWhereUniqueInput
-    data: XOR<ActivityUpdateWithoutUserInput, ActivityUncheckedUpdateWithoutUserInput>
-  }
-
-  export type ActivityUpdateManyWithWhereWithoutUserInput = {
-    where: ActivityScalarWhereInput
-    data: XOR<ActivityUpdateManyMutationInput, ActivityUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type ActivityScalarWhereInput = {
-    AND?: ActivityScalarWhereInput | ActivityScalarWhereInput[]
-    OR?: ActivityScalarWhereInput[]
-    NOT?: ActivityScalarWhereInput | ActivityScalarWhereInput[]
-    id?: StringFilter<"Activity"> | string
-    tenantId?: StringNullableFilter<"Activity"> | string | null
-    userId?: StringNullableFilter<"Activity"> | string | null
-    type?: EnumActivityTypeFilter<"Activity"> | $Enums.ActivityType
-    entityId?: StringFilter<"Activity"> | string
-    metadata?: JsonNullableFilter<"Activity">
-    createdAt?: DateTimeFilter<"Activity"> | Date | string
   }
 
   export type ReactionUpsertWithWhereUniqueWithoutUserInput = {
@@ -30639,44 +25544,11 @@ export namespace Prisma {
     OR?: ReactionScalarWhereInput[]
     NOT?: ReactionScalarWhereInput | ReactionScalarWhereInput[]
     id?: StringFilter<"Reaction"> | string
-    tenantId?: StringNullableFilter<"Reaction"> | string | null
+    tenantId?: StringFilter<"Reaction"> | string
     userId?: StringFilter<"Reaction"> | string
     resourceId?: StringFilter<"Reaction"> | string
-    type?: StringFilter<"Reaction"> | string
+    type?: EnumReactionTypeFilter<"Reaction"> | $Enums.ReactionType
     createdAt?: DateTimeFilter<"Reaction"> | Date | string
-  }
-
-  export type NotificationUpsertWithWhereUniqueWithoutUserInput = {
-    where: NotificationWhereUniqueInput
-    update: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
-    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
-  }
-
-  export type NotificationUpdateWithWhereUniqueWithoutUserInput = {
-    where: NotificationWhereUniqueInput
-    data: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
-  }
-
-  export type NotificationUpdateManyWithWhereWithoutUserInput = {
-    where: NotificationScalarWhereInput
-    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type NotificationScalarWhereInput = {
-    AND?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
-    OR?: NotificationScalarWhereInput[]
-    NOT?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
-    id?: StringFilter<"Notification"> | string
-    tenantId?: StringNullableFilter<"Notification"> | string | null
-    userId?: StringFilter<"Notification"> | string
-    type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
-    title?: StringFilter<"Notification"> | string
-    body?: StringNullableFilter<"Notification"> | string | null
-    entityId?: StringNullableFilter<"Notification"> | string | null
-    entityType?: StringNullableFilter<"Notification"> | string | null
-    read?: BoolFilter<"Notification"> | boolean
-    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    createdAt?: DateTimeFilter<"Notification"> | Date | string
   }
 
   export type FollowUpsertWithWhereUniqueWithoutFollowerInput = {
@@ -30700,11 +25572,9 @@ export namespace Prisma {
     OR?: FollowScalarWhereInput[]
     NOT?: FollowScalarWhereInput | FollowScalarWhereInput[]
     id?: StringFilter<"Follow"> | string
-    tenantId?: StringNullableFilter<"Follow"> | string | null
     followerId?: StringFilter<"Follow"> | string
     followingId?: StringFilter<"Follow"> | string
     createdAt?: DateTimeFilter<"Follow"> | Date | string
-    deletedAt?: DateTimeNullableFilter<"Follow"> | Date | string | null
   }
 
   export type FollowUpsertWithWhereUniqueWithoutFollowingInput = {
@@ -30723,179 +25593,9 @@ export namespace Prisma {
     data: XOR<FollowUpdateManyMutationInput, FollowUncheckedUpdateManyWithoutFollowingInput>
   }
 
-  export type MembershipUpsertWithWhereUniqueWithoutUserInput = {
-    where: MembershipWhereUniqueInput
-    update: XOR<MembershipUpdateWithoutUserInput, MembershipUncheckedUpdateWithoutUserInput>
-    create: XOR<MembershipCreateWithoutUserInput, MembershipUncheckedCreateWithoutUserInput>
-  }
-
-  export type MembershipUpdateWithWhereUniqueWithoutUserInput = {
-    where: MembershipWhereUniqueInput
-    data: XOR<MembershipUpdateWithoutUserInput, MembershipUncheckedUpdateWithoutUserInput>
-  }
-
-  export type MembershipUpdateManyWithWhereWithoutUserInput = {
-    where: MembershipScalarWhereInput
-    data: XOR<MembershipUpdateManyMutationInput, MembershipUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type MembershipScalarWhereInput = {
-    AND?: MembershipScalarWhereInput | MembershipScalarWhereInput[]
-    OR?: MembershipScalarWhereInput[]
-    NOT?: MembershipScalarWhereInput | MembershipScalarWhereInput[]
-    id?: StringFilter<"Membership"> | string
-    role?: EnumMemberRoleFilter<"Membership"> | $Enums.MemberRole
-    status?: StringFilter<"Membership"> | string
-    metadata?: JsonNullableFilter<"Membership">
-    joinedAt?: DateTimeFilter<"Membership"> | Date | string
-    updatedAt?: DateTimeFilter<"Membership"> | Date | string
-    userId?: StringFilter<"Membership"> | string
-    tenantId?: StringFilter<"Membership"> | string
-  }
-
-  export type UserCreateWithoutMembershipsInput = {
-    id?: string
-    tenantId?: string | null
-    identityId: string
-    username: string
-    displayName?: string | null
-    avatarUrl?: string | null
-    bio?: string | null
-    role?: $Enums.UserRole
-    archetype?: $Enums.UserArchetype
-    onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    archivedAt?: Date | string | null
-    deletedAt?: Date | string | null
-    resources?: ResourceCreateNestedManyWithoutAuthorInput
-    collections?: CollectionCreateNestedManyWithoutAuthorInput
-    comments?: CommentCreateNestedManyWithoutAuthorInput
-    savedResources?: SavedResourceCreateNestedManyWithoutUserInput
-    usageEvents?: ResourceUsageCreateNestedManyWithoutUserInput
-    versions?: ResourceVersionCreateNestedManyWithoutAuthorInput
-    activities?: ActivityCreateNestedManyWithoutUserInput
-    reactions?: ReactionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
-    following?: FollowCreateNestedManyWithoutFollowerInput
-    followers?: FollowCreateNestedManyWithoutFollowingInput
-  }
-
-  export type UserUncheckedCreateWithoutMembershipsInput = {
-    id?: string
-    tenantId?: string | null
-    identityId: string
-    username: string
-    displayName?: string | null
-    avatarUrl?: string | null
-    bio?: string | null
-    role?: $Enums.UserRole
-    archetype?: $Enums.UserArchetype
-    onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    archivedAt?: Date | string | null
-    deletedAt?: Date | string | null
-    resources?: ResourceUncheckedCreateNestedManyWithoutAuthorInput
-    collections?: CollectionUncheckedCreateNestedManyWithoutAuthorInput
-    comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
-    savedResources?: SavedResourceUncheckedCreateNestedManyWithoutUserInput
-    usageEvents?: ResourceUsageUncheckedCreateNestedManyWithoutUserInput
-    versions?: ResourceVersionUncheckedCreateNestedManyWithoutAuthorInput
-    activities?: ActivityUncheckedCreateNestedManyWithoutUserInput
-    reactions?: ReactionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
-    followers?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-  }
-
-  export type UserCreateOrConnectWithoutMembershipsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutMembershipsInput, UserUncheckedCreateWithoutMembershipsInput>
-  }
-
-  export type UserUpsertWithoutMembershipsInput = {
-    update: XOR<UserUpdateWithoutMembershipsInput, UserUncheckedUpdateWithoutMembershipsInput>
-    create: XOR<UserCreateWithoutMembershipsInput, UserUncheckedCreateWithoutMembershipsInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutMembershipsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutMembershipsInput, UserUncheckedUpdateWithoutMembershipsInput>
-  }
-
-  export type UserUpdateWithoutMembershipsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    identityId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    displayName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-    archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
-    onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    resources?: ResourceUpdateManyWithoutAuthorNestedInput
-    collections?: CollectionUpdateManyWithoutAuthorNestedInput
-    comments?: CommentUpdateManyWithoutAuthorNestedInput
-    savedResources?: SavedResourceUpdateManyWithoutUserNestedInput
-    usageEvents?: ResourceUsageUpdateManyWithoutUserNestedInput
-    versions?: ResourceVersionUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUpdateManyWithoutUserNestedInput
-    reactions?: ReactionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
-    following?: FollowUpdateManyWithoutFollowerNestedInput
-    followers?: FollowUpdateManyWithoutFollowingNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutMembershipsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    identityId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    displayName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-    archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
-    onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    resources?: ResourceUncheckedUpdateManyWithoutAuthorNestedInput
-    collections?: CollectionUncheckedUpdateManyWithoutAuthorNestedInput
-    comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
-    savedResources?: SavedResourceUncheckedUpdateManyWithoutUserNestedInput
-    usageEvents?: ResourceUsageUncheckedUpdateManyWithoutUserNestedInput
-    versions?: ResourceVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUncheckedUpdateManyWithoutUserNestedInput
-    reactions?: ReactionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
-    followers?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-  }
-
   export type UserCreateWithoutResourcesInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -30904,29 +25604,23 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     collections?: CollectionCreateNestedManyWithoutAuthorInput
     comments?: CommentCreateNestedManyWithoutAuthorInput
     savedResources?: SavedResourceCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageCreateNestedManyWithoutUserInput
     versions?: ResourceVersionCreateNestedManyWithoutAuthorInput
-    activities?: ActivityCreateNestedManyWithoutUserInput
     reactions?: ReactionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
     following?: FollowCreateNestedManyWithoutFollowerInput
     followers?: FollowCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutResourcesInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -30935,24 +25629,18 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     collections?: CollectionUncheckedCreateNestedManyWithoutAuthorInput
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     savedResources?: SavedResourceUncheckedCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageUncheckedCreateNestedManyWithoutUserInput
     versions?: ResourceVersionUncheckedCreateNestedManyWithoutAuthorInput
-    activities?: ActivityUncheckedCreateNestedManyWithoutUserInput
     reactions?: ReactionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutResourcesInput = {
@@ -30962,8 +25650,8 @@ export namespace Prisma {
 
   export type ResourceCreateWithoutChildrenInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -30978,13 +25666,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     author: UserCreateNestedOneWithoutResourcesInput
     parent?: ResourceCreateNestedOneWithoutChildrenInput
@@ -31002,8 +25688,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedCreateWithoutChildrenInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -31018,13 +25704,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
     parentId?: string | null
@@ -31047,8 +25731,8 @@ export namespace Prisma {
 
   export type ResourceCreateWithoutParentInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -31063,13 +25747,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     author: UserCreateNestedOneWithoutResourcesInput
     children?: ResourceCreateNestedManyWithoutParentInput
@@ -31087,8 +25769,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedCreateWithoutParentInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -31103,13 +25785,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
     children?: ResourceUncheckedCreateNestedManyWithoutParentInput
@@ -31137,7 +25817,7 @@ export namespace Prisma {
 
   export type RelationCreateWithoutFromInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     type: $Enums.RelationType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
@@ -31146,7 +25826,7 @@ export namespace Prisma {
 
   export type RelationUncheckedCreateWithoutFromInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     type: $Enums.RelationType
     toId: string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -31165,7 +25845,7 @@ export namespace Prisma {
 
   export type RelationCreateWithoutToInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     type: $Enums.RelationType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
@@ -31174,7 +25854,7 @@ export namespace Prisma {
 
   export type RelationUncheckedCreateWithoutToInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     type: $Enums.RelationType
     fromId: string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -31193,7 +25873,7 @@ export namespace Prisma {
 
   export type CollectionResourceCreateWithoutResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     orderIndex: number
     addedAt?: Date | string
     collection: CollectionCreateNestedOneWithoutResourcesInput
@@ -31201,7 +25881,7 @@ export namespace Prisma {
 
   export type CollectionResourceUncheckedCreateWithoutResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     collectionId: string
     orderIndex: number
     addedAt?: Date | string
@@ -31219,10 +25899,9 @@ export namespace Prisma {
 
   export type CommentCreateWithoutResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     content: string
     status?: $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -31233,10 +25912,9 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateWithoutResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     content: string
     status?: $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -31257,7 +25935,7 @@ export namespace Prisma {
 
   export type ResourceMetricsCreateWithoutResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     views?: number
     opens?: number
     downloads?: number
@@ -31271,7 +25949,7 @@ export namespace Prisma {
 
   export type ResourceMetricsUncheckedCreateWithoutResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     views?: number
     opens?: number
     downloads?: number
@@ -31290,7 +25968,7 @@ export namespace Prisma {
 
   export type ResourceVersionCreateWithoutResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     versionNumber: number
     titleSnapshot: string
     contentSnapshot?: NullableJsonNullValueInput | InputJsonValue
@@ -31302,7 +25980,7 @@ export namespace Prisma {
 
   export type ResourceVersionUncheckedCreateWithoutResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     authorId: string
     versionNumber: number
     titleSnapshot: string
@@ -31324,7 +26002,7 @@ export namespace Prisma {
 
   export type ResourceUsageCreateWithoutResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     event: $Enums.UsageEvent
     sessionId?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -31334,7 +26012,7 @@ export namespace Prisma {
 
   export type ResourceUsageUncheckedCreateWithoutResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     actorId?: string | null
     event: $Enums.UsageEvent
     sessionId?: string | null
@@ -31354,14 +26032,14 @@ export namespace Prisma {
 
   export type SavedResourceCreateWithoutResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutSavedResourcesInput
   }
 
   export type SavedResourceUncheckedCreateWithoutResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     userId: string
     createdAt?: Date | string
   }
@@ -31398,17 +26076,17 @@ export namespace Prisma {
 
   export type ReactionCreateWithoutResourceInput = {
     id?: string
-    tenantId?: string | null
-    type?: string
+    tenantId?: string
+    type?: $Enums.ReactionType
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutReactionsInput
   }
 
   export type ReactionUncheckedCreateWithoutResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     userId: string
-    type?: string
+    type?: $Enums.ReactionType
     createdAt?: Date | string
   }
 
@@ -31435,7 +26113,7 @@ export namespace Prisma {
 
   export type UserUpdateWithoutResourcesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31444,29 +26122,23 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collections?: CollectionUpdateManyWithoutAuthorNestedInput
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     savedResources?: SavedResourceUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUpdateManyWithoutUserNestedInput
     reactions?: ReactionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
     following?: FollowUpdateManyWithoutFollowerNestedInput
     followers?: FollowUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutResourcesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31475,24 +26147,18 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collections?: CollectionUncheckedUpdateManyWithoutAuthorNestedInput
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     savedResources?: SavedResourceUncheckedUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUncheckedUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUncheckedUpdateManyWithoutUserNestedInput
     reactions?: ReactionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ResourceUpsertWithoutChildrenInput = {
@@ -31508,8 +26174,8 @@ export namespace Prisma {
 
   export type ResourceUpdateWithoutChildrenInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31524,13 +26190,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     author?: UserUpdateOneRequiredWithoutResourcesNestedInput
     parent?: ResourceUpdateOneWithoutChildrenNestedInput
@@ -31548,8 +26212,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateWithoutChildrenInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31564,13 +26228,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31623,7 +26285,7 @@ export namespace Prisma {
     OR?: RelationScalarWhereInput[]
     NOT?: RelationScalarWhereInput | RelationScalarWhereInput[]
     id?: StringFilter<"Relation"> | string
-    tenantId?: StringNullableFilter<"Relation"> | string | null
+    tenantId?: StringFilter<"Relation"> | string
     type?: EnumRelationTypeFilter<"Relation"> | $Enums.RelationType
     fromId?: StringFilter<"Relation"> | string
     toId?: StringFilter<"Relation"> | string
@@ -31668,7 +26330,7 @@ export namespace Prisma {
     OR?: CollectionResourceScalarWhereInput[]
     NOT?: CollectionResourceScalarWhereInput | CollectionResourceScalarWhereInput[]
     id?: StringFilter<"CollectionResource"> | string
-    tenantId?: StringNullableFilter<"CollectionResource"> | string | null
+    tenantId?: StringFilter<"CollectionResource"> | string
     collectionId?: StringFilter<"CollectionResource"> | string
     resourceId?: StringFilter<"CollectionResource"> | string
     orderIndex?: IntFilter<"CollectionResource"> | number
@@ -31704,7 +26366,7 @@ export namespace Prisma {
 
   export type ResourceMetricsUpdateWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     views?: IntFieldUpdateOperationsInput | number
     opens?: IntFieldUpdateOperationsInput | number
     downloads?: IntFieldUpdateOperationsInput | number
@@ -31718,7 +26380,7 @@ export namespace Prisma {
 
   export type ResourceMetricsUncheckedUpdateWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     views?: IntFieldUpdateOperationsInput | number
     opens?: IntFieldUpdateOperationsInput | number
     downloads?: IntFieldUpdateOperationsInput | number
@@ -31821,8 +26483,8 @@ export namespace Prisma {
 
   export type ResourceCreateWithoutOutgoingRelationsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -31837,13 +26499,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     author: UserCreateNestedOneWithoutResourcesInput
     parent?: ResourceCreateNestedOneWithoutChildrenInput
@@ -31861,8 +26521,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedCreateWithoutOutgoingRelationsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -31877,13 +26537,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
     parentId?: string | null
@@ -31906,8 +26564,8 @@ export namespace Prisma {
 
   export type ResourceCreateWithoutIncomingRelationsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -31922,13 +26580,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     author: UserCreateNestedOneWithoutResourcesInput
     parent?: ResourceCreateNestedOneWithoutChildrenInput
@@ -31946,8 +26602,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedCreateWithoutIncomingRelationsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -31962,13 +26618,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
     parentId?: string | null
@@ -32002,8 +26656,8 @@ export namespace Prisma {
 
   export type ResourceUpdateWithoutOutgoingRelationsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32018,13 +26672,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     author?: UserUpdateOneRequiredWithoutResourcesNestedInput
     parent?: ResourceUpdateOneWithoutChildrenNestedInput
@@ -32042,8 +26694,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateWithoutOutgoingRelationsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32058,13 +26710,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32093,8 +26743,8 @@ export namespace Prisma {
 
   export type ResourceUpdateWithoutIncomingRelationsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32109,13 +26759,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     author?: UserUpdateOneRequiredWithoutResourcesNestedInput
     parent?: ResourceUpdateOneWithoutChildrenNestedInput
@@ -32133,8 +26781,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateWithoutIncomingRelationsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32149,13 +26797,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32173,8 +26819,8 @@ export namespace Prisma {
 
   export type ResourceCreateWithoutVersionsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -32189,13 +26835,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     author: UserCreateNestedOneWithoutResourcesInput
     parent?: ResourceCreateNestedOneWithoutChildrenInput
@@ -32213,8 +26857,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedCreateWithoutVersionsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -32229,13 +26873,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
     parentId?: string | null
@@ -32258,7 +26900,7 @@ export namespace Prisma {
 
   export type UserCreateWithoutVersionsInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -32267,29 +26909,23 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceCreateNestedManyWithoutAuthorInput
     collections?: CollectionCreateNestedManyWithoutAuthorInput
     comments?: CommentCreateNestedManyWithoutAuthorInput
     savedResources?: SavedResourceCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageCreateNestedManyWithoutUserInput
-    activities?: ActivityCreateNestedManyWithoutUserInput
     reactions?: ReactionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
     following?: FollowCreateNestedManyWithoutFollowerInput
     followers?: FollowCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVersionsInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -32298,24 +26934,18 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceUncheckedCreateNestedManyWithoutAuthorInput
     collections?: CollectionUncheckedCreateNestedManyWithoutAuthorInput
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     savedResources?: SavedResourceUncheckedCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageUncheckedCreateNestedManyWithoutUserInput
-    activities?: ActivityUncheckedCreateNestedManyWithoutUserInput
     reactions?: ReactionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVersionsInput = {
@@ -32336,8 +26966,8 @@ export namespace Prisma {
 
   export type ResourceUpdateWithoutVersionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32352,13 +26982,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     author?: UserUpdateOneRequiredWithoutResourcesNestedInput
     parent?: ResourceUpdateOneWithoutChildrenNestedInput
@@ -32376,8 +27004,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateWithoutVersionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32392,13 +27020,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32427,7 +27053,7 @@ export namespace Prisma {
 
   export type UserUpdateWithoutVersionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32436,29 +27062,23 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUpdateManyWithoutAuthorNestedInput
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     savedResources?: SavedResourceUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUpdateManyWithoutUserNestedInput
-    activities?: ActivityUpdateManyWithoutUserNestedInput
     reactions?: ReactionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
     following?: FollowUpdateManyWithoutFollowerNestedInput
     followers?: FollowUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVersionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32467,29 +27087,23 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUncheckedUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUncheckedUpdateManyWithoutAuthorNestedInput
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     savedResources?: SavedResourceUncheckedUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUncheckedUpdateManyWithoutUserNestedInput
-    activities?: ActivityUncheckedUpdateManyWithoutUserNestedInput
     reactions?: ReactionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCollectionsInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -32498,29 +27112,23 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceCreateNestedManyWithoutAuthorInput
     comments?: CommentCreateNestedManyWithoutAuthorInput
     savedResources?: SavedResourceCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageCreateNestedManyWithoutUserInput
     versions?: ResourceVersionCreateNestedManyWithoutAuthorInput
-    activities?: ActivityCreateNestedManyWithoutUserInput
     reactions?: ReactionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
     following?: FollowCreateNestedManyWithoutFollowerInput
     followers?: FollowCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCollectionsInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -32529,24 +27137,18 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceUncheckedCreateNestedManyWithoutAuthorInput
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     savedResources?: SavedResourceUncheckedCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageUncheckedCreateNestedManyWithoutUserInput
     versions?: ResourceVersionUncheckedCreateNestedManyWithoutAuthorInput
-    activities?: ActivityUncheckedCreateNestedManyWithoutUserInput
     reactions?: ReactionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCollectionsInput = {
@@ -32556,7 +27158,7 @@ export namespace Prisma {
 
   export type CollectionCreateWithoutChildrenInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     slug: string
     title: string
     description?: string | null
@@ -32572,7 +27174,7 @@ export namespace Prisma {
 
   export type CollectionUncheckedCreateWithoutChildrenInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     slug: string
     title: string
     description?: string | null
@@ -32593,7 +27195,7 @@ export namespace Prisma {
 
   export type CollectionCreateWithoutParentInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     slug: string
     title: string
     description?: string | null
@@ -32609,7 +27211,7 @@ export namespace Prisma {
 
   export type CollectionUncheckedCreateWithoutParentInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     slug: string
     title: string
     description?: string | null
@@ -32635,7 +27237,7 @@ export namespace Prisma {
 
   export type CollectionResourceCreateWithoutCollectionInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     orderIndex: number
     addedAt?: Date | string
     resource: ResourceCreateNestedOneWithoutCollectionsInput
@@ -32643,7 +27245,7 @@ export namespace Prisma {
 
   export type CollectionResourceUncheckedCreateWithoutCollectionInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
     orderIndex: number
     addedAt?: Date | string
@@ -32672,7 +27274,7 @@ export namespace Prisma {
 
   export type UserUpdateWithoutCollectionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32681,29 +27283,23 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUpdateManyWithoutAuthorNestedInput
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     savedResources?: SavedResourceUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUpdateManyWithoutUserNestedInput
     reactions?: ReactionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
     following?: FollowUpdateManyWithoutFollowerNestedInput
     followers?: FollowUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCollectionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32712,24 +27308,18 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUncheckedUpdateManyWithoutAuthorNestedInput
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     savedResources?: SavedResourceUncheckedUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUncheckedUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUncheckedUpdateManyWithoutUserNestedInput
     reactions?: ReactionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CollectionUpsertWithoutChildrenInput = {
@@ -32745,7 +27335,7 @@ export namespace Prisma {
 
   export type CollectionUpdateWithoutChildrenInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32761,7 +27351,7 @@ export namespace Prisma {
 
   export type CollectionUncheckedUpdateWithoutChildrenInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32809,7 +27399,7 @@ export namespace Prisma {
 
   export type CollectionCreateWithoutResourcesInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     slug: string
     title: string
     description?: string | null
@@ -32825,7 +27415,7 @@ export namespace Prisma {
 
   export type CollectionUncheckedCreateWithoutResourcesInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     slug: string
     title: string
     description?: string | null
@@ -32846,8 +27436,8 @@ export namespace Prisma {
 
   export type ResourceCreateWithoutCollectionsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -32862,13 +27452,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     author: UserCreateNestedOneWithoutResourcesInput
     parent?: ResourceCreateNestedOneWithoutChildrenInput
@@ -32886,8 +27474,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedCreateWithoutCollectionsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -32902,13 +27490,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
     parentId?: string | null
@@ -32942,7 +27528,7 @@ export namespace Prisma {
 
   export type CollectionUpdateWithoutResourcesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32958,7 +27544,7 @@ export namespace Prisma {
 
   export type CollectionUncheckedUpdateWithoutResourcesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32985,8 +27571,8 @@ export namespace Prisma {
 
   export type ResourceUpdateWithoutCollectionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33001,13 +27587,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     author?: UserUpdateOneRequiredWithoutResourcesNestedInput
     parent?: ResourceUpdateOneWithoutChildrenNestedInput
@@ -33025,8 +27609,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateWithoutCollectionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33041,13 +27625,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33101,8 +27683,8 @@ export namespace Prisma {
 
   export type ResourceCreateWithoutResourceTagsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -33117,13 +27699,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     author: UserCreateNestedOneWithoutResourcesInput
     parent?: ResourceCreateNestedOneWithoutChildrenInput
@@ -33141,8 +27721,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedCreateWithoutResourceTagsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -33157,13 +27737,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
     parentId?: string | null
@@ -33186,7 +27764,7 @@ export namespace Prisma {
 
   export type TagCreateWithoutResourcesInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     name: string
     slug: string
     createdAt?: Date | string
@@ -33194,7 +27772,7 @@ export namespace Prisma {
 
   export type TagUncheckedCreateWithoutResourcesInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     name: string
     slug: string
     createdAt?: Date | string
@@ -33218,8 +27796,8 @@ export namespace Prisma {
 
   export type ResourceUpdateWithoutResourceTagsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33234,13 +27812,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     author?: UserUpdateOneRequiredWithoutResourcesNestedInput
     parent?: ResourceUpdateOneWithoutChildrenNestedInput
@@ -33258,8 +27834,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateWithoutResourceTagsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33274,13 +27850,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33309,7 +27883,7 @@ export namespace Prisma {
 
   export type TagUpdateWithoutResourcesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33317,7 +27891,7 @@ export namespace Prisma {
 
   export type TagUncheckedUpdateWithoutResourcesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33325,7 +27899,7 @@ export namespace Prisma {
 
   export type UserCreateWithoutCommentsInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -33334,29 +27908,23 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceCreateNestedManyWithoutAuthorInput
     collections?: CollectionCreateNestedManyWithoutAuthorInput
     savedResources?: SavedResourceCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageCreateNestedManyWithoutUserInput
     versions?: ResourceVersionCreateNestedManyWithoutAuthorInput
-    activities?: ActivityCreateNestedManyWithoutUserInput
     reactions?: ReactionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
     following?: FollowCreateNestedManyWithoutFollowerInput
     followers?: FollowCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCommentsInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -33365,24 +27933,18 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceUncheckedCreateNestedManyWithoutAuthorInput
     collections?: CollectionUncheckedCreateNestedManyWithoutAuthorInput
     savedResources?: SavedResourceUncheckedCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageUncheckedCreateNestedManyWithoutUserInput
     versions?: ResourceVersionUncheckedCreateNestedManyWithoutAuthorInput
-    activities?: ActivityUncheckedCreateNestedManyWithoutUserInput
     reactions?: ReactionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCommentsInput = {
@@ -33392,8 +27954,8 @@ export namespace Prisma {
 
   export type ResourceCreateWithoutCommentsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -33408,13 +27970,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     author: UserCreateNestedOneWithoutResourcesInput
     parent?: ResourceCreateNestedOneWithoutChildrenInput
@@ -33432,8 +27992,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedCreateWithoutCommentsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -33448,13 +28008,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
     parentId?: string | null
@@ -33477,10 +28035,9 @@ export namespace Prisma {
 
   export type CommentCreateWithoutRepliesInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     content: string
     status?: $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -33491,10 +28048,9 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateWithoutRepliesInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     content: string
     status?: $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -33510,10 +28066,9 @@ export namespace Prisma {
 
   export type CommentCreateWithoutParentInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     content: string
     status?: $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -33524,10 +28079,9 @@ export namespace Prisma {
 
   export type CommentUncheckedCreateWithoutParentInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     content: string
     status?: $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -33559,7 +28113,7 @@ export namespace Prisma {
 
   export type UserUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33568,29 +28122,23 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUpdateManyWithoutAuthorNestedInput
     savedResources?: SavedResourceUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUpdateManyWithoutUserNestedInput
     reactions?: ReactionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
     following?: FollowUpdateManyWithoutFollowerNestedInput
     followers?: FollowUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33599,24 +28147,18 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUncheckedUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUncheckedUpdateManyWithoutAuthorNestedInput
     savedResources?: SavedResourceUncheckedUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUncheckedUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUncheckedUpdateManyWithoutUserNestedInput
     reactions?: ReactionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ResourceUpsertWithoutCommentsInput = {
@@ -33632,8 +28174,8 @@ export namespace Prisma {
 
   export type ResourceUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33648,13 +28190,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     author?: UserUpdateOneRequiredWithoutResourcesNestedInput
     parent?: ResourceUpdateOneWithoutChildrenNestedInput
@@ -33672,8 +28212,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateWithoutCommentsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33688,13 +28228,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33723,10 +28261,9 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutRepliesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -33737,10 +28274,9 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateWithoutRepliesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -33767,7 +28303,7 @@ export namespace Prisma {
 
   export type UserCreateWithoutSavedResourcesInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -33776,29 +28312,23 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceCreateNestedManyWithoutAuthorInput
     collections?: CollectionCreateNestedManyWithoutAuthorInput
     comments?: CommentCreateNestedManyWithoutAuthorInput
     usageEvents?: ResourceUsageCreateNestedManyWithoutUserInput
     versions?: ResourceVersionCreateNestedManyWithoutAuthorInput
-    activities?: ActivityCreateNestedManyWithoutUserInput
     reactions?: ReactionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
     following?: FollowCreateNestedManyWithoutFollowerInput
     followers?: FollowCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSavedResourcesInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -33807,24 +28337,18 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceUncheckedCreateNestedManyWithoutAuthorInput
     collections?: CollectionUncheckedCreateNestedManyWithoutAuthorInput
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     usageEvents?: ResourceUsageUncheckedCreateNestedManyWithoutUserInput
     versions?: ResourceVersionUncheckedCreateNestedManyWithoutAuthorInput
-    activities?: ActivityUncheckedCreateNestedManyWithoutUserInput
     reactions?: ReactionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSavedResourcesInput = {
@@ -33834,8 +28358,8 @@ export namespace Prisma {
 
   export type ResourceCreateWithoutSavedByInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -33850,13 +28374,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     author: UserCreateNestedOneWithoutResourcesInput
     parent?: ResourceCreateNestedOneWithoutChildrenInput
@@ -33874,8 +28396,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedCreateWithoutSavedByInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -33890,13 +28412,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
     parentId?: string | null
@@ -33930,7 +28450,7 @@ export namespace Prisma {
 
   export type UserUpdateWithoutSavedResourcesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33939,29 +28459,23 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUpdateManyWithoutAuthorNestedInput
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     usageEvents?: ResourceUsageUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUpdateManyWithoutUserNestedInput
     reactions?: ReactionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
     following?: FollowUpdateManyWithoutFollowerNestedInput
     followers?: FollowUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSavedResourcesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33970,24 +28484,18 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUncheckedUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUncheckedUpdateManyWithoutAuthorNestedInput
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     usageEvents?: ResourceUsageUncheckedUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUncheckedUpdateManyWithoutUserNestedInput
     reactions?: ReactionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ResourceUpsertWithoutSavedByInput = {
@@ -34003,8 +28511,8 @@ export namespace Prisma {
 
   export type ResourceUpdateWithoutSavedByInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34019,13 +28527,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     author?: UserUpdateOneRequiredWithoutResourcesNestedInput
     parent?: ResourceUpdateOneWithoutChildrenNestedInput
@@ -34043,8 +28549,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateWithoutSavedByInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34059,13 +28565,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34083,7 +28587,7 @@ export namespace Prisma {
 
   export type UserCreateWithoutReactionsInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -34092,12 +28596,9 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceCreateNestedManyWithoutAuthorInput
     collections?: CollectionCreateNestedManyWithoutAuthorInput
@@ -34105,16 +28606,13 @@ export namespace Prisma {
     savedResources?: SavedResourceCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageCreateNestedManyWithoutUserInput
     versions?: ResourceVersionCreateNestedManyWithoutAuthorInput
-    activities?: ActivityCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
     following?: FollowCreateNestedManyWithoutFollowerInput
     followers?: FollowCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReactionsInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -34123,12 +28621,9 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceUncheckedCreateNestedManyWithoutAuthorInput
     collections?: CollectionUncheckedCreateNestedManyWithoutAuthorInput
@@ -34136,11 +28631,8 @@ export namespace Prisma {
     savedResources?: SavedResourceUncheckedCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageUncheckedCreateNestedManyWithoutUserInput
     versions?: ResourceVersionUncheckedCreateNestedManyWithoutAuthorInput
-    activities?: ActivityUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReactionsInput = {
@@ -34150,8 +28642,8 @@ export namespace Prisma {
 
   export type ResourceCreateWithoutReactionsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -34166,13 +28658,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     author: UserCreateNestedOneWithoutResourcesInput
     parent?: ResourceCreateNestedOneWithoutChildrenInput
@@ -34190,8 +28680,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedCreateWithoutReactionsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -34206,13 +28696,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
     parentId?: string | null
@@ -34246,7 +28734,7 @@ export namespace Prisma {
 
   export type UserUpdateWithoutReactionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34255,12 +28743,9 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUpdateManyWithoutAuthorNestedInput
@@ -34268,16 +28753,13 @@ export namespace Prisma {
     savedResources?: SavedResourceUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
     following?: FollowUpdateManyWithoutFollowerNestedInput
     followers?: FollowUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReactionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34286,12 +28768,9 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUncheckedUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUncheckedUpdateManyWithoutAuthorNestedInput
@@ -34299,11 +28778,8 @@ export namespace Prisma {
     savedResources?: SavedResourceUncheckedUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUncheckedUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ResourceUpsertWithoutReactionsInput = {
@@ -34319,8 +28795,8 @@ export namespace Prisma {
 
   export type ResourceUpdateWithoutReactionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34335,13 +28811,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     author?: UserUpdateOneRequiredWithoutResourcesNestedInput
     parent?: ResourceUpdateOneWithoutChildrenNestedInput
@@ -34359,8 +28833,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateWithoutReactionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34375,13 +28849,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34399,7 +28871,7 @@ export namespace Prisma {
 
   export type UserCreateWithoutFollowingInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -34408,12 +28880,9 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceCreateNestedManyWithoutAuthorInput
     collections?: CollectionCreateNestedManyWithoutAuthorInput
@@ -34421,16 +28890,13 @@ export namespace Prisma {
     savedResources?: SavedResourceCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageCreateNestedManyWithoutUserInput
     versions?: ResourceVersionCreateNestedManyWithoutAuthorInput
-    activities?: ActivityCreateNestedManyWithoutUserInput
     reactions?: ReactionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
     followers?: FollowCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFollowingInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -34439,12 +28905,9 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceUncheckedCreateNestedManyWithoutAuthorInput
     collections?: CollectionUncheckedCreateNestedManyWithoutAuthorInput
@@ -34452,11 +28915,8 @@ export namespace Prisma {
     savedResources?: SavedResourceUncheckedCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageUncheckedCreateNestedManyWithoutUserInput
     versions?: ResourceVersionUncheckedCreateNestedManyWithoutAuthorInput
-    activities?: ActivityUncheckedCreateNestedManyWithoutUserInput
     reactions?: ReactionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFollowingInput = {
@@ -34466,7 +28926,7 @@ export namespace Prisma {
 
   export type UserCreateWithoutFollowersInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -34475,12 +28935,9 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceCreateNestedManyWithoutAuthorInput
     collections?: CollectionCreateNestedManyWithoutAuthorInput
@@ -34488,16 +28945,13 @@ export namespace Prisma {
     savedResources?: SavedResourceCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageCreateNestedManyWithoutUserInput
     versions?: ResourceVersionCreateNestedManyWithoutAuthorInput
-    activities?: ActivityCreateNestedManyWithoutUserInput
     reactions?: ReactionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
     following?: FollowCreateNestedManyWithoutFollowerInput
-    memberships?: MembershipCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFollowersInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -34506,12 +28960,9 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceUncheckedCreateNestedManyWithoutAuthorInput
     collections?: CollectionUncheckedCreateNestedManyWithoutAuthorInput
@@ -34519,11 +28970,8 @@ export namespace Prisma {
     savedResources?: SavedResourceUncheckedCreateNestedManyWithoutUserInput
     usageEvents?: ResourceUsageUncheckedCreateNestedManyWithoutUserInput
     versions?: ResourceVersionUncheckedCreateNestedManyWithoutAuthorInput
-    activities?: ActivityUncheckedCreateNestedManyWithoutUserInput
     reactions?: ReactionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFollowersInput = {
@@ -34544,7 +28992,7 @@ export namespace Prisma {
 
   export type UserUpdateWithoutFollowingInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34553,12 +29001,9 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUpdateManyWithoutAuthorNestedInput
@@ -34566,16 +29011,13 @@ export namespace Prisma {
     savedResources?: SavedResourceUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUpdateManyWithoutUserNestedInput
     reactions?: ReactionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
     followers?: FollowUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFollowingInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34584,12 +29026,9 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUncheckedUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUncheckedUpdateManyWithoutAuthorNestedInput
@@ -34597,11 +29036,8 @@ export namespace Prisma {
     savedResources?: SavedResourceUncheckedUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUncheckedUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUncheckedUpdateManyWithoutUserNestedInput
     reactions?: ReactionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutFollowersInput = {
@@ -34617,7 +29053,7 @@ export namespace Prisma {
 
   export type UserUpdateWithoutFollowersInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34626,12 +29062,9 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUpdateManyWithoutAuthorNestedInput
@@ -34639,16 +29072,13 @@ export namespace Prisma {
     savedResources?: SavedResourceUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUpdateManyWithoutUserNestedInput
     reactions?: ReactionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
     following?: FollowUpdateManyWithoutFollowerNestedInput
-    memberships?: MembershipUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFollowersInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34657,12 +29087,9 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUncheckedUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUncheckedUpdateManyWithoutAuthorNestedInput
@@ -34670,17 +29097,14 @@ export namespace Prisma {
     savedResources?: SavedResourceUncheckedUpdateManyWithoutUserNestedInput
     usageEvents?: ResourceUsageUncheckedUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUncheckedUpdateManyWithoutUserNestedInput
     reactions?: ReactionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
-    memberships?: MembershipUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ResourceCreateWithoutUsageEventsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -34695,13 +29119,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     author: UserCreateNestedOneWithoutResourcesInput
     parent?: ResourceCreateNestedOneWithoutChildrenInput
@@ -34719,8 +29141,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedCreateWithoutUsageEventsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -34735,13 +29157,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
     parentId?: string | null
@@ -34764,7 +29184,7 @@ export namespace Prisma {
 
   export type UserCreateWithoutUsageEventsInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -34773,29 +29193,23 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceCreateNestedManyWithoutAuthorInput
     collections?: CollectionCreateNestedManyWithoutAuthorInput
     comments?: CommentCreateNestedManyWithoutAuthorInput
     savedResources?: SavedResourceCreateNestedManyWithoutUserInput
     versions?: ResourceVersionCreateNestedManyWithoutAuthorInput
-    activities?: ActivityCreateNestedManyWithoutUserInput
     reactions?: ReactionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
     following?: FollowCreateNestedManyWithoutFollowerInput
     followers?: FollowCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUsageEventsInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     identityId: string
     username: string
     displayName?: string | null
@@ -34804,24 +29218,18 @@ export namespace Prisma {
     role?: $Enums.UserRole
     archetype?: $Enums.UserArchetype
     onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     resources?: ResourceUncheckedCreateNestedManyWithoutAuthorInput
     collections?: CollectionUncheckedCreateNestedManyWithoutAuthorInput
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     savedResources?: SavedResourceUncheckedCreateNestedManyWithoutUserInput
     versions?: ResourceVersionUncheckedCreateNestedManyWithoutAuthorInput
-    activities?: ActivityUncheckedCreateNestedManyWithoutUserInput
     reactions?: ReactionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUsageEventsInput = {
@@ -34842,8 +29250,8 @@ export namespace Prisma {
 
   export type ResourceUpdateWithoutUsageEventsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34858,13 +29266,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     author?: UserUpdateOneRequiredWithoutResourcesNestedInput
     parent?: ResourceUpdateOneWithoutChildrenNestedInput
@@ -34882,8 +29288,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateWithoutUsageEventsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34898,13 +29304,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34933,7 +29337,7 @@ export namespace Prisma {
 
   export type UserUpdateWithoutUsageEventsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34942,29 +29346,23 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUpdateManyWithoutAuthorNestedInput
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     savedResources?: SavedResourceUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUpdateManyWithoutUserNestedInput
     reactions?: ReactionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
     following?: FollowUpdateManyWithoutFollowerNestedInput
     followers?: FollowUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUsageEventsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     identityId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34973,30 +29371,24 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
     onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
     preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resources?: ResourceUncheckedUpdateManyWithoutAuthorNestedInput
     collections?: CollectionUncheckedUpdateManyWithoutAuthorNestedInput
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     savedResources?: SavedResourceUncheckedUpdateManyWithoutUserNestedInput
     versions?: ResourceVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUncheckedUpdateManyWithoutUserNestedInput
     reactions?: ReactionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ResourceCreateWithoutMetricsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -35011,13 +29403,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     author: UserCreateNestedOneWithoutResourcesInput
     parent?: ResourceCreateNestedOneWithoutChildrenInput
@@ -35035,8 +29425,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedCreateWithoutMetricsInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -35051,13 +29441,11 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
     parentId?: string | null
@@ -35091,8 +29479,8 @@ export namespace Prisma {
 
   export type ResourceUpdateWithoutMetricsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35107,13 +29495,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     author?: UserUpdateOneRequiredWithoutResourcesNestedInput
     parent?: ResourceUpdateOneWithoutChildrenNestedInput
@@ -35131,8 +29517,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateWithoutMetricsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35147,13 +29533,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35169,290 +29553,10 @@ export namespace Prisma {
     reactions?: ReactionUncheckedUpdateManyWithoutResourceNestedInput
   }
 
-  export type UserCreateWithoutActivitiesInput = {
-    id?: string
-    tenantId?: string | null
-    identityId: string
-    username: string
-    displayName?: string | null
-    avatarUrl?: string | null
-    bio?: string | null
-    role?: $Enums.UserRole
-    archetype?: $Enums.UserArchetype
-    onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    archivedAt?: Date | string | null
-    deletedAt?: Date | string | null
-    resources?: ResourceCreateNestedManyWithoutAuthorInput
-    collections?: CollectionCreateNestedManyWithoutAuthorInput
-    comments?: CommentCreateNestedManyWithoutAuthorInput
-    savedResources?: SavedResourceCreateNestedManyWithoutUserInput
-    usageEvents?: ResourceUsageCreateNestedManyWithoutUserInput
-    versions?: ResourceVersionCreateNestedManyWithoutAuthorInput
-    reactions?: ReactionCreateNestedManyWithoutUserInput
-    notifications?: NotificationCreateNestedManyWithoutUserInput
-    following?: FollowCreateNestedManyWithoutFollowerInput
-    followers?: FollowCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutActivitiesInput = {
-    id?: string
-    tenantId?: string | null
-    identityId: string
-    username: string
-    displayName?: string | null
-    avatarUrl?: string | null
-    bio?: string | null
-    role?: $Enums.UserRole
-    archetype?: $Enums.UserArchetype
-    onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    archivedAt?: Date | string | null
-    deletedAt?: Date | string | null
-    resources?: ResourceUncheckedCreateNestedManyWithoutAuthorInput
-    collections?: CollectionUncheckedCreateNestedManyWithoutAuthorInput
-    comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
-    savedResources?: SavedResourceUncheckedCreateNestedManyWithoutUserInput
-    usageEvents?: ResourceUsageUncheckedCreateNestedManyWithoutUserInput
-    versions?: ResourceVersionUncheckedCreateNestedManyWithoutAuthorInput
-    reactions?: ReactionUncheckedCreateNestedManyWithoutUserInput
-    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
-    followers?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutActivitiesInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutActivitiesInput, UserUncheckedCreateWithoutActivitiesInput>
-  }
-
-  export type UserUpsertWithoutActivitiesInput = {
-    update: XOR<UserUpdateWithoutActivitiesInput, UserUncheckedUpdateWithoutActivitiesInput>
-    create: XOR<UserCreateWithoutActivitiesInput, UserUncheckedCreateWithoutActivitiesInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutActivitiesInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutActivitiesInput, UserUncheckedUpdateWithoutActivitiesInput>
-  }
-
-  export type UserUpdateWithoutActivitiesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    identityId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    displayName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-    archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
-    onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    resources?: ResourceUpdateManyWithoutAuthorNestedInput
-    collections?: CollectionUpdateManyWithoutAuthorNestedInput
-    comments?: CommentUpdateManyWithoutAuthorNestedInput
-    savedResources?: SavedResourceUpdateManyWithoutUserNestedInput
-    usageEvents?: ResourceUsageUpdateManyWithoutUserNestedInput
-    versions?: ResourceVersionUpdateManyWithoutAuthorNestedInput
-    reactions?: ReactionUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUpdateManyWithoutUserNestedInput
-    following?: FollowUpdateManyWithoutFollowerNestedInput
-    followers?: FollowUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutActivitiesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    identityId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    displayName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-    archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
-    onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    resources?: ResourceUncheckedUpdateManyWithoutAuthorNestedInput
-    collections?: CollectionUncheckedUpdateManyWithoutAuthorNestedInput
-    comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
-    savedResources?: SavedResourceUncheckedUpdateManyWithoutUserNestedInput
-    usageEvents?: ResourceUsageUncheckedUpdateManyWithoutUserNestedInput
-    versions?: ResourceVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    reactions?: ReactionUncheckedUpdateManyWithoutUserNestedInput
-    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
-    followers?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUncheckedUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserCreateWithoutNotificationsInput = {
-    id?: string
-    tenantId?: string | null
-    identityId: string
-    username: string
-    displayName?: string | null
-    avatarUrl?: string | null
-    bio?: string | null
-    role?: $Enums.UserRole
-    archetype?: $Enums.UserArchetype
-    onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    archivedAt?: Date | string | null
-    deletedAt?: Date | string | null
-    resources?: ResourceCreateNestedManyWithoutAuthorInput
-    collections?: CollectionCreateNestedManyWithoutAuthorInput
-    comments?: CommentCreateNestedManyWithoutAuthorInput
-    savedResources?: SavedResourceCreateNestedManyWithoutUserInput
-    usageEvents?: ResourceUsageCreateNestedManyWithoutUserInput
-    versions?: ResourceVersionCreateNestedManyWithoutAuthorInput
-    activities?: ActivityCreateNestedManyWithoutUserInput
-    reactions?: ReactionCreateNestedManyWithoutUserInput
-    following?: FollowCreateNestedManyWithoutFollowerInput
-    followers?: FollowCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutNotificationsInput = {
-    id?: string
-    tenantId?: string | null
-    identityId: string
-    username: string
-    displayName?: string | null
-    avatarUrl?: string | null
-    bio?: string | null
-    role?: $Enums.UserRole
-    archetype?: $Enums.UserArchetype
-    onboardingStep?: number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    archivedAt?: Date | string | null
-    deletedAt?: Date | string | null
-    resources?: ResourceUncheckedCreateNestedManyWithoutAuthorInput
-    collections?: CollectionUncheckedCreateNestedManyWithoutAuthorInput
-    comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
-    savedResources?: SavedResourceUncheckedCreateNestedManyWithoutUserInput
-    usageEvents?: ResourceUsageUncheckedCreateNestedManyWithoutUserInput
-    versions?: ResourceVersionUncheckedCreateNestedManyWithoutAuthorInput
-    activities?: ActivityUncheckedCreateNestedManyWithoutUserInput
-    reactions?: ReactionUncheckedCreateNestedManyWithoutUserInput
-    following?: FollowUncheckedCreateNestedManyWithoutFollowerInput
-    followers?: FollowUncheckedCreateNestedManyWithoutFollowingInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutNotificationsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
-  }
-
-  export type UserUpsertWithoutNotificationsInput = {
-    update: XOR<UserUpdateWithoutNotificationsInput, UserUncheckedUpdateWithoutNotificationsInput>
-    create: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutNotificationsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutNotificationsInput, UserUncheckedUpdateWithoutNotificationsInput>
-  }
-
-  export type UserUpdateWithoutNotificationsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    identityId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    displayName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-    archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
-    onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    resources?: ResourceUpdateManyWithoutAuthorNestedInput
-    collections?: CollectionUpdateManyWithoutAuthorNestedInput
-    comments?: CommentUpdateManyWithoutAuthorNestedInput
-    savedResources?: SavedResourceUpdateManyWithoutUserNestedInput
-    usageEvents?: ResourceUsageUpdateManyWithoutUserNestedInput
-    versions?: ResourceVersionUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUpdateManyWithoutUserNestedInput
-    reactions?: ReactionUpdateManyWithoutUserNestedInput
-    following?: FollowUpdateManyWithoutFollowerNestedInput
-    followers?: FollowUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUpdateManyWithoutUserNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutNotificationsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    identityId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-    displayName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    bio?: NullableStringFieldUpdateOperationsInput | string | null
-    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-    archetype?: EnumUserArchetypeFieldUpdateOperationsInput | $Enums.UserArchetype
-    onboardingStep?: IntFieldUpdateOperationsInput | number
-    onboardingJson?: NullableJsonNullValueInput | InputJsonValue
-    preferences?: NullableJsonNullValueInput | InputJsonValue
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    resources?: ResourceUncheckedUpdateManyWithoutAuthorNestedInput
-    collections?: CollectionUncheckedUpdateManyWithoutAuthorNestedInput
-    comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
-    savedResources?: SavedResourceUncheckedUpdateManyWithoutUserNestedInput
-    usageEvents?: ResourceUsageUncheckedUpdateManyWithoutUserNestedInput
-    versions?: ResourceVersionUncheckedUpdateManyWithoutAuthorNestedInput
-    activities?: ActivityUncheckedUpdateManyWithoutUserNestedInput
-    reactions?: ReactionUncheckedUpdateManyWithoutUserNestedInput
-    following?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
-    followers?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
-    memberships?: MembershipUncheckedUpdateManyWithoutUserNestedInput
-  }
-
   export type ResourceCreateManyAuthorInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -35467,20 +29571,18 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     parentId?: string | null
   }
 
   export type CollectionCreateManyAuthorInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     slug: string
     title: string
     description?: string | null
@@ -35494,10 +29596,9 @@ export namespace Prisma {
 
   export type CommentCreateManyAuthorInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     content: string
     status?: $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -35507,14 +29608,14 @@ export namespace Prisma {
 
   export type SavedResourceCreateManyUserInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
     createdAt?: Date | string
   }
 
   export type ResourceUsageCreateManyUserInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
     event: $Enums.UsageEvent
     sessionId?: string | null
@@ -35524,7 +29625,7 @@ export namespace Prisma {
 
   export type ResourceVersionCreateManyAuthorInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
     versionNumber: number
     titleSnapshot: string
@@ -35534,66 +29635,30 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
-  export type ActivityCreateManyUserInput = {
-    id?: string
-    tenantId?: string | null
-    type: $Enums.ActivityType
-    entityId: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-  }
-
   export type ReactionCreateManyUserInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
-    type?: string
-    createdAt?: Date | string
-  }
-
-  export type NotificationCreateManyUserInput = {
-    id?: string
-    tenantId?: string | null
-    type: $Enums.NotificationType
-    title: string
-    body?: string | null
-    entityId?: string | null
-    entityType?: string | null
-    read?: boolean
-    readAt?: Date | string | null
+    type?: $Enums.ReactionType
     createdAt?: Date | string
   }
 
   export type FollowCreateManyFollowerInput = {
     id?: string
-    tenantId?: string | null
     followingId: string
     createdAt?: Date | string
-    deletedAt?: Date | string | null
   }
 
   export type FollowCreateManyFollowingInput = {
     id?: string
-    tenantId?: string | null
     followerId: string
     createdAt?: Date | string
-    deletedAt?: Date | string | null
-  }
-
-  export type MembershipCreateManyUserInput = {
-    id?: string
-    role?: $Enums.MemberRole
-    status?: string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    joinedAt?: Date | string
-    updatedAt?: Date | string
-    tenantId: string
   }
 
   export type ResourceUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35608,13 +29673,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parent?: ResourceUpdateOneWithoutChildrenNestedInput
     children?: ResourceUpdateManyWithoutParentNestedInput
@@ -35632,8 +29695,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35648,13 +29711,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     children?: ResourceUncheckedUpdateManyWithoutParentNestedInput
@@ -35672,8 +29733,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateManyWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35688,20 +29749,18 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CollectionUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35717,7 +29776,7 @@ export namespace Prisma {
 
   export type CollectionUncheckedUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35733,7 +29792,7 @@ export namespace Prisma {
 
   export type CollectionUncheckedUpdateManyWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35747,10 +29806,9 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -35761,10 +29819,9 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -35775,10 +29832,9 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateManyWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -35788,28 +29844,28 @@ export namespace Prisma {
 
   export type SavedResourceUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resource?: ResourceUpdateOneRequiredWithoutSavedByNestedInput
   }
 
   export type SavedResourceUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SavedResourceUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ResourceUsageUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     event?: EnumUsageEventFieldUpdateOperationsInput | $Enums.UsageEvent
     sessionId?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -35819,7 +29875,7 @@ export namespace Prisma {
 
   export type ResourceUsageUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     event?: EnumUsageEventFieldUpdateOperationsInput | $Enums.UsageEvent
     sessionId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35829,7 +29885,7 @@ export namespace Prisma {
 
   export type ResourceUsageUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     event?: EnumUsageEventFieldUpdateOperationsInput | $Enums.UsageEvent
     sessionId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35839,7 +29895,7 @@ export namespace Prisma {
 
   export type ResourceVersionUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     versionNumber?: IntFieldUpdateOperationsInput | number
     titleSnapshot?: StringFieldUpdateOperationsInput | string
     contentSnapshot?: NullableJsonNullValueInput | InputJsonValue
@@ -35851,7 +29907,7 @@ export namespace Prisma {
 
   export type ResourceVersionUncheckedUpdateWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     versionNumber?: IntFieldUpdateOperationsInput | number
     titleSnapshot?: StringFieldUpdateOperationsInput | string
@@ -35863,7 +29919,7 @@ export namespace Prisma {
 
   export type ResourceVersionUncheckedUpdateManyWithoutAuthorInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     versionNumber?: IntFieldUpdateOperationsInput | number
     titleSnapshot?: StringFieldUpdateOperationsInput | string
@@ -35873,178 +29929,70 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type ActivityUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
-    entityId?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ActivityUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
-    entityId?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ActivityUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
-    entityId?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type ReactionUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    type?: EnumReactionTypeFieldUpdateOperationsInput | $Enums.ReactionType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resource?: ResourceUpdateOneRequiredWithoutReactionsNestedInput
   }
 
   export type ReactionUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
-    type?: StringFieldUpdateOperationsInput | string
+    type?: EnumReactionTypeFieldUpdateOperationsInput | $Enums.ReactionType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ReactionUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
-    type?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    body?: NullableStringFieldUpdateOperationsInput | string | null
-    entityId?: NullableStringFieldUpdateOperationsInput | string | null
-    entityType?: NullableStringFieldUpdateOperationsInput | string | null
-    read?: BoolFieldUpdateOperationsInput | boolean
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    body?: NullableStringFieldUpdateOperationsInput | string | null
-    entityId?: NullableStringFieldUpdateOperationsInput | string | null
-    entityType?: NullableStringFieldUpdateOperationsInput | string | null
-    read?: BoolFieldUpdateOperationsInput | boolean
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    body?: NullableStringFieldUpdateOperationsInput | string | null
-    entityId?: NullableStringFieldUpdateOperationsInput | string | null
-    entityType?: NullableStringFieldUpdateOperationsInput | string | null
-    read?: BoolFieldUpdateOperationsInput | boolean
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    type?: EnumReactionTypeFieldUpdateOperationsInput | $Enums.ReactionType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type FollowUpdateWithoutFollowerInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     following?: UserUpdateOneRequiredWithoutFollowersNestedInput
   }
 
   export type FollowUncheckedUpdateWithoutFollowerInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     followingId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type FollowUncheckedUpdateManyWithoutFollowerInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     followingId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type FollowUpdateWithoutFollowingInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     follower?: UserUpdateOneRequiredWithoutFollowingNestedInput
   }
 
   export type FollowUncheckedUpdateWithoutFollowingInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     followerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type FollowUncheckedUpdateManyWithoutFollowingInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     followerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type MembershipUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    role?: EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
-    status?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    tenantId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type MembershipUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    role?: EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
-    status?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    tenantId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type MembershipUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    role?: EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
-    status?: StringFieldUpdateOperationsInput | string
-    metadata?: NullableJsonNullValueInput | InputJsonValue
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    tenantId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ResourceCreateManyParentInput = {
     id?: string
-    tenantId?: string | null
-    slug?: string | null
+    tenantId?: string
+    slug: string
     title?: string | null
     description?: string | null
     excerpt?: string | null
@@ -36059,20 +30007,18 @@ export namespace Prisma {
     coverImageUrl?: string | null
     fileUrl?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: number | null
     estimatedTime?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     publishedAt?: Date | string | null
-    archivedAt?: Date | string | null
     deletedAt?: Date | string | null
     authorId: string
   }
 
   export type RelationCreateManyFromInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     type: $Enums.RelationType
     toId: string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -36081,7 +30027,7 @@ export namespace Prisma {
 
   export type RelationCreateManyToInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     type: $Enums.RelationType
     fromId: string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -36090,7 +30036,7 @@ export namespace Prisma {
 
   export type CollectionResourceCreateManyResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     collectionId: string
     orderIndex: number
     addedAt?: Date | string
@@ -36098,10 +30044,9 @@ export namespace Prisma {
 
   export type CommentCreateManyResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     content: string
     status?: $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -36111,7 +30056,7 @@ export namespace Prisma {
 
   export type ResourceVersionCreateManyResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     authorId: string
     versionNumber: number
     titleSnapshot: string
@@ -36123,7 +30068,7 @@ export namespace Prisma {
 
   export type ResourceUsageCreateManyResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     actorId?: string | null
     event: $Enums.UsageEvent
     sessionId?: string | null
@@ -36133,7 +30078,7 @@ export namespace Prisma {
 
   export type SavedResourceCreateManyResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     userId: string
     createdAt?: Date | string
   }
@@ -36145,16 +30090,16 @@ export namespace Prisma {
 
   export type ReactionCreateManyResourceInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     userId: string
-    type?: string
+    type?: $Enums.ReactionType
     createdAt?: Date | string
   }
 
   export type ResourceUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36169,13 +30114,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     author?: UserUpdateOneRequiredWithoutResourcesNestedInput
     children?: ResourceUpdateManyWithoutParentNestedInput
@@ -36193,8 +30136,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36209,13 +30152,11 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
     children?: ResourceUncheckedUpdateManyWithoutParentNestedInput
@@ -36233,8 +30174,8 @@ export namespace Prisma {
 
   export type ResourceUncheckedUpdateManyWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     excerpt?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36249,20 +30190,18 @@ export namespace Prisma {
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    aiMetadata?: NullableJsonNullValueInput | InputJsonValue
     wordCount?: NullableIntFieldUpdateOperationsInput | number | null
     estimatedTime?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authorId?: StringFieldUpdateOperationsInput | string
   }
 
   export type RelationUpdateWithoutFromInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     type?: EnumRelationTypeFieldUpdateOperationsInput | $Enums.RelationType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36271,7 +30210,7 @@ export namespace Prisma {
 
   export type RelationUncheckedUpdateWithoutFromInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     type?: EnumRelationTypeFieldUpdateOperationsInput | $Enums.RelationType
     toId?: StringFieldUpdateOperationsInput | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -36280,7 +30219,7 @@ export namespace Prisma {
 
   export type RelationUncheckedUpdateManyWithoutFromInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     type?: EnumRelationTypeFieldUpdateOperationsInput | $Enums.RelationType
     toId?: StringFieldUpdateOperationsInput | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -36289,7 +30228,7 @@ export namespace Prisma {
 
   export type RelationUpdateWithoutToInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     type?: EnumRelationTypeFieldUpdateOperationsInput | $Enums.RelationType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36298,7 +30237,7 @@ export namespace Prisma {
 
   export type RelationUncheckedUpdateWithoutToInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     type?: EnumRelationTypeFieldUpdateOperationsInput | $Enums.RelationType
     fromId?: StringFieldUpdateOperationsInput | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -36307,7 +30246,7 @@ export namespace Prisma {
 
   export type RelationUncheckedUpdateManyWithoutToInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     type?: EnumRelationTypeFieldUpdateOperationsInput | $Enums.RelationType
     fromId?: StringFieldUpdateOperationsInput | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -36316,7 +30255,7 @@ export namespace Prisma {
 
   export type CollectionResourceUpdateWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     orderIndex?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     collection?: CollectionUpdateOneRequiredWithoutResourcesNestedInput
@@ -36324,7 +30263,7 @@ export namespace Prisma {
 
   export type CollectionResourceUncheckedUpdateWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     collectionId?: StringFieldUpdateOperationsInput | string
     orderIndex?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36332,7 +30271,7 @@ export namespace Prisma {
 
   export type CollectionResourceUncheckedUpdateManyWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     collectionId?: StringFieldUpdateOperationsInput | string
     orderIndex?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36340,10 +30279,9 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36354,10 +30292,9 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36368,10 +30305,9 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateManyWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36381,7 +30317,7 @@ export namespace Prisma {
 
   export type ResourceVersionUpdateWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     versionNumber?: IntFieldUpdateOperationsInput | number
     titleSnapshot?: StringFieldUpdateOperationsInput | string
     contentSnapshot?: NullableJsonNullValueInput | InputJsonValue
@@ -36393,7 +30329,7 @@ export namespace Prisma {
 
   export type ResourceVersionUncheckedUpdateWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
     versionNumber?: IntFieldUpdateOperationsInput | number
     titleSnapshot?: StringFieldUpdateOperationsInput | string
@@ -36405,7 +30341,7 @@ export namespace Prisma {
 
   export type ResourceVersionUncheckedUpdateManyWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     authorId?: StringFieldUpdateOperationsInput | string
     versionNumber?: IntFieldUpdateOperationsInput | number
     titleSnapshot?: StringFieldUpdateOperationsInput | string
@@ -36417,7 +30353,7 @@ export namespace Prisma {
 
   export type ResourceUsageUpdateWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     event?: EnumUsageEventFieldUpdateOperationsInput | $Enums.UsageEvent
     sessionId?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
@@ -36427,7 +30363,7 @@ export namespace Prisma {
 
   export type ResourceUsageUncheckedUpdateWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     actorId?: NullableStringFieldUpdateOperationsInput | string | null
     event?: EnumUsageEventFieldUpdateOperationsInput | $Enums.UsageEvent
     sessionId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36437,7 +30373,7 @@ export namespace Prisma {
 
   export type ResourceUsageUncheckedUpdateManyWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     actorId?: NullableStringFieldUpdateOperationsInput | string | null
     event?: EnumUsageEventFieldUpdateOperationsInput | $Enums.UsageEvent
     sessionId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36447,21 +30383,21 @@ export namespace Prisma {
 
   export type SavedResourceUpdateWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutSavedResourcesNestedInput
   }
 
   export type SavedResourceUncheckedUpdateWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SavedResourceUncheckedUpdateManyWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -36483,31 +30419,31 @@ export namespace Prisma {
 
   export type ReactionUpdateWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    type?: EnumReactionTypeFieldUpdateOperationsInput | $Enums.ReactionType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutReactionsNestedInput
   }
 
   export type ReactionUncheckedUpdateWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    type?: StringFieldUpdateOperationsInput | string
+    type?: EnumReactionTypeFieldUpdateOperationsInput | $Enums.ReactionType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ReactionUncheckedUpdateManyWithoutResourceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    type?: StringFieldUpdateOperationsInput | string
+    type?: EnumReactionTypeFieldUpdateOperationsInput | $Enums.ReactionType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CollectionCreateManyParentInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     slug: string
     title: string
     description?: string | null
@@ -36521,7 +30457,7 @@ export namespace Prisma {
 
   export type CollectionResourceCreateManyCollectionInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     resourceId: string
     orderIndex: number
     addedAt?: Date | string
@@ -36529,7 +30465,7 @@ export namespace Prisma {
 
   export type CollectionUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36545,7 +30481,7 @@ export namespace Prisma {
 
   export type CollectionUncheckedUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36561,7 +30497,7 @@ export namespace Prisma {
 
   export type CollectionUncheckedUpdateManyWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36575,7 +30511,7 @@ export namespace Prisma {
 
   export type CollectionResourceUpdateWithoutCollectionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     orderIndex?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resource?: ResourceUpdateOneRequiredWithoutCollectionsNestedInput
@@ -36583,7 +30519,7 @@ export namespace Prisma {
 
   export type CollectionResourceUncheckedUpdateWithoutCollectionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     orderIndex?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36591,7 +30527,7 @@ export namespace Prisma {
 
   export type CollectionResourceUncheckedUpdateManyWithoutCollectionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     resourceId?: StringFieldUpdateOperationsInput | string
     orderIndex?: IntFieldUpdateOperationsInput | number
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36619,10 +30555,9 @@ export namespace Prisma {
 
   export type CommentCreateManyParentInput = {
     id?: string
-    tenantId?: string | null
+    tenantId?: string
     content: string
     status?: $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     deletedAt?: Date | string | null
@@ -36632,10 +30567,9 @@ export namespace Prisma {
 
   export type CommentUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36646,10 +30580,9 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36660,10 +30593,9 @@ export namespace Prisma {
 
   export type CommentUncheckedUpdateManyWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
-    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
+    tenantId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     status?: EnumCommentStatusFieldUpdateOperationsInput | $Enums.CommentStatus
-    metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

@@ -4,6 +4,7 @@ import type { FlowContext } from "@/core/flows/flow-context";
 import { ConnectResourcesDto } from "../resource.dto";
 import { ResourceService }     from "../resource.service";
 import { ApiError }            from "@/lib/errors";
+import { resolveTenantId }     from "@/core/tenancy";
 
 const Input = ConnectResourcesDto.extend({ resourceId: z.string() });
 
@@ -22,7 +23,7 @@ export const connectResourcesFlow: Flow<z.infer<typeof Input>, { relation: unkno
 
     const relation = await ctx.db.relation.upsert({
       where:  { fromId_toId_type: { fromId: input.resourceId, toId: input.targetId, type: input.type } },
-      create: { fromId: input.resourceId, toId: input.targetId, type: input.type, metadata: input.metadata, tenantId: ctx.tenantId },
+      create: { fromId: input.resourceId, toId: input.targetId, type: input.type, metadata: input.metadata, tenantId: resolveTenantId(ctx.tenantId) },
       update: { metadata: input.metadata },
     });
 

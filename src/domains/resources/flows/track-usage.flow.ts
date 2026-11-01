@@ -2,6 +2,7 @@ import { z }             from "zod";
 import type { Flow }     from "@/core/flows/flow";
 import type { FlowContext } from "@/core/flows/flow-context";
 import { ResourceRepository } from "../resource.repository";
+import { resolveTenantId }    from "@/core/tenancy";
 
 const Input = z.object({
   resourceId: z.string(),
@@ -31,7 +32,7 @@ export const trackUsageFlow: Flow<z.infer<typeof Input>> = {
         event:      input.event,
         sessionId:  input.sessionId,
         metadata:   input.metadata,
-        tenantId:   ctx.tenantId,
+        tenantId:   resolveTenantId(ctx.tenantId),
       },
     });
 

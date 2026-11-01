@@ -131,24 +131,10 @@ exports.Prisma.UserScalarFieldEnum = {
   role: 'role',
   archetype: 'archetype',
   onboardingStep: 'onboardingStep',
-  onboardingJson: 'onboardingJson',
   preferences: 'preferences',
-  metadata: 'metadata',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  archivedAt: 'archivedAt',
   deletedAt: 'deletedAt'
-};
-
-exports.Prisma.MembershipScalarFieldEnum = {
-  id: 'id',
-  role: 'role',
-  status: 'status',
-  metadata: 'metadata',
-  joinedAt: 'joinedAt',
-  updatedAt: 'updatedAt',
-  userId: 'userId',
-  tenantId: 'tenantId'
 };
 
 exports.Prisma.ResourceScalarFieldEnum = {
@@ -169,13 +155,11 @@ exports.Prisma.ResourceScalarFieldEnum = {
   coverImageUrl: 'coverImageUrl',
   fileUrl: 'fileUrl',
   metadata: 'metadata',
-  aiMetadata: 'aiMetadata',
   wordCount: 'wordCount',
   estimatedTime: 'estimatedTime',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   publishedAt: 'publishedAt',
-  archivedAt: 'archivedAt',
   deletedAt: 'deletedAt',
   authorId: 'authorId',
   parentId: 'parentId'
@@ -247,7 +231,6 @@ exports.Prisma.CommentScalarFieldEnum = {
   tenantId: 'tenantId',
   content: 'content',
   status: 'status',
-  metadata: 'metadata',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt',
@@ -275,11 +258,9 @@ exports.Prisma.ReactionScalarFieldEnum = {
 
 exports.Prisma.FollowScalarFieldEnum = {
   id: 'id',
-  tenantId: 'tenantId',
   followerId: 'followerId',
   followingId: 'followingId',
-  createdAt: 'createdAt',
-  deletedAt: 'deletedAt'
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.ResourceUsageScalarFieldEnum = {
@@ -306,30 +287,6 @@ exports.Prisma.ResourceMetricsScalarFieldEnum = {
   comments: 'comments',
   engagementScore: 'engagementScore',
   updatedAt: 'updatedAt'
-};
-
-exports.Prisma.ActivityScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  userId: 'userId',
-  type: 'type',
-  entityId: 'entityId',
-  metadata: 'metadata',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.NotificationScalarFieldEnum = {
-  id: 'id',
-  tenantId: 'tenantId',
-  userId: 'userId',
-  type: 'type',
-  title: 'title',
-  body: 'body',
-  entityId: 'entityId',
-  entityType: 'entityType',
-  read: 'read',
-  readAt: 'readAt',
-  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -375,14 +332,6 @@ exports.UserArchetype = exports.$Enums.UserArchetype = {
   GENERAL: 'GENERAL'
 };
 
-exports.MemberRole = exports.$Enums.MemberRole = {
-  OWNER: 'OWNER',
-  ADMIN: 'ADMIN',
-  EDITOR: 'EDITOR',
-  VIEWER: 'VIEWER',
-  GUEST: 'GUEST'
-};
-
 exports.ResourceTypeRenderer = exports.$Enums.ResourceTypeRenderer = {
   ARTICLE: 'ARTICLE',
   NOTE: 'NOTE',
@@ -424,6 +373,10 @@ exports.CommentStatus = exports.$Enums.CommentStatus = {
   SPAM: 'SPAM'
 };
 
+exports.ReactionType = exports.$Enums.ReactionType = {
+  LIKE: 'LIKE'
+};
+
 exports.UsageEvent = exports.$Enums.UsageEvent = {
   VIEW: 'VIEW',
   OPEN: 'OPEN',
@@ -433,36 +386,8 @@ exports.UsageEvent = exports.$Enums.UsageEvent = {
   BOOKMARK: 'BOOKMARK'
 };
 
-exports.ActivityType = exports.$Enums.ActivityType = {
-  RESOURCE_CREATED: 'RESOURCE_CREATED',
-  RESOURCE_PUBLISHED: 'RESOURCE_PUBLISHED',
-  RESOURCE_ARCHIVED: 'RESOURCE_ARCHIVED',
-  RESOURCE_DELETED: 'RESOURCE_DELETED',
-  COMMENT_POSTED: 'COMMENT_POSTED',
-  COMMENT_DELETED: 'COMMENT_DELETED',
-  COLLECTION_CREATED: 'COLLECTION_CREATED',
-  RESOURCE_SAVED: 'RESOURCE_SAVED',
-  RESOURCE_UNSAVED: 'RESOURCE_UNSAVED',
-  REACTION_ADDED: 'REACTION_ADDED',
-  REACTION_REMOVED: 'REACTION_REMOVED',
-  FOLLOW_ADDED: 'FOLLOW_ADDED',
-  FOLLOW_REMOVED: 'FOLLOW_REMOVED',
-  NOTIFICATION_READ: 'NOTIFICATION_READ'
-};
-
-exports.NotificationType = exports.$Enums.NotificationType = {
-  NEW_COMMENT: 'NEW_COMMENT',
-  NEW_REPLY: 'NEW_REPLY',
-  NEW_FOLLOWER: 'NEW_FOLLOWER',
-  RESOURCE_PUBLISHED: 'RESOURCE_PUBLISHED',
-  RESOURCE_FEATURED: 'RESOURCE_FEATURED',
-  MENTION: 'MENTION',
-  SYSTEM: 'SYSTEM'
-};
-
 exports.Prisma.ModelName = {
   User: 'User',
-  Membership: 'Membership',
   Resource: 'Resource',
   Relation: 'Relation',
   ResourceVersion: 'ResourceVersion',
@@ -475,9 +400,7 @@ exports.Prisma.ModelName = {
   Reaction: 'Reaction',
   Follow: 'Follow',
   ResourceUsage: 'ResourceUsage',
-  ResourceMetrics: 'ResourceMetrics',
-  Activity: 'Activity',
-  Notification: 'Notification'
+  ResourceMetrics: 'ResourceMetrics'
 };
 
 /**

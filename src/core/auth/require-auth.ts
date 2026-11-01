@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { getSession, type AuthSession, type OnboardedSession } from "./get-session";
 import { prisma } from "@/core/db/prisma";
 import { ApiError } from "@/lib/errors";
+import { resolveTenantId } from "@/core/tenancy";
 
 /**
  * Inline guard - returns AuthSession or throws ApiError.unauthorized.
@@ -30,7 +31,7 @@ export async function requireOnboarded(req: NextRequest): Promise<OnboardedSessi
       data: {
         identityId: session.identityId,
         username: `user_${session.identityId.slice(0, 8)}`,
-        tenantId: session.tenantId,
+        tenantId: resolveTenantId(session.tenantId),
       },
     }));
   session.userId = user.id;

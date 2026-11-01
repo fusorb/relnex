@@ -3,6 +3,7 @@ import type { DbClient } from "@/core/flows/flow-context";
 import { CollectionRepository } from "./collection.repository";
 import type { CreateCollectionInput } from "./collection.dto";
 import { ApiError } from "@/lib/errors";
+import { resolveTenantId } from "@/core/tenancy";
 
 export class CollectionService {
   private repo: CollectionRepository;
@@ -21,7 +22,7 @@ export class CollectionService {
       visibility: input.visibility ?? "PUBLIC",
       metadata: input.metadata,
       parent: input.parentId ? { connect: { id: input.parentId } } : undefined,
-      tenantId: tenantId ?? null,
+      tenantId: resolveTenantId(tenantId),
     });
 
     const full = await this.repo.findById(created.id, tenantId);
@@ -54,7 +55,7 @@ export class CollectionService {
     await this.assertOwnership(collectionId, userId, tenantId);
     const maxIndex = await this.repo.getMaxOrderIndex(collectionId);
     return this.db.collectionResource.create({
-      data: { collectionId, resourceId, orderIndex: maxIndex + 1, tenantId },
+      data: { collectionId, resourceId, orderIndex: maxIndex + 1, tenantId: resolveTenantId(tenantId) },
     });
   }
 

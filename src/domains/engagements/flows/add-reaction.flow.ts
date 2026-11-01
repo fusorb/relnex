@@ -5,7 +5,7 @@ import { ReactionService } from "../reaction.service";
 
 const Input = z.object({
   resourceId: z.string(),
-  type:       z.string().optional(),
+  type:       z.enum(["LIKE"]).optional(),
 });
 
 export interface AddReactionResult {
@@ -20,7 +20,7 @@ export const addReactionFlow: Flow<z.infer<typeof Input>, AddReactionResult> = {
   async execute(input, ctx: FlowContext) {
     const service = new ReactionService(ctx.db);
     const reaction = await service.addReaction(
-      ctx.userId!, input.resourceId, input.type ?? "like", ctx.tenantId ?? undefined,
+      ctx.userId!, input.resourceId, input.type ?? "LIKE", ctx.tenantId ?? undefined,
     );
     return { added: true, reactionId: reaction.id };
   },

@@ -2,7 +2,7 @@
  * User presenter - transforms User model to API-safe response shapes.
  */
 
-import type { User, Membership } from "@prisma-client";
+import type { User } from "@prisma-client";
 
 // ── Public user profile (what others see) ───────────────────────────────
 
@@ -46,7 +46,6 @@ export interface PrivateUser extends PublicUser {
   role: string;
   onboardingStep: number;
   preferences: Record<string, unknown> | null;
-  metadata: Record<string, unknown> | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -64,7 +63,6 @@ export function presentPrivateUser(user: User): PrivateUser {
     role: user.role,
     onboardingStep: user.onboardingStep,
     preferences: user.preferences as Record<string, unknown> | null,
-    metadata: user.metadata as Record<string, unknown> | null,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
   };
@@ -90,25 +88,5 @@ export function presentUserList(
     total,
     page,
     limit,
-  };
-}
-
-// ── Membership presenter ────────────────────────────────────────────────
-
-export interface MembershipResponse {
-  id: string;
-  role: string;
-  status: string;
-  tenantId: string;
-  joinedAt: string;
-}
-
-export function presentMembership(membership: Membership): MembershipResponse {
-  return {
-    id: membership.id,
-    role: membership.role,
-    status: membership.status,
-    tenantId: membership.tenantId,
-    joinedAt: membership.joinedAt.toISOString(),
   };
 }

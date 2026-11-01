@@ -4,6 +4,7 @@ import type { FlowContext } from "@/core/flows/flow-context";
 import { CollectionService }    from "../collection.service";
 import { CollectionRepository } from "../collection.repository";
 import { ApiError } from "@/lib/errors";
+import { resolveTenantId } from "@/core/tenancy";
 
 const Input = z.object({ collectionId: z.string(), resourceId: z.string() });
 
@@ -21,7 +22,7 @@ export const addResourceToCollectionFlow: Flow<z.infer<typeof Input>> = {
 
     const entry = await ctx.db.collectionResource.upsert({
       where:  { collectionId_resourceId: { collectionId: input.collectionId, resourceId: input.resourceId } },
-      create: { collectionId: input.collectionId, resourceId: input.resourceId, orderIndex: maxIndex + 1, tenantId: ctx.tenantId },
+      create: { collectionId: input.collectionId, resourceId: input.resourceId, orderIndex: maxIndex + 1, tenantId: resolveTenantId(ctx.tenantId) },
       update: {},
     });
 

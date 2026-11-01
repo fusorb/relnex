@@ -5,7 +5,7 @@ import { ReactionService } from "../reaction.service";
 
 const Input = z.object({
   resourceId: z.string(),
-  type:       z.string().optional(),
+  type:       z.enum(["LIKE"]).optional(),
 });
 
 export interface RemoveReactionResult {
@@ -18,7 +18,7 @@ export const removeReactionFlow: Flow<z.infer<typeof Input>, RemoveReactionResul
 
   async execute(input, ctx: FlowContext) {
     const service = new ReactionService(ctx.db);
-    await service.removeReaction(ctx.userId!, input.resourceId, input.type ?? "like");
+    await service.removeReaction(ctx.userId!, input.resourceId, input.type ?? "LIKE");
     return { removed: true };
   },
 };

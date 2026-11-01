@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession, type AuthSession } from "./get-session";
 import { prisma } from "@/core/db/prisma";
+import { resolveTenantId } from "@/core/tenancy";
 
 type AuthedHandler = (req: NextRequest, session: AuthSession) => Promise<NextResponse>;
 
@@ -40,7 +41,7 @@ export function withUser(handler: AuthedHandler) {
         data: {
           identityId: session.identityId,
           username:   `user_${session.identityId.slice(0, 8)}`,
-          tenantId:   session.tenantId,
+          tenantId:   resolveTenantId(session.tenantId),
         },
       });
     }

@@ -49,7 +49,6 @@ export const authService = {
       identity:    null, // Populated from Sg
       onboardingStep: user.onboardingStep,
       preferences:   user.preferences,
-      metadata:      user.metadata,
       createdAt:     user.createdAt.toISOString(),
       updatedAt:     user.updatedAt.toISOString(),
     };
