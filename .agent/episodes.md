@@ -262,8 +262,8 @@ What changed:
   - `src/middleware.ts` - tenant/identity header forwarding.
   - Em/en dashes removed across `src/` and the docs.
   - README / AGENTS / CLAUDE / docs/architecture / roadmap / these episodes and
-    the tracker all realigned to the true repo state (17 models, 11 enums,
-    40 routes, 10 domains).
+    the tracker all realigned to the repo state (14 models, 9 enums, 40 routes,
+    9 domains).
 
 What survived:
   Phases 0-5 are complete and the repo builds clean. Phase 6 (pages) and Phase 7
@@ -272,3 +272,47 @@ What survived:
 State: paused at a green checkpoint. `pnpm build` compiles; `pnpm typecheck`
 passes; docs and trackers are in sync. Identity verification still uses the shared
 secret pending the JWKS migration (user-owned; `verifySgToken` is the seam).
+
+================================================================================
+
+EP 11 -- The audit: SG contract, dead-code purge, and sync gates
+--------------------------------------------------------------------------------
+What happened:
+  A full-repo audit was run before resuming Phase 6. It found the repo
+  self-inconsistent in four ways: retired names still live, docs drifted from
+  reality, dead code left behind by earlier renames, and no gates to catch any of
+  it again.
+
+  The sharpest finding: the **live `.env` was still on the retired `ARCID_*`
+  contract** while the source reads `SG_*` - so `SG_JWT_SECRET` and
+  `SG_WEBHOOK_SECRET` (both non-null asserted) would throw locally and auth was
+  broken on any fresh clone.
+
+What changed:
+  - **Env contract.** `.env` + `.env.example` aligned on `SG_*`; `SG_ISSUER`,
+    `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_STORAGE_PUBLIC_URL` documented; the
+    duplicate `.env.sg.example` deleted; secret backups (`.env.bak-*`,
+    `.env.dbname-*`) removed; `docs/environment.md` added as the canonical contract.
+  - **Legacy purge.** No `arcbase` / `arc-id` / `ArcID` / `arcevo` outside
+    `.agent/episodes.md` and the new `.agent/archive/` (the superseded AUDIT and the
+    DB-access plan now live there). `components.json` (shadcn scaffold) deleted.
+  - **Dead code.** Removed the duplicate `DbClient`, unused barrels, `guards.ts`,
+    `prisma-helpers.ts`, the engagement save/unsave duplicates + `saved-resource.*`,
+    and unused hooks/components. Coherent-but-unrouted code (engagements
+    reactions/follows, the protected layout) was kept for Phase 6.
+  - **Sync gates.** `scripts/check-{docs-sync,legacy-names,env-sync,boundaries}.mjs`
+    + `pnpm check:all` + a `.github/workflows/ci.yml`, mirroring facet. Docs now
+    carry counts that `check:docs` verifies.
+  - **Hardening.** `api-client` maps HTTP status to the right `ApiError` (was always
+    500); baseline security headers added; webhook idempotency via a dedupe table.
+  - **Docs/trackers** re-synced to the real state: 15 models, 9 enums, 40 routes,
+    9 domains. `docs/capacity-and-fragmentation.md` records the 5-year stress-test.
+
+What survived:
+  The architecture is unchanged - routes -> flows -> services -> repositories,
+  `handleApiRoute` + guards, `User.identityId` as the bridge. The lesson is the one
+  EP 05/06 already taught: a rename is a manifest + import sites + docs + env sweep,
+  and it is not done until a gate fails when it regresses. This pass makes the gate.
+
+State: green at a paused checkpoint, now with drift gates. Identity verification
+still uses the shared secret pending the JWKS migration (`verifySgToken` seam).

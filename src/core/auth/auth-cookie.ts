@@ -52,13 +52,3 @@ export async function getAccessTokenFromCookie(): Promise<string | null> {
   const jar = await cookies();
   return jar.get(ACCESS_TOKEN_COOKIE)?.value ?? null;
 }
-
-export async function getRefreshTokenFromCookie(): Promise<string | null> {
-  const jar = await cookies();
-  return jar.get(REFRESH_TOKEN_COOKIE)?.value ?? null;
-}
-
-export async function getSessionIdFromCookie(): Promise<string | null> {
-  const jar = await cookies();
-  return jar.get(SESSION_COOKIE)?.value ?? null;
-}

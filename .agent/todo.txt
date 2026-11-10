@@ -1,5 +1,5 @@
 Relnex - Development Tracker
-Updated: 2026-10-31  (development PAUSED until SovGrant is stable)
+Updated: 2026-11-10  (development PAUSED until SovGrant is stable)
 Source of truth: docs/relnex-roadmap.md
 
 ================================================================================
@@ -10,7 +10,7 @@ Remaining: Phase 6 (pages) and Phase 7 (polish). Resume once SG is stable.
 PHASE 0 - DOCUMENTATION ........................................ [x] DONE
   [x] README, AGENTS.md, CLAUDE.md, docs/architecture.md present
   [x] Namespace canonical (Relnex / SovGrant / sg / @fusorb/facet-*)
-  [x] Docs re-synced to repo state (17 models, 11 enums, 40 routes, 10 domains)
+  [x] Docs re-synced to repo state (15 models, 9 enums, 40 routes, 9 domains)
 
 PHASE 1 - CORE INFRASTRUCTURE ................................. [x] DONE
   [x] requireAuth / requireOnboarded guards (@/core/auth)
@@ -25,7 +25,7 @@ PHASE 2 - FLOW UNIFICATION .................................... [x] DONE
 PHASE 3 - AUTH CONSOLIDATION .................................. [x] DONE
   [x] Hand-rolled sgFetch client replaced by @fusorb/facet-sdk via @/lib/sg
   [x] Dead src/lib/facet/ wrappers deleted
-  [x] src/lib/arcid/ and src/lib/sg/middleware gone
+  [x] Legacy hand-rolled identity client and src/lib/sg/middleware gone
   [x] Sg boundary: SgClient/AuthSdk + createServerSgClient + unwrap + SgError
   [ ] (deferred) Swap shared-secret verify for JWKS - user-owned, verifySgToken seam
 
@@ -45,17 +45,27 @@ PHASE 6 - PAGES ............................................... [ ] TODO (deferr
   [ ] Dashboard (src/app/(protected)/dashboard/) - missing entirely
   [ ] Extend middleware PROTECTED_PREFIXES (onboarding, resources, collections, settings)
 
-PHASE 7 - POLISH & VERIFY ..................................... [ ] TODO
-  [ ] Migrate lint off `next lint` (removed in Next 16) to the ESLint CLI
+PHASE 7 - POLISH & VERIFY ..................................... [~] PARTIAL
+  [x] Migrate lint off `next lint` (removed in Next 16) to the ESLint CLI
   [ ] Rename middleware.ts -> proxy.ts (Next 16 deprecation)
   [ ] End-to-end auth test (login -> cookie -> /api/auth/me)
-  [ ] Prune any remaining dead files (verify src/lib/useful/db-client.ts usage)
+  [x] Prune dead files (dup DbClient, unused barrels, guards, prisma-helpers)
+
+PHASE 8 - AUDIT, NAMESPACE SYNC & GATES (2026-11-10) .......... [x] DONE
+  [x] Env contract: live .env + .env.example on the SG_* contract; secret backups deleted
+  [x] Legacy purge: retired names removed from the live tree (kept only as lineaged history)
+  [x] Dead-code removal (verified zero-reference only); barrels fixed
+  [x] Docs + trackers re-synced to real counts (14 / 9 / 40 / 9)
+  [x] Facet-style sync gates: check:docs, check:legacy, check:env, check:boundaries, check:all
+  [x] CI workflow (.github/workflows/ci.yml)
+  [x] Capacity & fragmentation stress-test ADR + cheap hardening (api-client, headers, webhook idempotency)
 
 ================================================================================
 VERIFICATION CHECKLIST (current)
 ================================================================================
   [x] pnpm typecheck passes with zero errors
   [x] pnpm build passes; 27 static pages, 40 routes emitted
-  [ ] pnpm lint passes (blocked - `next lint` removed in Next 16; see Phase 7)
+  [x] pnpm lint runs via the ESLint CLI (was `next lint`)
+  [x] pnpm check:all passes (docs-sync, legacy-names, env-sync, boundaries, typecheck)
   [ ] Login -> cookie set -> /api/auth/me returns 200 (needs live SG)
   [ ] Extended middleware coverage for all protected prefixes (Phase 6)

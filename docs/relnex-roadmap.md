@@ -2,11 +2,13 @@
 
 > Relnex is the knowledge-graph content management layer of the Fusorb ecosystem.
 > Auth is fully delegated to **SovGrant** (separate Fastify service, code prefix `sg`).
-> Relnex owns User profile, Resources, Collections, Comments, Tags, Search, and Activity.
+> Relnex owns User profile, Resources, Collections, Comments, Tags, and Search.
 
 > **Status: PAUSED (2026-10-31).** Phases 0-5 are complete and the repo builds clean
 > (`pnpm build` + `pnpm typecheck` green). Development is paused until SovGrant is stable;
 > the remaining work is the Phase 6 page build-out and Phase 7 polish.
+
+> Counts in this file (models, enums, routes, domains) are machine-verified by `pnpm check:docs`.
 
 ---
 
@@ -16,8 +18,8 @@
 
 | Layer | Status | Details |
 |-------|--------|---------|
-| Prisma schema | ✅ **Final** | 17 models, 11 enums, `User.identityId` bridge to SovGrant. No schema changes needed. |
-| Domain layers | ✅ **Functional** | Resources (14 flows), Collections (4 flows), Users (3 flows), Auth (2 flows), Engagements (6 flows), Search, Uploads, Tags, Comments, Activity |
+| Prisma schema | ✅ **Stable** | 15 models, 9 enums, `User.identityId` bridge to SovGrant. Last change: webhook idempotency ledger (EP 11). |
+| Domain layers | ✅ **Functional** | Resources (14 flows), Collections (4 flows), Users (3 flows), Auth (2 flows), Engagements (4 flows, unrouted), Search, Uploads, Tags, Comments |
 | Auth infrastructure | ✅ **Complete** | `core/auth/` JWT verify + cookies + guards; `middleware.ts` forwards tenant/identity headers; login route sets cookies. Sg boundary is `@fusorb/facet-sdk` via `@/lib/sg`. |
 | API routes | ✅ **40/40 fixed** | `handleApiRoute` + `requireAuth`/`requireOnboarded` + flow executor everywhere; `tsc --noEmit` green (incl. Next 16 async `params` via `handleApiRoute` unwrap). |
 | Frontend pages | 🔲 **Phase 6** | Login/Register complete. Landing + Onboarding are minimal placeholders. Dashboard missing. |
@@ -59,8 +61,8 @@ request. Verification currently uses the shared `SG_JWT_SECRET`; the planned dir
 |---|---|---|---|
 | 0 | **Documentation** | ✅ Phase 0 | Define the contract before changing anything |
 | 1 | **Core Infrastructure** | ✅ Phase 1 | `requireAuth`, `requireOnboarded`, `handleApiRoute` created |
-| 2 | **Flow Unification** | ✅ Phase 2 | All 13 flow-using routes use object-style flows |
-| 3 | **Auth Consolidation** | ✅ Phase 3 | Legacy `arcid` client and `sg/middleware` gone; `@fusorb/facet-sdk` is the single Sg boundary |
+| 2 | **Flow Unification** | ✅ Phase 2 | All 16 flow-using routes use object-style flows |
+| 3 | **Auth Consolidation** | ✅ Phase 3 | Legacy hand-rolled identity client and `sg/middleware` gone; `@fusorb/facet-sdk` is the single Sg boundary |
 | 4 | **Route Fix Pass** | ✅ Phase 4 | All 40 route files fixed: imports, guards, patterns unified |
 | 5 | **Edge Middleware** | ✅ Phase 5 | Tenant header forwarding (`x-tenant-id`/`x-identity-id` from verified JWT) |
 | 6 | **Pages** | 🔲 Phase 6 | Landing, Onboarding, Dashboard. **Before building onboarding, reuse SovGrant's onboarding feature** if it exposes a consumable surface. |

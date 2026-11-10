@@ -15,7 +15,7 @@ src/
 │   ├── (protected)/        # Auth-required layout (dashboard pages pending - Phase 6)
 │   ├── (onboarding)/       # Onboarding wizard (placeholder - Phase 6)
 │   ├── api-docs/           # Swagger UI documentation
-│   └── api/                # 40 API route files across 9 domains
+│   └── api/                # 40 API route files across 9 route modules
 │       ├── auth/           # login, register, logout, me
 │       ├── users/          # profile, onboarding, admin
 │       ├── resources/      # CRUD, relations, comments, versions, usage
@@ -28,20 +28,19 @@ src/
 │
 ├── core/                   # Infrastructure (no business logic)
 │   ├── auth/               # JWT verify, guards, cookies, session
-│   ├── db/                 # Prisma client singleton + query helpers
+│   ├── db/                 # Prisma client singleton (pg adapter)
 │   └── flows/              # Flow system (executor, context, errors)
 │
-├── domains/                # Business logic (10 domains)
+├── domains/                # Business logic (9 domains)
 │   ├── auth/               # Auth service + DTOs (register, login flows)
 │   ├── users/              # User service + repository + 3 flows
 │   ├── resources/          # 14 flows (CRUD, relations, comments, versions, usage)
 │   ├── collections/        # 4 flows (CRUD, resource management)
 │   ├── comments/           # Repository + service
-│   ├── engagements/        # Reactions, follows, saves (6 flows)
+│   ├── engagements/        # Reactions, follows (4 flows; no API surface yet)
 │   ├── tags/               # Repository + service
 │   ├── search/             # Search service + repository
-│   ├── uploads/            # S3 presigned upload service
-│   └── activity/           # Activity type constants + fire-and-forget logger
+│   └── uploads/            # S3 presigned upload service
 │
 ├── lib/                    # Third-party clients & utilities
 │   ├── sg/                 # SovGrant SDK boundary (SgClient/AuthSdk re-export + unwrap)
@@ -50,12 +49,10 @@ src/
 │   └── useful/             # api-client, openapi spec, logger, metadata
 │
 ├── components/             # UI components
-│   ├── shared/             # Navbar, Sidebar, Footer
-│   ├── layout/             # DashboardLayout, MarketingLayout
-│   └── home/               # Hero, Features
+│   └── layout/             # DashboardLayout, MarketingLayout
 │
 ├── context/                # React providers (auth-context, provider)
-├── hooks/                  # use-auth, use-api, use-debounce, use-mobile, use-theme
+├── hooks/                  # use-auth, use-theme
 ├── config/                 # Site configuration (navigation, features)
 └── middleware.ts           # Edge middleware (tenant header forwarding)
 ```
@@ -193,7 +190,7 @@ barrel pulls the server-only chain (`@/core/flows` -> Prisma -> `pg`) into the b
 | Import Path | Exports | Used For |
 |---|---|---|
 | `@/core/auth` | `requireAuth`, `requireOnboarded`, `getSession`, `verifySgToken`, `setAuthCookies`, `clearAuthCookies` | Auth guards, JWT, cookies |
-| `@/core/db` | `prisma`, `resourceWithRelations`, `collectionWithResources`, `commentWithAuthor`, `commentWithAuthorAndReplies` | Database access |
+| `@/core/db` | `prisma` | Database access |
 | `@/core/flows` | `flowExecutor`, `Flow`, `FlowContext`, `FlowError` | Write operation flows |
 | `@/lib/errors` | `ApiError`, `handleError`, `handleApiRoute` | Error handling (server) |
 | `@/lib/errors/api-error` | `ApiError` | Error handling (client leaf) |

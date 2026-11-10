@@ -19,17 +19,3 @@ export async function verifySgToken(token: string): Promise<SgTokenPayload> {
   const { payload } = await jwtVerify(token, secret(), { issuer: ISSUER });
   return payload as SgTokenPayload;
 }
-
-export async function extractIdentityId(authHeader: string | null): Promise<string | null> {
-  if (!authHeader?.startsWith("Bearer ")) return null;
-  try {
-    const p = await verifySgToken(authHeader.slice(7));
-    return p.sub;
-  } catch {
-    return null;
-  }
-}
-
-export function scopeArray(payload: SgTokenPayload): string[] {
-  return (payload.scope ?? "").split(" ").filter(Boolean);
-}

@@ -2,11 +2,7 @@
   "permissions": {
     "allow": [
       "Shell(npm:*)",
-      "Shell(npm view @arcevo/facet-components version 2>&1; npm view @arcevo/facet-auth version 2>&1; npm view @arcevo/facet-layout version 2>&1; npm view @arcevo/facet-sdk version 2>&1; npm view @arcevo/facet-tokens version 2>&1; npm view @arcevo/facet-store version 2>&1; npm view @arcevo/facet-cliversion: skip 2>&1 || true; npm view @arcevo/facet-cli version 2>&1; npm view @arcevo/facet-docs version 2>&1; npm view @arcevo/facet-emails version 2>&1)",
       "Shell(pnpm:*)",
-      "Shell(cd /d C:\\Users\\HP\\Desktop\\ArcevoDev\\arcbase && echo \"=== API routes ===\" && dir /s /b src\\app\\api\\*\\route.ts 2>nul | find /c \".txt\" && echo \"=== Domains ===\" && dir /b src\\domains 2>nul && echo \"=== Core ===\" && dir /b src\\core 2>nul)",
-      "Shell(powershell -Command Get-ChildItem -Path src\\app\\api -Recurse -Filter route.ts | Measure-Object | Select-Object -ExpandProperty Count; Write-Host '=== Domains ==='; Get-ChildItem -Path src\\domains -Directory | ForEach-Object { Name }; Write-Host '=== Core ==='; Get-ChildItem -Path src\\core -Directory | ForEach-Object { Name })",
-      "Shell(node -e console.log('Node works') 2 >& 1)",
       "Shell(Get-ChildItem:*)",
       "Shell(Select-String:*)",
       "Shell(Select-Object:*)",
