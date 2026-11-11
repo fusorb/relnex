@@ -13,10 +13,10 @@ Package manager: **pnpm**. TypeScript strict mode.
 ## Current Status (2026-11-10)
 
 Phases 0-5 and 7 complete; the repo builds clean and has a Vitest suite (50 tests).
-The remaining work is the frontend rebuild Phases C-G.
+The remaining work is the frontend rebuild Phases D-G.
 
 - Phase 0-5 ✅ - docs, core infra, flow unification, auth consolidation, route fix pass, edge middleware
-- Phase 6 🟡 - frontend rebuild on `@fusorb/facet-*` (Phases A-G); A (shell) and B (console + onboarding) done, C-G pending
+- Phase 6 🟡 - frontend rebuild on `@fusorb/facet-*` (Phases A-G); A (shell), B (console + onboarding), and C (resources) done, D-G pending
 - Phase 7 ✅ - polish & verify (ESLint CLI, proxy rename, Vitest auth/flow/error suite)
 
 Details in `docs/relnex-roadmap.md`. Each phase is independently compilable and mergable.

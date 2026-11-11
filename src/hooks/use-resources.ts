@@ -27,20 +27,51 @@ export interface ResourceListResponse {
   limit: number;
 }
 
+export interface ResourceFilters {
+  limit?: number;
+  page?: number;
+  type?: string;
+  status?: string;
+  visibility?: string;
+}
+
 interface ApiEnvelope<T> {
   success: boolean;
   data: T;
 }
 
-export function resourceQueryKey(limit: number, page: number) {
-  return ["resources", { limit, page }] as const;
+export const RESOURCE_TYPES = [
+  "ARTICLE",
+  "NOTE",
+  "MODULE",
+  "VIDEO",
+  "IMAGE",
+  "FILE",
+  "LINK",
+  "AI_OUTPUT",
+] as const;
+
+export const RESOURCE_STATUSES = ["DRAFT", "PUBLISHED", "ARCHIVED"] as const;
+export const RESOURCE_VISIBILITIES = ["PUBLIC", "PRIVATE", "UNLISTED"] as const;
+
+export function resourceQueryKey(filters: ResourceFilters = {}) {
+  return ["resources", filters] as const;
 }
 
-export function useResources({ limit = 20, page = 1 }: { limit?: number; page?: number } = {}) {
+function toQuery(filters: ResourceFilters): string {
+  const params = new URLSearchParams();
+  params.set("limit", String(filters.limit ?? 20));
+  params.set("page", String(filters.page ?? 1));
+  if (filters.type) params.set("type", filters.type);
+  if (filters.status) params.set("status", filters.status);
+  if (filters.visibility) params.set("visibility", filters.visibility);
+  return params.toString();
+}
+
+export function useResources(filters: ResourceFilters = {}) {
   return useQuery({
-    queryKey: resourceQueryKey(limit, page),
+    queryKey: resourceQueryKey(filters),
     queryFn: async (): Promise<ResourceListResponse> =>
-      (await apiClient<ApiEnvelope<ResourceListResponse>>(`/api/resources?limit=${limit}&page=${page}`))
-        .data,
+      (await apiClient<ApiEnvelope<ResourceListResponse>>(`/api/resources?${toQuery(filters)}`)).data,
   });
 }

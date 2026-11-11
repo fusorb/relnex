@@ -3,8 +3,8 @@ Updated: 2026-11-10
 Source of truth: docs/relnex-roadmap.md
 
 ================================================================================
-STATUS: Phases 0-5 and 7 complete; frontend rebuild Phases A-B done.
-Repo builds clean; Vitest suite green (50 tests). Remaining: rebuild Phases C-G.
+STATUS: Phases 0-5 and 7 complete; frontend rebuild Phases A-C done.
+Repo builds clean; Vitest suite green (50 tests). Remaining: rebuild Phases D-G.
 ================================================================================
 
 PHASE 0 - DOCUMENTATION ........................................ [x] DONE
@@ -49,7 +49,11 @@ PHASE 6 - FRONTEND REBUILD ON FACET (A-G) .................... [~] A DONE
           nav placeholders, onboarding wizard on Relnex's step model
           (lib/onboarding + PUT /api/users/me/onboarding|profile). SG IdentitySdk
           flow is a documented seam (needs a flow provisioned for Relnex in SG)
-  [ ] C. Resources (list, read + graph neighborhood, create/edit, publish, uploads)
+  [x] C. Resources (nodes) - browse with type/status filters + pagination, read
+          view with graph neighborhood (relations in/out, hierarchy parent +
+          children, collection membership, tags), create/edit forms, publish
+          action, file uploads (presign -> PUT). Additive: findById now includes
+          parent + relations + collections (one fetch for the neighborhood)
   [ ] D. Graph (relation authoring + visualization)
   [ ] E. Collections, tags, search (+ pg_trgm/tsvector index)
   [ ] F. Engagement (comments, saved, profiles; route the unrouted engagements domain)
@@ -81,6 +85,7 @@ VERIFICATION CHECKLIST (current)
   [x] pnpm test passes (Vitest: auth jwt/session/guards, flows, api-client, proxy)
   [x] Phase A rebuild: pnpm typecheck clean, pnpm test 45/45, gates green
   [x] Phase B: pnpm typecheck clean, pnpm test 50/50, gates green
+  [x] Phase C: pnpm typecheck clean, pnpm test 50/50, gates green
   [x] pnpm check:all passes (docs-sync, legacy-names, env-sync, boundaries, lint, typecheck)
   [ ] Live login -> cookie -> /api/auth/me 200 (needs running SovGrant)
   [x] Extended proxy coverage for all protected prefixes

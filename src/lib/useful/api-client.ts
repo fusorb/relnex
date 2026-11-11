@@ -4,7 +4,7 @@
 import { ApiError } from "@/lib/errors/api-error";
 
 export interface FetchOptions extends Omit<RequestInit, "credentials"> {
-  bodyData?: Record<string, unknown>;
+  bodyData?: unknown;
 }
 
 /**

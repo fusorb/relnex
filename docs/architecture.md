@@ -12,7 +12,7 @@ src/
 ├── app/                    # Next.js App Router
 │   ├── (auth)/             # facet AuthLayout + facet-auth LoginForm
 │   ├── (public)/           # facet LandingLayout marketing page
-│   ├── (protected)/        # facet ConsoleLayout: dashboard + console surfaces
+│   ├── (protected)/        # facet ConsoleLayout: dashboard, resources (list/read/edit)
 │   ├── (onboarding)/       # Onboarding wizard (Relnex step model; SG IdentitySdk seam)
 │   ├── api-docs/           # Swagger UI documentation
 │   └── api/                # 40 API route files across 9 route modules
@@ -51,9 +51,10 @@ src/
 ├── components/             # facet-based UI glue
 │   ├── providers.tsx       # ThemeProvider + React Query + Toaster (facet)
 │   ├── layout/             # router-adapter.tsx (Next RouterAdapter for facet-layout)
-│   └── shell/              # coming-soon.tsx (console placeholders)
+│   ├── shell/              # coming-soon.tsx (console placeholders)
+│   └── resources/          # file-upload.tsx (presign -> PUT)
 │
-├── hooks/                  # use-me, use-resources, use-session (facet LayoutSession)
+├── hooks/                  # use-me, use-resources, use-resource, use-session
 ├── lib/onboarding.ts       # product onboarding step model (pure, unit-tested)
 ├── config/                 # site.ts (constants) + layout.tsx (facet LayoutConfig)
 ├── styles/                 # globals.css + relnex-palette.css (Relnex brand)
@@ -257,6 +258,12 @@ or icon registry (a boundary gate enforces this).
   own step model (`src/lib/onboarding.ts`), persisting via
   `PUT /api/users/me/onboarding|profile`. SG-level identity onboarding plugs in
   via facet-sdk `IdentitySdk` once a flow is provisioned for Relnex in SovGrant.
+- **Resources**: browse (`(protected)/resources`, type/status filters + pagination),
+  read view (`/resources/[resourceId]`) leading with the **graph neighborhood**
+  (relations in/out, hierarchy parent + children, collections, tags), create/edit
+  forms, a publish action, and file uploads (`/api/uploads/presign` -> PUT).
+  `use-resource.ts` wraps detail/children/create/update/publish. The read view's
+  neighborhood comes from one `findById` include (parent + relations + collections).
 - **Brand**: `src/styles/relnex-palette.css` overrides the facet semantic tokens
   (the documented "bring your own palette" pattern).
 

@@ -6,9 +6,20 @@ export class ResourceRepository {
   constructor(private db: DbClient) {}
 
   async findById(id: string, tenantId?: string | null) {
+    // Read view (Phase C) needs the full graph neighborhood: hierarchy parent,
+    // typed relations in/out, and collection membership - all in one fetch.
+    const summary = { select: { id: true, title: true, slug: true, type: true, status: true } };
     return this.db.resource.findFirst({
       where: { id, ...(tenantId ? { tenantId } : {}), deletedAt: null },
-      include: { author: true, metrics: true, resourceTags: { include: { tag: true } } },
+      include: {
+        author: true,
+        metrics: true,
+        resourceTags: { include: { tag: true } },
+        parent: { select: { id: true, title: true, slug: true, type: true } },
+        outgoingRelations: { include: { to: summary } },
+        incomingRelations: { include: { from: summary } },
+        collections: { include: { collection: { select: { id: true, title: true, slug: true } } } },
+      },
     });
   }
 

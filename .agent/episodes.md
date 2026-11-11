@@ -442,3 +442,31 @@ a data-backed home - before building the rooms.
 
 State: Phase B green (`pnpm typecheck` clean, `pnpm test` 50/50, gates green).
 Phases C-G remain.
+
+================================================================================
+EP 15 - PHASE C: RESOURCES (THE NODES)
+================================================================================
+
+What changed:
+  - Read view: `(protected)/resources/[resourceId]` renders a node and its graph
+    neighborhood - relations in/out (typed), hierarchy (parent + children),
+    collection membership, and tags - plus a Publish action for drafts.
+  - Browse: `(protected)/resources` lists nodes with type/status filters and
+    pagination. Create (`/resources/new`) and edit (`/[id]/edit`) forms bind to
+    the real DTOs. Uploads: presign, then PUT the bytes to the object store and
+    attach the returned `fileUrl` on create.
+  - Hooks: `use-resource.ts` (detail / children / create / update / publish) and
+    filters on `use-resources.ts`.
+  - Additive backend (a single change): `ResourceRepository.findById` now includes
+    `parent`, `outgoingRelations`/`incomingRelations`, and `collections`, so the
+    whole neighborhood arrives in one fetch. No new route; route count stays 40.
+
+What survived:
+  Every route handler is unchanged. The graph was already modeled - the UI just
+  reads it now.
+
+Lesson: a node is only as valuable as its edges, so the read view leads with
+connections, not content. Phase D makes those edges writable.
+
+State: Phase C green (`pnpm typecheck` clean, `pnpm test` 50/50, gates green).
+Phases D-G remain.
