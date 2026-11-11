@@ -63,11 +63,13 @@ stay in Relnex. See `docs/identity-model.md`.
 
 ## Auth Notes
 
-- Token verification goes through one seam: `verifySgToken` (`@/core/auth/jwt`).
-  It prefers **JWKS/RS256** when `SG_JWKS_URL` is set and falls back to the shared
-  `SG_JWT_SECRET` (HS256) for local dev / e2e. Algos are pinned per mode.
+- Token verification goes through one seam: `verifySgToken` (`@/core/auth/jwt`),
+  resolved in order: **JWKS/RS256** (`SG_JWKS_URL`, target), then a **pinned public
+  key** (`SG_JWT_PUBLIC_KEY`, interim), then the shared `SG_JWT_SECRET` (HS256) for
+  local dev / e2e. Algorithms are pinned per anchor.
 - **Blocker before JWKS works end-to-end:** SovGrant's JWKS publishes the tenant
   VC/DID keys, not the RSA access-token signing key, and access tokens carry no
-  `kid`. See `docs/identity-model.md`. Do not assume the shared secret is permanent.
+  `kid`. Tracked in `sovgrant/.agent/todo.txt`; see `docs/identity-model.md`. Do not
+  assume the shared secret is permanent.
 - `src/proxy.ts` (Next 16 rename of `middleware.ts`) forwards `x-tenant-id` /
   `x-identity-id` from the verified JWT and gates protected page prefixes.

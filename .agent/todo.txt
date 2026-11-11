@@ -71,3 +71,6 @@ VERIFICATION CHECKLIST (current)
   [x] pnpm check:all passes (docs-sync, legacy-names, env-sync, boundaries, lint, typecheck)
   [ ] Live login -> cookie -> /api/auth/me 200 (needs running SovGrant)
   [ ] Extended proxy coverage for all protected prefixes (Phase 6)
+  [ ] JWKS activation: pending SovGrant publishing the access-token signing key
+      (+ kid) in its JWKS - see sovgrant/.agent/todo.txt. Relnex is ready: set
+      SG_JWKS_URL. Interim asymmetric anchor: SG_JWT_PUBLIC_KEY (RS256 pinned key).

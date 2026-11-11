@@ -335,14 +335,15 @@ What happened:
      `api-client` status-to-`ApiError` mapping, and proxy gating. Prisma and the token
      seam are mocked, so the suite needs no database or live SovGrant.
 
-  3. `verifySgToken` now carries two trust anchors in one seam: **JWKS/RS256** when
-     `SG_JWKS_URL` is set (the target), else the **shared secret (HS256)** for local
-     dev / e2e. Algorithms are pinned per mode.
+  3. `verifySgToken` now carries three trust anchors in one seam, resolved in order:
+     **JWKS/RS256** (`SG_JWKS_URL`, the target), a **pinned public key** (`SG_JWT_PUBLIC_KEY`,
+     the interim that works against `sovgrant/certs/public.pem` today), then the
+     **shared secret (HS256)** for local dev / e2e. Algorithms are pinned per anchor.
 
 What changed:
   - `src/proxy.ts` (rename + `proxy` export), `src/proxy.test.ts`.
-  - `src/core/auth/jwt.ts` - JWKS-first with HS256 fallback; `SG_JWKS_URL` added to
-    the env contract; `docs/environment.md` / `identity-model.md` / roadmap re-synced.
+  - `src/core/auth/jwt.ts` - three-anchor resolution; `SG_JWKS_URL` / `SG_JWT_PUBLIC_KEY`
+    added to the env contract; `docs/environment.md` / `identity-model.md` / roadmap re-synced.
   - `vitest.config.ts` (alias-based, mirroring SovGrant; capped workers on Windows),
     `test` / `test:watch` / `test:coverage` scripts, `pnpm test` wired into CI.
 
@@ -352,8 +353,9 @@ The finding (why JWKS is not wired on yet):
   its JWKS (`/api/v1/oauth/jwks`) publishes the **tenant VC/DID signing keys** (EC
   P-256), not the access-token key - and access tokens carry no `kid`. So JWKS
   verification cannot succeed against current SovGrant. Relnex keeps the shared
-  secret for dev/e2e and stays ready to flip `SG_JWKS_URL` once SovGrant publishes
-  the access-token key. Logged as an SovGrant-side blocker.
+  secret (or a pinned public key) for dev/e2e and stays ready to flip `SG_JWKS_URL`
+  once SovGrant publishes the access-token key. Logged as an SovGrant-side blocker in
+  `sovgrant/.agent/todo.txt`.
 
 What survived:
   `verifySgToken` stays the single seam; no route, flow, or service changed. The

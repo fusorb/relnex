@@ -86,7 +86,7 @@ See [identity-model.md](./identity-model.md) for the canonical-identity decision
      → proxy verifies the JWT and forwards x-tenant-id / x-identity-id
      → route handler: const session = await requireAuth(req)
         → getSession(req) extracts JWT from header/cookie
-        → verifySgToken(token) - local jose verify (shared secret today, JWKS planned)
+        → verifySgToken(token) - local jose verify (JWKS, pinned key, or shared secret)
         → prisma.user.findUnique({ where: { identityId: payload.sub } })
      ← 200 { user }
 
@@ -225,8 +225,9 @@ claim) and `x-identity-id` (from `sub`) into the forwarded request. It also gate
 page prefixes, redirecting unauthenticated users to `/login`.
 
 > Next.js 16 renamed the `middleware` file convention to `proxy` and defaults it to the
-> Node.js runtime. Verification currently uses `verifySgToken` (shared secret); the JWKS
-> swap happens behind that function.
+> Node.js runtime. Token verification goes through `verifySgToken`, resolved in order:
+> JWKS (`SG_JWKS_URL`), then a pinned public key (`SG_JWT_PUBLIC_KEY`), then the shared
+> secret (`SG_JWT_SECRET`). Algorithms are pinned per anchor.
 
 ---
 
@@ -236,6 +237,7 @@ Vitest covers the core seams (`pnpm test`); it runs in CI before the build.
 
 - `src/core/auth/jwt.test.ts` - real `jose` sign/verify round-trips (signature, issuer, expiry).
 - `src/core/auth/jwt.jwks.test.ts` - JWKS/RS256 verification against a local key set.
+- `src/core/auth/jwt.pem.test.ts` - pinned-public-key/RS256 verification (inline PEM + path).
 - `src/core/auth/get-session.test.ts` - token resolution (header vs cookie) + User projection.
 - `src/core/auth/require-auth.test.ts` - guard behavior + first-login auto-provisioning.
 - `src/core/flows/flow-executor.test.ts` - input validation, transactions, error normalization.

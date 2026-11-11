@@ -50,7 +50,7 @@ describe("flowExecutor.run", () => {
     const result = await flowExecutor.run(flow, { n: 7 }, ctx());
 
     expect(result).toBe("ok");
-    const [input, enriched] = execute.mock.calls[0] as [unknown, FlowContext];
+    const [input, enriched] = execute.mock.calls[0] as unknown as [unknown, FlowContext];
     expect(input).toEqual({ n: 7 });
     expect(enriched.requestId).toEqual(expect.any(String));
     expect(enriched.db).toBe(client);

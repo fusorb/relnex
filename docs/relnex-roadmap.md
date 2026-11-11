@@ -28,11 +28,12 @@
 | Auth context/providers | ✅ **Complete** | AuthProvider, QueryClient, Theme, Toaster all wired. |
 | Documentation | ✅ **Present** | CLAUDE.md, AGENTS.md, architecture docs, and episode tracker all migrated to the Relnex/SovGrant/Facet namespace |
 
-> **Auth verification note:** `verifySgToken` supports two trust anchors. Set
-> `SG_JWKS_URL` to verify SovGrant tokens via **JWKS/RS256** (the target); otherwise
-> it falls back to the shared `SG_JWT_SECRET` (HS256) for local dev / e2e. The seam
-> is `@/core/auth/jwt`. **Blocker:** SovGrant's JWKS currently publishes the tenant
-> VC/DID keys, not the RSA access-token signing key, and tokens carry no `kid` - see
+> **Auth verification note:** `verifySgToken` supports three trust anchors, in order:
+> **JWKS/RS256** (`SG_JWKS_URL`, the target), a **pinned public key** (`SG_JWT_PUBLIC_KEY`,
+> the interim that works against `sovgrant/certs/public.pem` today), then the shared
+> `SG_JWT_SECRET` (HS256) dev/e2e fallback. The seam is `@/core/auth/jwt`. **Blocker:**
+> SovGrant's JWKS currently publishes the tenant VC/DID keys, not the RSA access-token
+> signing key, and tokens carry no `kid` - tracked in `sovgrant/.agent/todo.txt`; see
 > `docs/identity-model.md`.
 
 ### Auth Architecture
