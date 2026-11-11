@@ -22,8 +22,10 @@ jobs:
       SG_WEBHOOK_SECRET: ci-placeholder-secret
     steps:
       - uses: actions/checkout@v4
-      # Version comes from package.json "packageManager" (pnpm@12.6.0).
+      # pnpm 10+ (the workspace file uses pnpm 10+ settings keys).
       - uses: pnpm/action-setup@v4
+        with:
+          version: 12.6.0
       - uses: actions/setup-node@v4
         with:
           node-version: 20
