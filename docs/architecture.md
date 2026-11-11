@@ -10,10 +10,10 @@
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── (auth)/             # Login, Register pages
-│   ├── (public)/           # Marketing landing page
-│   ├── (protected)/        # Auth-required layout (dashboard pages pending - Phase 6)
-│   ├── (onboarding)/       # Onboarding wizard (placeholder - Phase 6)
+│   ├── (auth)/             # facet AuthLayout + facet-auth SignIn/forms
+│   ├── (public)/           # facet LandingLayout marketing page
+│   ├── (protected)/        # facet ConsoleLayout dashboard shell
+│   ├── (onboarding)/       # Onboarding wizard (Phase B - SG onboarding SDK)
 │   ├── api-docs/           # Swagger UI documentation
 │   └── api/                # 40 API route files across 9 route modules
 │       ├── auth/           # login, register, logout, me
@@ -48,12 +48,13 @@ src/
 │   ├── storage/            # S3/R2 client
 │   └── useful/             # api-client, openapi spec, logger, metadata
 │
-├── components/             # UI components
-│   └── layout/             # DashboardLayout, MarketingLayout
+├── components/             # facet-based UI glue
+│   ├── providers.tsx       # ThemeProvider + React Query + Toaster (facet)
+│   └── layout/             # router-adapter.tsx (Next RouterAdapter for facet-layout)
 │
-├── context/                # React providers (auth-context, provider)
-├── hooks/                  # use-auth, use-theme
-├── config/                 # Site configuration (navigation, features)
+├── hooks/                  # use-session (facet LayoutSession from /api/auth/me)
+├── config/                 # site.ts (constants) + layout.tsx (facet LayoutConfig)
+├── styles/                 # globals.css + relnex-palette.css (Relnex brand)
 ├── test/                   # Vitest setup (env contract for the suite)
 └── proxy.ts                # Next 16 proxy (tenant header forwarding + gating)
 ```
@@ -228,6 +229,27 @@ page prefixes, redirecting unauthenticated users to `/login`.
 > Node.js runtime. Token verification goes through `verifySgToken`, resolved in order:
 > JWKS (`SG_JWKS_URL`), then a pinned public key (`SG_JWT_PUBLIC_KEY`), then the shared
 > secret (`SG_JWT_SECRET`). Algorithms are pinned per anchor.
+
+---
+
+## Frontend (facet stack)
+
+The UI is built entirely on `@fusorb/facet-*` - no hand-rolled layouts, providers,
+or icon registry (a boundary gate enforces this).
+
+- **Providers** (`src/components/providers.tsx`): facet-components `ThemeProvider`
+  (writes `data-theme`) -> React Query -> facet `Toaster`.
+- **Router** (`src/components/layout/router-adapter.tsx`): a facet-layout
+  `RouterAdapter` backed by `next/link` + `usePathname`; injected into the shells.
+- **Shells** (`src/config/layout.tsx`): facet `LayoutConfig` for the console
+  (`ConsoleLayout`), auth (`AuthLayout`), and landing (`LandingLayout`).
+- **Auth UI**: facet-auth `LoginForm` over Relnex's BFF `/api/auth/*` (httpOnly
+  cookie session). The facet-auth `SgProvider` / OIDC-client migration is the next
+  slice (see the frontend plan).
+- **Session**: `src/hooks/use-session.ts` maps `/api/auth/me` to a facet-layout
+  `LayoutSession`.
+- **Brand**: `src/styles/relnex-palette.css` overrides the facet semantic tokens
+  (the documented "bring your own palette" pattern).
 
 ---
 

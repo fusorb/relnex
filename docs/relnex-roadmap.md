@@ -23,7 +23,7 @@
 | Domain layers | ✅ **Functional** | Resources (14 flows), Collections (4 flows), Users (3 flows), Auth (2 flows), Engagements (4 flows, unrouted), Search, Uploads, Tags, Comments |
 | Auth infrastructure | ✅ **Complete** | `core/auth/` JWT verify + cookies + guards; `proxy.ts` forwards tenant/identity headers; login route sets cookies. Sg boundary is `@fusorb/facet-sdk` via `@/lib/sg`. |
 | API routes | ✅ **40/40 fixed** | `handleApiRoute` + `requireAuth`/`requireOnboarded` + flow executor everywhere; `tsc --noEmit` green (incl. Next 16 async `params` via `handleApiRoute` unwrap). |
-| Frontend pages | 🔲 **Phase 6** | Login/Register complete. Landing + Onboarding are minimal placeholders. Dashboard missing. |
+| Frontend pages | 🟡 **Rebuild (A-G)** | Phase A (facet shell) done: landing, auth, console shell, brand palette. Product surfaces land in Phases B-G. |
 | Test suite | ✅ **Vitest** | `pnpm test` covers auth (jwt/session/guards), the flow executor, api-client error mapping, and proxy gating. Runs in CI. |
 | Auth context/providers | ✅ **Complete** | AuthProvider, QueryClient, Theme, Toaster all wired. |
 | Documentation | ✅ **Present** | CLAUDE.md, AGENTS.md, architecture docs, and episode tracker all migrated to the Relnex/SovGrant/Facet namespace |
@@ -69,7 +69,7 @@ request. `verifySgToken` prefers **JWKS/RS256** (`SG_JWKS_URL`) and falls back t
 | 3 | **Auth Consolidation** | ✅ Phase 3 | Legacy hand-rolled identity client and `sg/middleware` gone; `@fusorb/facet-sdk` is the single Sg boundary |
 | 4 | **Route Fix Pass** | ✅ Phase 4 | All 40 route files fixed: imports, guards, patterns unified |
 | 5 | **Edge Middleware** | ✅ Phase 5 | Tenant header forwarding (`x-tenant-id`/`x-identity-id` from verified JWT) |
-| 6 | **Pages** | 🔲 Phase 6 | Landing, Onboarding, Dashboard. **Before building onboarding, reuse SovGrant's onboarding feature** if it exposes a consumable surface. |
+| 6 | **Pages** | 🟡 Phased (A-G) | facet-based rebuild. A shell (done) -> B console/onboarding -> C resources -> D graph -> E collections/search -> F engagement -> G polish. Onboarding reuses SovGrant's onboarding SDK. |
 | 7 | **Polish & Verify** | ✅ Phase 7 | Proxy rename (Next 16), Vitest auth/flow/error suite, ESLint CLI, build check, typecheck |
 
 ---

@@ -35,6 +35,8 @@ tokens and receive webhooks.
 |---|---|---|
 | `SG_API_URL` | yes | SovGrant base URL (`src/lib/sg/client.ts`) |
 | `SG_CLIENT_ID` | yes | OAuth/M2M client id registered for Relnex |
+| `NEXT_PUBLIC_SG_API_URL` | no | Browser-side SovGrant base URL for facet-sdk (`src/lib/sg/browser-client.ts`). Public - not a secret |
+| `NEXT_PUBLIC_SG_CLIENT_ID` | no | Browser-side OAuth client id for facet-sdk. Public - not a secret |
 | `SG_ISSUER` | yes | Expected `iss` claim; must match SovGrant's `JWT_ISSUER` (`src/core/auth/jwt.ts`) |
 | `SG_JWKS_URL` | no | Preferred: SovGrant JWKS (RS256). Point at a set that contains the access-token signing key (`src/core/auth/jwt.ts`) |
 | `SG_JWT_PUBLIC_KEY` | no | Interim RS256 anchor: an inline PEM or a path to one (e.g. `../sovgrant/certs/public.pem`). Used when `SG_JWKS_URL` is unset |

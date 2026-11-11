@@ -367,3 +367,49 @@ sibling repo actually publishes before wiring it in; "JWKS exists" does not mean
 
 State: Phases 0-5 and 7 complete, suite green, gates green. Identity verification
 uses the JWKS/HS256 seam; JWKS activation waits on SovGrant.
+
+================================================================================
+
+EP 13 -- Dissolve the frontend; rebuild on facet (Phase A)
+--------------------------------------------------------------------------------
+What happened:
+  With auth parked behind a stable seam, the next line of action is what Relnex
+  exists for: the product surface. The decision was to stop patching the
+  hand-rolled UI and rebuild the frontend on `@fusorb/facet-*`.
+
+  Reframe (why connections are the point). Relnex solves resource/knowledge
+  fragmentation, not storage. Research (Glean; IBM; Bergman & Whittaker, "The
+  Science of Managing Our Digital Stuff") shows the failure is architectural:
+  capture-and-search fragments knowledge; the remedy is a graph of typed
+  connections. The schema already models this (`Resource` node + self-hierarchy,
+  `Relation` typed edges, collections, tags), and the API is complete (9 domains,
+  40 routes). The gap was the UI, not the backend.
+
+  A full product plan (Phases A-G) was written and approved: A foundation shell,
+  B console + onboarding, C resources, D graph, E collections/search, F
+  engagement, G polish - ordered graph-first.
+
+What changed (Phase A):
+  - Dissolved the hand-rolled frontend: marketing/dashboard layouts,
+    auth-context + provider, use-auth/use-theme, the local icon registry, and the
+    duplicated token block in globals.css - gone.
+  - Rebuilt the shell on facet: `providers.tsx` (facet ThemeProvider -> React
+    Query -> Toaster), a Next `RouterAdapter`, facet `LayoutConfig`
+    (`config/layout.tsx`), `LandingLayout`, `AuthLayout` + facet-auth
+    `LoginForm`, `ConsoleLayout` + dashboard, and a `use-session` hook mapping
+    `/api/auth/me` to a facet `LayoutSession`.
+  - Branding: `relnex-palette.css` - a consumer "knowledge" palette (deep indigo
+    on near-black; indigo on paper) overriding facet's semantic tokens, following
+    facet's documented "bring your own palette" pattern. No facet change needed.
+  - Recorded the I/O pieces: `NEXT_PUBLIC_SG_*` for the browser SDK; docs
+    (architecture map + Frontend section, roadmap, AGENTS conventions, todo).
+
+What survived:
+  The backend is untouched. Facet ownership is now explicit, and the auth seam
+  (`verifySgToken`) is unchanged.
+
+Lesson: dissolve scaffolding, not foundations. The backend already encoded the
+graph; the rebuild only had to stop hiding it behind ad-hoc UI.
+
+State: Phase A green (`pnpm typecheck` clean, `pnpm test` 45/45, gates green).
+Phases B-G remain.

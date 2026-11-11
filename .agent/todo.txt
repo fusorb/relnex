@@ -3,8 +3,8 @@ Updated: 2026-11-10
 Source of truth: docs/relnex-roadmap.md
 
 ================================================================================
-STATUS: Phases 0-5 and 7 complete. Repo builds clean; Vitest suite green (42 tests).
-Remaining: Phase 6 (pages).
+STATUS: Phases 0-5 and 7 complete; frontend rebuild Phase A (facet shell) done.
+Repo builds clean; Vitest suite green (45 tests). Remaining: rebuild Phases B-G.
 ================================================================================
 
 PHASE 0 - DOCUMENTATION ........................................ [x] DONE
@@ -39,11 +39,18 @@ PHASE 5 - EDGE MIDDLEWARE ..................................... [x] DONE
   [x] Protected page prefixes gated -> redirect to /login
   [x] Edge-safe import (@/core/auth/jwt leaf, not the barrel)
 
-PHASE 6 - PAGES ............................................... [ ] TODO (deferred)
-  [ ] Landing page (src/app/(public)/page.tsx) - currently placeholder
-  [ ] Onboarding wizard - REUSE SovGrant's onboarding feature if consumable
-  [ ] Dashboard (src/app/(protected)/dashboard/) - missing entirely
-  [ ] Extend middleware PROTECTED_PREFIXES (onboarding, resources, collections, settings)
+PHASE 6 - FRONTEND REBUILD ON FACET (A-G) .................... [~] A DONE
+  [x] A. Foundation shell - facet providers (ThemeProvider/Toaster), Next
+          RouterAdapter, facet LayoutConfig, LandingLayout, auth pages
+          (facet-auth LoginForm over BFF), ConsoleLayout + dashboard, Relnex
+          brand palette; hand-rolled layouts/context/hooks/icon-registry dissolved
+  [ ] B. Console + onboarding (reuse SovGrant's onboarding SDK)
+  [ ] C. Resources (list, read + graph neighborhood, create/edit, publish, uploads)
+  [ ] D. Graph (relation authoring + visualization)
+  [ ] E. Collections, tags, search (+ pg_trgm/tsvector index)
+  [ ] F. Engagement (comments, saved, profiles; route the unrouted engagements domain)
+  [ ] G. Polish (api-docs re-skin, a11y, empty/loading/error states, proxy prefixes)
+  [ ] Extend proxy PROTECTED_PREFIXES (onboarding, resources, collections, settings)
 
 PHASE 7 - POLISH & VERIFY ..................................... [x] DONE
   [x] Migrate lint off `next lint` (removed in Next 16) to the ESLint CLI
@@ -68,6 +75,7 @@ VERIFICATION CHECKLIST (current)
   [x] pnpm build passes; 27 static pages, 40 routes emitted
   [x] pnpm lint runs via the ESLint CLI (was `next lint`)
   [x] pnpm test passes (Vitest: auth jwt/session/guards, flows, api-client, proxy)
+  [x] Phase A rebuild: pnpm typecheck clean, pnpm test 45/45, gates green
   [x] pnpm check:all passes (docs-sync, legacy-names, env-sync, boundaries, lint, typecheck)
   [ ] Live login -> cookie -> /api/auth/me 200 (needs running SovGrant)
   [ ] Extended proxy coverage for all protected prefixes (Phase 6)

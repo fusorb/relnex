@@ -39,6 +39,16 @@ for (const f of walk(path.join(root, "src"), [])) {
 
   for (const m of text.matchAll(/from\s+["']([^"']*prisma\/generated[^"']*)["']/g))
     errors.push(`${rel}: deep import into prisma/generated ("${m[1]}") - use the @prisma-client alias`);
+
+  // Facet-only UI: these hand-rolled patterns were dissolved in the frontend rebuild.
+  if (/from\s+["']next-themes["']/.test(text))
+    errors.push(`${rel}: imports next-themes (use @fusorb/facet-components ThemeProvider)`);
+
+  if (/from\s+["'][^"']*icon-registry["']/.test(text))
+    errors.push(`${rel}: imports a local icon registry (use <Icon/> from @fusorb/facet-components)`);
+
+  if (/from\s+["']@\/context\/(auth-context|provider)["']/.test(text))
+    errors.push(`${rel}: imports the dissolved @/context module (use facet providers)`);
 }
 
 if (errors.length) {
