@@ -20,6 +20,11 @@ jobs:
       SG_ISSUER: sovgrant
       SG_JWT_SECRET: ci-placeholder-secret
       SG_WEBHOOK_SECRET: ci-placeholder-secret
+      # src/lib/storage/s3.ts throws at import if storage creds are absent.
+      STORAGE_ACCESS_KEY_ID: ci-placeholder
+      STORAGE_SECRET_ACCESS_KEY: ci-placeholder
+      STORAGE_BUCKET_NAME: relnex-ci
+      STORAGE_REGION: auto
     steps:
       - uses: actions/checkout@v4
       # pnpm 10+ (the workspace file uses pnpm 10+ settings keys).
