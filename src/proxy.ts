@@ -1,5 +1,6 @@
-// src/middleware.ts
-// Edge middleware: tenant header forwarding + protected-route gating.
+// src/proxy.ts
+// Next 16 "proxy" file convention (renamed from `middleware`): tenant header
+// forwarding + protected-route gating.
 //
 // Tenant forwarding: extract `tid` (and `sub`) from the verified SovGrant JWT
 // and inject them as `x-tenant-id` / `x-identity-id` request headers so route
@@ -8,8 +9,8 @@
 // (createRemoteJWKSet against SovGrant's well-known endpoint) - keep the
 // verification call behind verifySgToken so the swap is one-line.
 //
-// Edge-runtime safe: import verifySgToken from the leaf module, never the
-// `@/core/auth` barrel (which pulls Prisma via get-session).
+// Import verifySgToken from the leaf module, never the `@/core/auth` barrel,
+// so proxy stays off the Prisma import graph (get-session pulls prisma).
 
 import { NextRequest, NextResponse } from "next/server";
 import { verifySgToken } from "@/core/auth/jwt";
@@ -28,7 +29,7 @@ async function extractToken(req: NextRequest): Promise<string | null> {
   return req.cookies.get("sg_at")?.value ?? null;
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Pass through public API routes (no blocking), but still forward tenant
@@ -44,7 +45,7 @@ export async function middleware(req: NextRequest) {
       const payload = await verifySgToken(token);
       authenticated = true;
       identityId = payload.sub ?? null;
-      tenantId = (payload as { tid?: string }).tid ?? null;
+      tenantId = payload.tid ?? null;
     } catch {
       // Invalid/expired token - treat as unauthenticated. Fall through.
       authenticated = false;

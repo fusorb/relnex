@@ -316,3 +316,52 @@ What survived:
 
 State: green at a paused checkpoint, now with drift gates. Identity verification
 still uses the shared secret pending the JWKS migration (`verifySgToken` seam).
+
+================================================================================
+
+EP 12 -- Phase 7: proxy rename, a Vitest suite, and the JWKS seam
+--------------------------------------------------------------------------------
+What happened:
+  The polish pass closed. Three things landed, all behind existing seams.
+
+  1. Next 16 renamed the `middleware` file convention to `proxy`. `src/middleware.ts`
+     became `src/proxy.ts` and the exported function `middleware` became `proxy`
+     (verified against `node_modules/next/dist/docs`). Gating and tenant/identity
+     header forwarding are unchanged.
+
+  2. A Vitest suite (sibling parity with SovGrant: `vitest@^4`) covers the load-bearing
+     seams - 7 files / 42 tests: `verifySgToken` (real jose HS256 + JWKS/RS256),
+     `getSession`, the guards (incl. first-login provisioning), the flow executor,
+     `api-client` status-to-`ApiError` mapping, and proxy gating. Prisma and the token
+     seam are mocked, so the suite needs no database or live SovGrant.
+
+  3. `verifySgToken` now carries two trust anchors in one seam: **JWKS/RS256** when
+     `SG_JWKS_URL` is set (the target), else the **shared secret (HS256)** for local
+     dev / e2e. Algorithms are pinned per mode.
+
+What changed:
+  - `src/proxy.ts` (rename + `proxy` export), `src/proxy.test.ts`.
+  - `src/core/auth/jwt.ts` - JWKS-first with HS256 fallback; `SG_JWKS_URL` added to
+    the env contract; `docs/environment.md` / `identity-model.md` / roadmap re-synced.
+  - `vitest.config.ts` (alias-based, mirroring SovGrant; capped workers on Windows),
+    `test` / `test:watch` / `test:coverage` scripts, `pnpm test` wired into CI.
+
+The finding (why JWKS is not wired on yet):
+  Reading `../sovgrant` before trusting the endpoint name paid off. SovGrant signs
+  access tokens RS256 with `certs/private.pem` and declares issuer `sovgrant`, but
+  its JWKS (`/api/v1/oauth/jwks`) publishes the **tenant VC/DID signing keys** (EC
+  P-256), not the access-token key - and access tokens carry no `kid`. So JWKS
+  verification cannot succeed against current SovGrant. Relnex keeps the shared
+  secret for dev/e2e and stays ready to flip `SG_JWKS_URL` once SovGrant publishes
+  the access-token key. Logged as an SovGrant-side blocker.
+
+What survived:
+  `verifySgToken` stays the single seam; no route, flow, or service changed. The
+  identity model is untouched - only the trust anchor is now switchable.
+
+Lesson: an endpoint with the right name is not the right contract. Verify what a
+sibling repo actually publishes before wiring it in; "JWKS exists" does not mean
+"JWKS publishes the key that signs my token".
+
+State: Phases 0-5 and 7 complete, suite green, gates green. Identity verification
+uses the JWKS/HS256 seam; JWKS activation waits on SovGrant.

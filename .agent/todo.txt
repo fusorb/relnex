@@ -1,10 +1,10 @@
 Relnex - Development Tracker
-Updated: 2026-11-10  (development PAUSED until SovGrant is stable)
+Updated: 2026-11-10
 Source of truth: docs/relnex-roadmap.md
 
 ================================================================================
-STATUS: Phases 0-5 complete. Repo builds clean (pnpm build + pnpm typecheck).
-Remaining: Phase 6 (pages) and Phase 7 (polish). Resume once SG is stable.
+STATUS: Phases 0-5 and 7 complete. Repo builds clean; Vitest suite green (42 tests).
+Remaining: Phase 6 (pages).
 ================================================================================
 
 PHASE 0 - DOCUMENTATION ........................................ [x] DONE
@@ -45,10 +45,11 @@ PHASE 6 - PAGES ............................................... [ ] TODO (deferr
   [ ] Dashboard (src/app/(protected)/dashboard/) - missing entirely
   [ ] Extend middleware PROTECTED_PREFIXES (onboarding, resources, collections, settings)
 
-PHASE 7 - POLISH & VERIFY ..................................... [~] PARTIAL
+PHASE 7 - POLISH & VERIFY ..................................... [x] DONE
   [x] Migrate lint off `next lint` (removed in Next 16) to the ESLint CLI
-  [ ] Rename middleware.ts -> proxy.ts (Next 16 deprecation)
-  [ ] End-to-end auth test (login -> cookie -> /api/auth/me)
+  [x] Rename middleware.ts -> proxy.ts (Next 16 deprecation; export `proxy`)
+  [x] Auth/flow/error test suite via Vitest (7 files / 42 tests) - mocks Prisma
+      and the token seam, so no live DB or SovGrant needed
   [x] Prune dead files (dup DbClient, unused barrels, guards, prisma-helpers)
 
 PHASE 8 - AUDIT, NAMESPACE SYNC & GATES (2026-11-10) .......... [x] DONE
@@ -66,6 +67,7 @@ VERIFICATION CHECKLIST (current)
   [x] pnpm typecheck passes with zero errors
   [x] pnpm build passes; 27 static pages, 40 routes emitted
   [x] pnpm lint runs via the ESLint CLI (was `next lint`)
-  [x] pnpm check:all passes (docs-sync, legacy-names, env-sync, boundaries, typecheck)
-  [ ] Login -> cookie set -> /api/auth/me returns 200 (needs live SG)
-  [ ] Extended middleware coverage for all protected prefixes (Phase 6)
+  [x] pnpm test passes (Vitest: auth jwt/session/guards, flows, api-client, proxy)
+  [x] pnpm check:all passes (docs-sync, legacy-names, env-sync, boundaries, lint, typecheck)
+  [ ] Live login -> cookie -> /api/auth/me 200 (needs running SovGrant)
+  [ ] Extended proxy coverage for all protected prefixes (Phase 6)

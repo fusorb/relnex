@@ -4,9 +4,10 @@
 > Auth is fully delegated to **SovGrant** (separate Fastify service, code prefix `sg`).
 > Relnex owns User profile, Resources, Collections, Comments, Tags, and Search.
 
-> **Status: PAUSED (2026-10-31).** Phases 0-5 are complete and the repo builds clean
-> (`pnpm build` + `pnpm typecheck` green). Development is paused until SovGrant is stable;
-> the remaining work is the Phase 6 page build-out and Phase 7 polish.
+> **Status (2026-11-10).** Phases 0-5 and 7 are complete; the repo builds clean and
+> carries a Vitest suite. The remaining work is the Phase 6 page build-out.
+> Auth verification runs through one seam (`verifySgToken`): JWKS/RS256 when
+> `SG_JWKS_URL` is set, shared secret (HS256) as the dev/e2e fallback.
 
 > Counts in this file (models, enums, routes, domains) are machine-verified by `pnpm check:docs`.
 
@@ -20,17 +21,19 @@
 |-------|--------|---------|
 | Prisma schema | ✅ **Stable** | 15 models, 9 enums, `User.identityId` bridge to SovGrant. Last change: webhook idempotency ledger (EP 11). |
 | Domain layers | ✅ **Functional** | Resources (14 flows), Collections (4 flows), Users (3 flows), Auth (2 flows), Engagements (4 flows, unrouted), Search, Uploads, Tags, Comments |
-| Auth infrastructure | ✅ **Complete** | `core/auth/` JWT verify + cookies + guards; `middleware.ts` forwards tenant/identity headers; login route sets cookies. Sg boundary is `@fusorb/facet-sdk` via `@/lib/sg`. |
+| Auth infrastructure | ✅ **Complete** | `core/auth/` JWT verify + cookies + guards; `proxy.ts` forwards tenant/identity headers; login route sets cookies. Sg boundary is `@fusorb/facet-sdk` via `@/lib/sg`. |
 | API routes | ✅ **40/40 fixed** | `handleApiRoute` + `requireAuth`/`requireOnboarded` + flow executor everywhere; `tsc --noEmit` green (incl. Next 16 async `params` via `handleApiRoute` unwrap). |
 | Frontend pages | 🔲 **Phase 6** | Login/Register complete. Landing + Onboarding are minimal placeholders. Dashboard missing. |
+| Test suite | ✅ **Vitest** | `pnpm test` covers auth (jwt/session/guards), the flow executor, api-client error mapping, and proxy gating. Runs in CI. |
 | Auth context/providers | ✅ **Complete** | AuthProvider, QueryClient, Theme, Toaster all wired. |
 | Documentation | ✅ **Present** | CLAUDE.md, AGENTS.md, architecture docs, and episode tracker all migrated to the Relnex/SovGrant/Facet namespace |
 
-> **Auth verification note (planned):** JWT verification currently uses the shared
-> `SG_JWT_SECRET`. The direction is to verify SovGrant tokens via **JWKS**
-> (`createRemoteJWKSet` against SovGrant's well-known endpoint) instead of the
-> shared secret. This swap is user-owned and in progress; `verifySgToken` is the
-> single seam to change.
+> **Auth verification note:** `verifySgToken` supports two trust anchors. Set
+> `SG_JWKS_URL` to verify SovGrant tokens via **JWKS/RS256** (the target); otherwise
+> it falls back to the shared `SG_JWT_SECRET` (HS256) for local dev / e2e. The seam
+> is `@/core/auth/jwt`. **Blocker:** SovGrant's JWKS currently publishes the tenant
+> VC/DID keys, not the RSA access-token signing key, and tokens carry no `kid` - see
+> `docs/identity-model.md`.
 
 ### Auth Architecture
 
@@ -50,8 +53,8 @@ SovGrant (Fastify :4000)              Relnex (Next.js :3000)
 ```
 
 JWTs issued by SovGrant → verified locally in Relnex via `jose` → no network call on every
-request. Verification currently uses the shared `SG_JWT_SECRET`; the planned direction is
-**JWKS** verification against SovGrant's well-known endpoint (see note above).
+request. `verifySgToken` prefers **JWKS/RS256** (`SG_JWKS_URL`) and falls back to the shared
+`SG_JWT_SECRET` (HS256) for dev/e2e (see note above).
 
 ---
 
@@ -66,7 +69,7 @@ request. Verification currently uses the shared `SG_JWT_SECRET`; the planned dir
 | 4 | **Route Fix Pass** | ✅ Phase 4 | All 40 route files fixed: imports, guards, patterns unified |
 | 5 | **Edge Middleware** | ✅ Phase 5 | Tenant header forwarding (`x-tenant-id`/`x-identity-id` from verified JWT) |
 | 6 | **Pages** | 🔲 Phase 6 | Landing, Onboarding, Dashboard. **Before building onboarding, reuse SovGrant's onboarding feature** if it exposes a consumable surface. |
-| 7 | **Polish & Verify** | 🔲 Phase 7 | Build check, typecheck, ESLint CLI migration, end-to-end auth test |
+| 7 | **Polish & Verify** | ✅ Phase 7 | Proxy rename (Next 16), Vitest auth/flow/error suite, ESLint CLI, build check, typecheck |
 
 ---
 

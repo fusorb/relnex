@@ -54,7 +54,8 @@ src/
 ├── context/                # React providers (auth-context, provider)
 ├── hooks/                  # use-auth, use-theme
 ├── config/                 # Site configuration (navigation, features)
-└── middleware.ts           # Edge middleware (tenant header forwarding)
+├── test/                   # Vitest setup (env contract for the suite)
+└── proxy.ts                # Next 16 proxy (tenant header forwarding + gating)
 ```
 
 ---
@@ -82,7 +83,7 @@ See [identity-model.md](./identity-model.md) for the canonical-identity decision
 3. AUTHENTICATED REQUEST
    Browser → GET /api/users/me/profile
      → Cookie: sg_at=<JWT>  (or Authorization: Bearer <JWT>)
-     → middleware verifies the JWT and forwards x-tenant-id / x-identity-id
+     → proxy verifies the JWT and forwards x-tenant-id / x-identity-id
      → route handler: const session = await requireAuth(req)
         → getSession(req) extracts JWT from header/cookie
         → verifySgToken(token) - local jose verify (shared secret today, JWKS planned)
@@ -124,7 +125,7 @@ Key rules:
 - Always wrap in `handleApiRoute` (catches all error types, awaits async `params`)
 - Use `requireAuth` for routes that need any authentication
 - Use `requireOnboarded` for routes that need a fully-provisioned user
-- `@/lib/sg/middleware` no longer exists (superseded by `@/core/auth` + `src/middleware.ts`)
+- `@/lib/sg/middleware` no longer exists (superseded by `@/core/auth` + `src/proxy.ts`)
 
 ---
 
@@ -216,13 +217,30 @@ Inside a `Flow`, services receive the transaction-scoped `ctx.db`. Outside a Flo
 
 ---
 
-## Middleware
+## Proxy
 
-`src/middleware.ts` verifies the SovGrant JWT (from the `sg_at` cookie or `Authorization`
-header) and injects `x-tenant-id` (from the `tid` claim) and `x-identity-id` (from `sub`)
-into the forwarded request. It also gates protected page prefixes, redirecting unauthenticated
-users to `/login`.
+`src/proxy.ts` (the Next 16 rename of `middleware.ts`) verifies the SovGrant JWT (from
+the `sg_at` cookie or `Authorization` header) and injects `x-tenant-id` (from the `tid`
+claim) and `x-identity-id` (from `sub`) into the forwarded request. It also gates protected
+page prefixes, redirecting unauthenticated users to `/login`.
 
-> Next.js 16 deprecates the `middleware` file convention in favor of `proxy`; the rename is
-> tracked in Phase 7. Verification currently uses `verifySgToken` (shared secret); the JWKS
+> Next.js 16 renamed the `middleware` file convention to `proxy` and defaults it to the
+> Node.js runtime. Verification currently uses `verifySgToken` (shared secret); the JWKS
 > swap happens behind that function.
+
+---
+
+## Testing
+
+Vitest covers the core seams (`pnpm test`); it runs in CI before the build.
+
+- `src/core/auth/jwt.test.ts` - real `jose` sign/verify round-trips (signature, issuer, expiry).
+- `src/core/auth/jwt.jwks.test.ts` - JWKS/RS256 verification against a local key set.
+- `src/core/auth/get-session.test.ts` - token resolution (header vs cookie) + User projection.
+- `src/core/auth/require-auth.test.ts` - guard behavior + first-login auto-provisioning.
+- `src/core/flows/flow-executor.test.ts` - input validation, transactions, error normalization.
+- `src/lib/useful/api-client.test.ts` - HTTP status to `ApiError` mapping.
+- `src/proxy.test.ts` - gating and tenant/identity header forwarding.
+
+Prisma and the token-verification seam are mocked in the unit tests, so the suite needs no
+database or live SovGrant.
