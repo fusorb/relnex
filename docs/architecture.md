@@ -10,10 +10,10 @@
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── (auth)/             # facet AuthLayout + facet-auth SignIn/forms
+│   ├── (auth)/             # facet AuthLayout + facet-auth LoginForm
 │   ├── (public)/           # facet LandingLayout marketing page
-│   ├── (protected)/        # facet ConsoleLayout dashboard shell
-│   ├── (onboarding)/       # Onboarding wizard (Phase B - SG onboarding SDK)
+│   ├── (protected)/        # facet ConsoleLayout: dashboard + console surfaces
+│   ├── (onboarding)/       # Onboarding wizard (Relnex step model; SG IdentitySdk seam)
 │   ├── api-docs/           # Swagger UI documentation
 │   └── api/                # 40 API route files across 9 route modules
 │       ├── auth/           # login, register, logout, me
@@ -50,9 +50,11 @@ src/
 │
 ├── components/             # facet-based UI glue
 │   ├── providers.tsx       # ThemeProvider + React Query + Toaster (facet)
-│   └── layout/             # router-adapter.tsx (Next RouterAdapter for facet-layout)
+│   ├── layout/             # router-adapter.tsx (Next RouterAdapter for facet-layout)
+│   └── shell/              # coming-soon.tsx (console placeholders)
 │
-├── hooks/                  # use-session (facet LayoutSession from /api/auth/me)
+├── hooks/                  # use-me, use-resources, use-session (facet LayoutSession)
+├── lib/onboarding.ts       # product onboarding step model (pure, unit-tested)
 ├── config/                 # site.ts (constants) + layout.tsx (facet LayoutConfig)
 ├── styles/                 # globals.css + relnex-palette.css (Relnex brand)
 ├── test/                   # Vitest setup (env contract for the suite)
@@ -246,8 +248,15 @@ or icon registry (a boundary gate enforces this).
 - **Auth UI**: facet-auth `LoginForm` over Relnex's BFF `/api/auth/*` (httpOnly
   cookie session). The facet-auth `SgProvider` / OIDC-client migration is the next
   slice (see the frontend plan).
-- **Session**: `src/hooks/use-session.ts` maps `/api/auth/me` to a facet-layout
-  `LayoutSession`.
+- **Data**: `src/hooks/use-me.ts` is the canonical `/api/auth/me` query (with a
+  `requiresOnboarding` guard); `use-resources.ts` wraps `/api/resources`.
+  `use-session.ts` derives the facet `LayoutSession` from `useMe`.
+- **Console**: dashboard home (`(protected)/dashboard`) with recent resources and
+  empty/loading/error states; `(protected)/*` placeholders keep the sidebar
+  navigable. **Onboarding** (`(onboarding)/onboarding`) is a wizard on Relnex's
+  own step model (`src/lib/onboarding.ts`), persisting via
+  `PUT /api/users/me/onboarding|profile`. SG-level identity onboarding plugs in
+  via facet-sdk `IdentitySdk` once a flow is provisioned for Relnex in SovGrant.
 - **Brand**: `src/styles/relnex-palette.css` overrides the facet semantic tokens
   (the documented "bring your own palette" pattern).
 

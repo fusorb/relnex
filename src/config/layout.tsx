@@ -27,7 +27,7 @@ export const consoleLayoutConfig: LayoutConfig = {
     {
       title: "Graph",
       items: [
-        { href: "/graph", label: "Graph view", icon: <Icon name="share-2" /> },
+        { href: "/graph", label: "Graph view", icon: <Icon name="share2" /> },
         { href: "/tags", label: "Tags", icon: <Icon name="tags" /> },
       ],
     },

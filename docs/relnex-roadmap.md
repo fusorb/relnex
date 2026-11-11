@@ -4,8 +4,9 @@
 > Auth is fully delegated to **SovGrant** (separate Fastify service, code prefix `sg`).
 > Relnex owns User profile, Resources, Collections, Comments, Tags, and Search.
 
-> **Status (2026-11-10).** Phases 0-5 and 7 are complete; the repo builds clean and
-> carries a Vitest suite. The remaining work is the Phase 6 page build-out.
+> **Status (2026-11-10).** Phases 0-5, 7, and frontend rebuild Phases A-B are
+> complete; the repo builds clean and carries a Vitest suite (50 tests). The
+> remaining work is rebuild Phases C-G.
 > Auth verification runs through one seam (`verifySgToken`): JWKS/RS256 when
 > `SG_JWKS_URL` is set, shared secret (HS256) as the dev/e2e fallback.
 
@@ -23,9 +24,9 @@
 | Domain layers | ✅ **Functional** | Resources (14 flows), Collections (4 flows), Users (3 flows), Auth (2 flows), Engagements (4 flows, unrouted), Search, Uploads, Tags, Comments |
 | Auth infrastructure | ✅ **Complete** | `core/auth/` JWT verify + cookies + guards; `proxy.ts` forwards tenant/identity headers; login route sets cookies. Sg boundary is `@fusorb/facet-sdk` via `@/lib/sg`. |
 | API routes | ✅ **40/40 fixed** | `handleApiRoute` + `requireAuth`/`requireOnboarded` + flow executor everywhere; `tsc --noEmit` green (incl. Next 16 async `params` via `handleApiRoute` unwrap). |
-| Frontend pages | 🟡 **Rebuild (A-G)** | Phase A (facet shell) done: landing, auth, console shell, brand palette. Product surfaces land in Phases B-G. |
+| Frontend pages | 🟡 **Rebuild (A-G)** | Phases A-B done: facet shell (landing, auth, console, brand palette) + console nav, dashboard home (recent resources), onboarding wizard. Product surfaces land in Phases C-G. |
 | Test suite | ✅ **Vitest** | `pnpm test` covers auth (jwt/session/guards), the flow executor, api-client error mapping, and proxy gating. Runs in CI. |
-| Auth context/providers | ✅ **Complete** | AuthProvider, QueryClient, Theme, Toaster all wired. |
+| Providers | ✅ **Complete** | facet `ThemeProvider` → React Query → facet `Toaster`; session via `use-me`/`use-session`. The facet-auth `SgProvider` swap (Model A) is a later slice. |
 | Documentation | ✅ **Present** | CLAUDE.md, AGENTS.md, architecture docs, and episode tracker all migrated to the Relnex/SovGrant/Facet namespace |
 
 > **Auth verification note:** `verifySgToken` supports three trust anchors, in order:

@@ -16,7 +16,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifySgToken } from "@/core/auth/jwt";
 
 const PROTECTED_PREFIXES = [
-  "/dashboard", "/settings", "/editor", "/profile",
+  "/dashboard",
+  "/onboarding",
+  "/resources",
+  "/collections",
+  "/graph",
+  "/tags",
+  "/settings",
+  "/profile",
 ];
 
 function isProtectedPage(pathname: string) {

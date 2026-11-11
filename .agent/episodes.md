@@ -413,3 +413,32 @@ graph; the rebuild only had to stop hiding it behind ad-hoc UI.
 
 State: Phase A green (`pnpm typecheck` clean, `pnpm test` 45/45, gates green).
 Phases B-G remain.
+
+================================================================================
+EP 14 - PHASE B: CONSOLE + ONBOARDING
+================================================================================
+
+What changed:
+  - Data seam: `src/hooks/use-me.ts` (canonical `/api/auth/me` query plus a
+    `requiresOnboarding` guard) and `use-resources.ts` (resource list). `use-session`
+    now derives the facet `LayoutSession` from `useMe` instead of its own fetch.
+  - Dashboard home: greeting, `StatCard` row, recent-resource cards with loading
+    skeleton / empty / error states, quick action to `/resources/new`.
+  - Console nav: kept the facet `LayoutConfig` sections and added `ComingSoon`
+    placeholders (resources, collections, graph, tags, settings) so the sidebar
+    never 404s. Fixed a latent icon bug: the nav used `share-2`, which `getIcon`
+    cannot resolve (the registry key is `share2`), so it rendered blank.
+  - Onboarding: a real wizard on Relnex's own step model (`src/lib/onboarding.ts`,
+    unit-tested) persisting via `PUT /api/users/me/onboarding` and `/profile`,
+    resuming from `onboardingStep`. SG-level identity onboarding plugs in through
+    facet-sdk `IdentitySdk` once a flow is provisioned for Relnex in SovGrant.
+  - Gated `/onboarding` and the console prefixes in `proxy.ts`.
+
+What survived:
+  Backend untouched; auth still rides the BFF cookie flow behind `verifySgToken`.
+
+Lesson: the console is the doorway to the graph. Make the doorway real - nav plus
+a data-backed home - before building the rooms.
+
+State: Phase B green (`pnpm typecheck` clean, `pnpm test` 50/50, gates green).
+Phases C-G remain.
