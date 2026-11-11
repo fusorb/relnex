@@ -5,7 +5,6 @@
 // result (author, metrics, resourceTags, parent, relations in/out, collections).
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/useful/api-client";
-import { resourceQueryKey } from "./use-resources";
 
 interface ApiEnvelope<T> {
   success: boolean;
@@ -195,6 +194,3 @@ export function usePublishResource(id: string) {
     },
   });
 }
-
-/** Re-export so resource pages can invalidate lists without importing two hook modules. */
-export { resourceQueryKey };

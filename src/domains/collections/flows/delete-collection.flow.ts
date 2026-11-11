@@ -1,6 +1,5 @@
 import { z }        from "zod";
 import type { Flow } from "@/core/flows/flow";
-import type { FlowContext } from "@/core/flows/flow-context";
 import { CollectionService }    from "../collection.service";
 import { CollectionRepository } from "../collection.repository";
 

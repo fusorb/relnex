@@ -14,6 +14,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { verifySgToken } from "@/core/auth/jwt";
+import { resolveTenantId } from "@/core/tenancy";
 
 const PROTECTED_PREFIXES = [
   "/dashboard",
@@ -67,9 +68,14 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Forward tenant/identity to downstream handlers via request headers.
+  // Forward tenant/identity from the *verified* token only. Drop any
+  // client-supplied values first (anti-spoof), and always emit a concrete
+  // tenant (the reserved default scope) so downstream queries are never
+  // left unscoped when the token carries no `tid`.
   const requestHeaders = new Headers(req.headers);
-  if (tenantId) requestHeaders.set("x-tenant-id", tenantId);
+  requestHeaders.delete("x-tenant-id");
+  requestHeaders.delete("x-identity-id");
+  requestHeaders.set("x-tenant-id", resolveTenantId(tenantId));
   if (identityId) requestHeaders.set("x-identity-id", identityId);
 
   return NextResponse.next({ request: { headers: requestHeaders } });

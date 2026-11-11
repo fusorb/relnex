@@ -7,7 +7,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { flowExecutor } from "@/core/flows";
 import { loginFlow } from "@/domains/auth";
-import { LoginDto } from "@/domains/auth/auth.dto";
 import { setAuthCookies } from "@/core/auth";
 
 export const POST = handleApiRoute(async (req: NextRequest) => {

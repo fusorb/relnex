@@ -13,7 +13,7 @@ const resourceService = new ResourceService();
 
 export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
-    const session = await requireOnboarded(req);
+    await requireOnboarded(req);
     const tenantId = req.headers.get("x-tenant-id") ?? null;
     const resource = await resourceService.getResource(params.resourceId, tenantId);
     return NextResponse.json({ success: true, data: resource });

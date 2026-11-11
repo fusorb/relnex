@@ -22,7 +22,6 @@ export const GET = handleApiRoute(async (req: NextRequest) => {
 
   const limit = parseInt(parsed.data.limit, 10);
   const page = parseInt(parsed.data.page, 10);
-  const skip = (page - 1) * limit;
 
   const { total, items } = await repo.searchUsers(parsed.data.q, {
     q: parsed.data.q,

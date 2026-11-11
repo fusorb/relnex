@@ -11,7 +11,7 @@ import { prisma } from "@/core/db";
 const resourceService = new ResourceService(prisma);
 
 export const GET = handleApiRoute(async (req: NextRequest) => {
-  const session = await requireOnboarded(req);
+  await requireOnboarded(req);
   const tenantId = req.headers.get("x-tenant-id") ?? null;
   const { searchParams } = new URL(req.url);
   const filters = listResourcesSchema.parse(

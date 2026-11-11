@@ -10,9 +10,9 @@ import { proxy } from "@/proxy";
 
 function req(
   path: string,
-  opts: { cookie?: string; authorization?: string } = {}
+  opts: { cookie?: string; authorization?: string; headers?: Record<string, string> } = {}
 ): NextRequest {
-  const headers = new Headers();
+  const headers = new Headers(opts.headers);
   if (opts.cookie) headers.set("cookie", `sg_at=${opts.cookie}`);
   if (opts.authorization) headers.set("authorization", opts.authorization);
   return new NextRequest(`https://relnex.test${path}`, { headers });
@@ -61,5 +61,16 @@ describe("proxy", () => {
   it("does not forward identity headers for an anonymous public request", async () => {
     const res = await proxy(req("/"));
     expect(res.headers.get("x-middleware-request-x-identity-id")).toBeNull();
+  });
+
+  it("ignores a client-supplied x-tenant-id (anti-spoof)", async () => {
+    const res = await proxy(req("/", { headers: { "x-tenant-id": "attacker-tenant" } }));
+    expect(res.headers.get("x-middleware-request-x-tenant-id")).toBe("relnex-default");
+  });
+
+  it("emits the default tenant when the verified token carries no tid", async () => {
+    verifySgToken.mockResolvedValue({ sub: "idn_test" });
+    const res = await proxy(req("/dashboard", { cookie: "valid.token" }));
+    expect(res.headers.get("x-middleware-request-x-tenant-id")).toBe("relnex-default");
   });
 });

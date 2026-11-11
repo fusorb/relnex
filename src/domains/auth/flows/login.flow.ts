@@ -1,6 +1,5 @@
 import { z }            from "zod";
 import type { Flow }    from "@/core/flows/flow";
-import type { FlowContext } from "@/core/flows/flow-context";
 import { LoginDto }     from "../auth.dto";
 import { authService }  from "../auth.service";
 
@@ -17,7 +16,7 @@ export const loginFlow: Flow<z.infer<typeof LoginDto>, LoginFlowOutput> = {
   name:        "auth:login",
   inputSchema: LoginDto,
 
-  async execute(input, ctx: FlowContext) {
+  async execute(input) {
     const result = await authService.login(input);
 
     if (result.requiresMfa) {
