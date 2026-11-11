@@ -1,4 +1,4 @@
-import { ResourceTypeRenderer } from "../../prisma/generated";
+import { ResourceTypeRenderer } from "@prisma-client";
 
 export const siteConfig = {
   name: "Relnex",

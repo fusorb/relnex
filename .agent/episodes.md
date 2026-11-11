@@ -262,8 +262,8 @@ What changed:
   - `src/middleware.ts` - tenant/identity header forwarding.
   - Em/en dashes removed across `src/` and the docs.
   - README / AGENTS / CLAUDE / docs/architecture / roadmap / these episodes and
-    the tracker all realigned to the true repo state (17 models, 11 enums,
-    40 routes, 10 domains).
+    the tracker all realigned to the repo state (14 models, 9 enums, 40 routes,
+    9 domains).
 
 What survived:
   Phases 0-5 are complete and the repo builds clean. Phase 6 (pages) and Phase 7
@@ -272,3 +272,98 @@ What survived:
 State: paused at a green checkpoint. `pnpm build` compiles; `pnpm typecheck`
 passes; docs and trackers are in sync. Identity verification still uses the shared
 secret pending the JWKS migration (user-owned; `verifySgToken` is the seam).
+
+================================================================================
+
+EP 11 -- The audit: SG contract, dead-code purge, and sync gates
+--------------------------------------------------------------------------------
+What happened:
+  A full-repo audit was run before resuming Phase 6. It found the repo
+  self-inconsistent in four ways: retired names still live, docs drifted from
+  reality, dead code left behind by earlier renames, and no gates to catch any of
+  it again.
+
+  The sharpest finding: the **live `.env` was still on the retired `ARCID_*`
+  contract** while the source reads `SG_*` - so `SG_JWT_SECRET` and
+  `SG_WEBHOOK_SECRET` (both non-null asserted) would throw locally and auth was
+  broken on any fresh clone.
+
+What changed:
+  - **Env contract.** `.env` + `.env.example` aligned on `SG_*`; `SG_ISSUER`,
+    `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_STORAGE_PUBLIC_URL` documented; the
+    duplicate `.env.sg.example` deleted; secret backups (`.env.bak-*`,
+    `.env.dbname-*`) removed; `docs/environment.md` added as the canonical contract.
+  - **Legacy purge.** No `arcbase` / `arc-id` / `ArcID` / `arcevo` outside
+    `.agent/episodes.md` and the new `.agent/archive/` (the superseded AUDIT and the
+    DB-access plan now live there). `components.json` (shadcn scaffold) deleted.
+  - **Dead code.** Removed the duplicate `DbClient`, unused barrels, `guards.ts`,
+    `prisma-helpers.ts`, the engagement save/unsave duplicates + `saved-resource.*`,
+    and unused hooks/components. Coherent-but-unrouted code (engagements
+    reactions/follows, the protected layout) was kept for Phase 6.
+  - **Sync gates.** `scripts/check-{docs-sync,legacy-names,env-sync,boundaries}.mjs`
+    + `pnpm check:all` + a `.github/workflows/ci.yml`, mirroring facet. Docs now
+    carry counts that `check:docs` verifies.
+  - **Hardening.** `api-client` maps HTTP status to the right `ApiError` (was always
+    500); baseline security headers added; webhook idempotency via a dedupe table.
+  - **Docs/trackers** re-synced to the real state: 15 models, 9 enums, 40 routes,
+    9 domains. `docs/capacity-and-fragmentation.md` records the 5-year stress-test.
+
+What survived:
+  The architecture is unchanged - routes -> flows -> services -> repositories,
+  `handleApiRoute` + guards, `User.identityId` as the bridge. The lesson is the one
+  EP 05/06 already taught: a rename is a manifest + import sites + docs + env sweep,
+  and it is not done until a gate fails when it regresses. This pass makes the gate.
+
+State: green at a paused checkpoint, now with drift gates. Identity verification
+still uses the shared secret pending the JWKS migration (`verifySgToken` seam).
+
+================================================================================
+
+EP 12 -- Phase 7: proxy rename, a Vitest suite, and the JWKS seam
+--------------------------------------------------------------------------------
+What happened:
+  The polish pass closed. Three things landed, all behind existing seams.
+
+  1. Next 16 renamed the `middleware` file convention to `proxy`. `src/middleware.ts`
+     became `src/proxy.ts` and the exported function `middleware` became `proxy`
+     (verified against `node_modules/next/dist/docs`). Gating and tenant/identity
+     header forwarding are unchanged.
+
+  2. A Vitest suite (sibling parity with SovGrant: `vitest@^4`) covers the load-bearing
+     seams - 7 files / 42 tests: `verifySgToken` (real jose HS256 + JWKS/RS256),
+     `getSession`, the guards (incl. first-login provisioning), the flow executor,
+     `api-client` status-to-`ApiError` mapping, and proxy gating. Prisma and the token
+     seam are mocked, so the suite needs no database or live SovGrant.
+
+  3. `verifySgToken` now carries three trust anchors in one seam, resolved in order:
+     **JWKS/RS256** (`SG_JWKS_URL`, the target), a **pinned public key** (`SG_JWT_PUBLIC_KEY`,
+     the interim that works against `sovgrant/certs/public.pem` today), then the
+     **shared secret (HS256)** for local dev / e2e. Algorithms are pinned per anchor.
+
+What changed:
+  - `src/proxy.ts` (rename + `proxy` export), `src/proxy.test.ts`.
+  - `src/core/auth/jwt.ts` - three-anchor resolution; `SG_JWKS_URL` / `SG_JWT_PUBLIC_KEY`
+    added to the env contract; `docs/environment.md` / `identity-model.md` / roadmap re-synced.
+  - `vitest.config.ts` (alias-based, mirroring SovGrant; capped workers on Windows),
+    `test` / `test:watch` / `test:coverage` scripts, `pnpm test` wired into CI.
+
+The finding (why JWKS is not wired on yet):
+  Reading `../sovgrant` before trusting the endpoint name paid off. SovGrant signs
+  access tokens RS256 with `certs/private.pem` and declares issuer `sovgrant`, but
+  its JWKS (`/api/v1/oauth/jwks`) publishes the **tenant VC/DID signing keys** (EC
+  P-256), not the access-token key - and access tokens carry no `kid`. So JWKS
+  verification cannot succeed against current SovGrant. Relnex keeps the shared
+  secret (or a pinned public key) for dev/e2e and stays ready to flip `SG_JWKS_URL`
+  once SovGrant publishes the access-token key. Logged as an SovGrant-side blocker in
+  `sovgrant/.agent/todo.txt`.
+
+What survived:
+  `verifySgToken` stays the single seam; no route, flow, or service changed. The
+  identity model is untouched - only the trust anchor is now switchable.
+
+Lesson: an endpoint with the right name is not the right contract. Verify what a
+sibling repo actually publishes before wiring it in; "JWKS exists" does not mean
+"JWKS publishes the key that signs my token".
+
+State: Phases 0-5 and 7 complete, suite green, gates green. Identity verification
+uses the JWKS/HS256 seam; JWKS activation waits on SovGrant.

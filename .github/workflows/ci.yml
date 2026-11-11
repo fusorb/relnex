@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      # Build-time placeholders: the app must compile without live secrets.
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/relnex?schema=public
+      SG_API_URL: http://localhost:4000
+      SG_CLIENT_ID: relnex
+      SG_ISSUER: sovgrant
+      SG_JWT_SECRET: ci-placeholder-secret
+      SG_WEBHOOK_SECRET: ci-placeholder-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm build
+      - run: pnpm check:all

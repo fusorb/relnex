@@ -418,3 +418,18 @@ model ResourceMetrics {
 
   @@index([tenantId])
 }
+
+// ==========================================
+// WEBHOOKS
+// ==========================================
+
+// Idempotency ledger for inbound SovGrant webhooks. The event id (or a body
+// hash when the sender omits one) is the primary key, so a redelivered event is
+// processed at most once.
+model WebhookEvent {
+  id         String   @id
+  source     String   @default("sg")
+  receivedAt DateTime @default(now())
+
+  @@index([receivedAt])
+}

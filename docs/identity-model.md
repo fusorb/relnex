@@ -83,7 +83,9 @@ name), it is kept in sync **one-way via SovGrant webhooks**.
 - Auth model: **hybrid** - shared `facet-auth` UI over Relnex's BFF httpOnly-cookie
   session. Relnex owns a *session*, not an *identity*. Browser talks to Relnex's
   `/api/auth/*`, which proxy to SovGrant.
-- Token verification: local; currently `SG_JWT_SECRET`, migrating to JWKS.
+- Token verification: local via `verifySgToken`, resolved in order - **JWKS/RS256**
+  (`SG_JWKS_URL`, the target), then a **pinned public key** (`SG_JWT_PUBLIC_KEY`,
+  the interim), then the `SG_JWT_SECRET` (HS256) dev/e2e fallback. One seam, three anchors.
 - Onboarding: consume SovGrant's onboarding SDK for user-level progress; Relnex keeps
   any product-specific onboarding state.
 - Org/tenant membership: canonical in SovGrant; Relnex keeps local, non-identity roles only.
@@ -94,3 +96,9 @@ name), it is kept in sync **one-way via SovGrant webhooks**.
 - Client registration for third parties: admin-managed vs dynamic client registration.
 - Define the scope registry + consent screen copy, and per-client branding at SovGrant.
 - Register Relnex (and each relying party) as an OIDC client; move `verifySgToken` to JWKS.
+- **SovGrant-side blocker:** its JWKS (`/api/v1/oauth/jwks`) currently publishes the
+  tenant VC/DID signing keys (EC P-256), not the RSA key that signs access tokens
+  (`certs/*.pem`), and access tokens carry no `kid`. JWKS verification cannot succeed
+  until SovGrant publishes the access-token signing key and/or sets a `kid`. Tracked in
+  `sovgrant/.agent/todo.txt`. Until then, Relnex uses the pinned-public-key or
+  shared-secret anchor; switching to JWKS is one env var (`SG_JWKS_URL`) with no code change.

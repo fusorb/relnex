@@ -45,7 +45,6 @@ export const GET = handleApiRoute(async (req, { params }) => {
 | JWT verify (verifySgToken) | `@/core/auth` (leaf `@/core/auth/jwt` in edge code) | |
 | Auth cookies (setAuthCookies, clearAuthCookies) | `@/core/auth` | |
 | Prisma client | `@/core/db` | Singleton, not from `@/lib/useful/db-client` |
-| Prisma helpers (resourceWithRelations, ...) | `@/core/db` | |
 | FlowExecutor, Flow, FlowContext | `@/core/flows` | |
 | ApiError, handleApiRoute, handleError | `@/lib/errors` | Barrel is server-only; client code imports `@/lib/errors/api-error` |
 | Sg SDK (SgClient, AuthSdk, unwrap) | `@/lib/sg` | Only for SDK calls to SovGrant |

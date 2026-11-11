@@ -289,6 +289,12 @@ exports.Prisma.ResourceMetricsScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.WebhookEventScalarFieldEnum = {
+  id: 'id',
+  source: 'source',
+  receivedAt: 'receivedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -400,7 +406,8 @@ exports.Prisma.ModelName = {
   Reaction: 'Reaction',
   Follow: 'Follow',
   ResourceUsage: 'ResourceUsage',
-  ResourceMetrics: 'ResourceMetrics'
+  ResourceMetrics: 'ResourceMetrics',
+  WebhookEvent: 'WebhookEvent'
 };
 
 /**

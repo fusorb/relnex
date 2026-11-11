@@ -10,14 +10,14 @@
 Next.js 16 knowledge-graph app. Auth delegated to `sovgrant` (Fastify identity service, code prefix `sg`).
 Package manager: **pnpm**. TypeScript strict mode.
 
-## Current Status (2026-10-31)
+## Current Status (2026-11-10)
 
-**Development is paused** until SovGrant is stable. Backend is stabilized and
-`pnpm build` / `pnpm typecheck` are green. What remains is the frontend page build-out.
+Phases 0-5 and 7 complete; the repo builds clean and has a Vitest suite.
+What remains is the Phase 6 frontend page build-out.
 
 - Phase 0-5 ✅ - docs, core infra, flow unification, auth consolidation, route fix pass, edge middleware
 - Phase 6 🔲 - pages (landing, onboarding, dashboard) - deferred; consider reusing SovGrant's onboarding feature
-- Phase 7 🔲 - polish & verify (ESLint CLI migration, end-to-end auth test)
+- Phase 7 ✅ - polish & verify (ESLint CLI, proxy rename, Vitest auth/flow/error suite)
 
 Details in `docs/relnex-roadmap.md`. Each phase is independently compilable and mergable.
 
@@ -63,8 +63,13 @@ stay in Relnex. See `docs/identity-model.md`.
 
 ## Auth Notes
 
-- JWT verification currently uses the shared `SG_JWT_SECRET`. The direction is to
-  verify SovGrant tokens via **JWKS**; `verifySgToken` (`@/core/auth/jwt`) is the
-  single seam to change. Do not assume the shared secret is permanent.
-- `src/middleware.ts` forwards `x-tenant-id` / `x-identity-id` from the verified JWT.
-  Next 16 deprecates the `middleware` convention in favor of `proxy` (rename tracked in Phase 7).
+- Token verification goes through one seam: `verifySgToken` (`@/core/auth/jwt`),
+  resolved in order: **JWKS/RS256** (`SG_JWKS_URL`, target), then a **pinned public
+  key** (`SG_JWT_PUBLIC_KEY`, interim), then the shared `SG_JWT_SECRET` (HS256) for
+  local dev / e2e. Algorithms are pinned per anchor.
+- **Blocker before JWKS works end-to-end:** SovGrant's JWKS publishes the tenant
+  VC/DID keys, not the RSA access-token signing key, and access tokens carry no
+  `kid`. Tracked in `sovgrant/.agent/todo.txt`; see `docs/identity-model.md`. Do not
+  assume the shared secret is permanent.
+- `src/proxy.ts` (Next 16 rename of `middleware.ts`) forwards `x-tenant-id` /
+  `x-identity-id` from the verified JWT and gates protected page prefixes.
