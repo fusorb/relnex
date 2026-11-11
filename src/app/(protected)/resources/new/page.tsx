@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@fusorb/facet-layout";
-import { Button, Icon, Input, Label, Textarea } from "@fusorb/facet-components";
+import { Button, Input, Label, Textarea } from "@fusorb/facet-components";
 import { FileUpload } from "@/components/resources/file-upload";
 import { RESOURCE_TYPES, RESOURCE_VISIBILITIES } from "@/hooks/use-resources";
 import { useCreateResource } from "@/hooks/use-resource";
