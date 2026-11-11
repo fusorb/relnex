@@ -14,4 +14,5 @@ See [workflow/taste.md](workflow/taste.md)
 
 # design
 - When removing a disliked element (e.g., jargon-heavy "orbit" branding), expects it replaced with something more conversational and reasonable rather than simply excised. Confidence: 0.8
+- Wants each product to carry its own brand colors/palette rather than shipping a framework's default theme — expects branding (custom brand color/palette) to be possible and applied, and questions a framework when it seems not to allow it. Confidence: 0.7
  0.75

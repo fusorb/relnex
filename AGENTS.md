@@ -16,10 +16,22 @@ Phases 0-5 and 7 complete; the repo builds clean and has a Vitest suite.
 What remains is the Phase 6 frontend page build-out.
 
 - Phase 0-5 ✅ - docs, core infra, flow unification, auth consolidation, route fix pass, edge middleware
-- Phase 6 🔲 - pages (landing, onboarding, dashboard) - deferred; consider reusing SovGrant's onboarding feature
+- Phase 6 🟡 - frontend rebuild on `@fusorb/facet-*` (Phases A-G); A (shell) done, B-G pending
 - Phase 7 ✅ - polish & verify (ESLint CLI, proxy rename, Vitest auth/flow/error suite)
 
 Details in `docs/relnex-roadmap.md`. Each phase is independently compilable and mergable.
+
+## Frontend Conventions (MANDATORY)
+
+- **The UI is facet-only.** Build on `@fusorb/facet-*` (layout/components/auth/store);
+  never hand-roll layouts, providers, or an icon registry. Use
+  `<Icon name="…" />` from `@fusorb/facet-components`, not a local icon map.
+- **No `next-themes`.** Theme via `@fusorb/facet-components` `ThemeProvider`
+  (writes `data-theme` on `<html>`).
+- **Navigation** lives in a facet-layout `LayoutConfig` (`src/config/layout.tsx`),
+  not in ad-hoc arrays. Shells: `ConsoleLayout` / `AuthLayout` / `LandingLayout`.
+- **Branding** = override facet's semantic tokens in `src/styles/relnex-palette.css`
+  (the documented "bring your own palette" pattern), imported after `tokens.css`.
 
 ## Route Handler Pattern (MANDATORY)
 
