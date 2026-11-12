@@ -2,7 +2,6 @@ import { z }             from "zod";
 import type { Flow }     from "@/core/flows/flow";
 import type { FlowContext } from "@/core/flows/flow-context";
 import { ResourceService } from "../resource.service";
-import { ApiError }        from "@/lib/errors";
 import type { Prisma }      from "@prisma-client";
 import { resolveTenantId }  from "@/core/tenancy";
 

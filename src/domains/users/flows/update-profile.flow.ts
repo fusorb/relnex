@@ -1,6 +1,5 @@
 import { z }        from "zod";
 import type { Flow } from "@/core/flows/flow";
-import type { FlowContext } from "@/core/flows/flow-context";
 import { UpdateProfileDto } from "../user.dto";
 import { UserRepository }   from "../user.repository";
 

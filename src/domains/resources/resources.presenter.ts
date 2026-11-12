@@ -2,7 +2,7 @@
  * Resource presenter - transforms Resource model to API-safe response shapes.
  */
 
-import type { Resource, ResourceTag, ResourceMetrics } from "@prisma-client";
+import type { Resource, ResourceMetrics } from "@prisma-client";
 import { presentPublicUser, type PublicUser } from "../users/users.presenter";
 
 // ── Tag shape ───────────────────────────────────────────────────────────

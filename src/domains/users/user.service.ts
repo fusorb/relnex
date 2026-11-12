@@ -20,7 +20,7 @@ export class UserService {
   }
 
   async getUserDirectoryListing(tenantId?: string | null, page = 1, limit = 50) {
-    const { items, total } = await this.repo.findMany({ tenantId, page, limit });
+    const { items } = await this.repo.findMany({ tenantId, page, limit });
     return items.map(presentPublicUser);
   }
 
