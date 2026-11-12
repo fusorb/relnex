@@ -647,3 +647,35 @@ Tests: +11 (collection.visibility 8, search.service 2, proxy `/search` 1).
 Suite: 87.
 
 State: gates green, 87 tests, CI green. Phases F-G remain.
+
+================================================================================
+EP 21 - DRIFT AUDIT: A NEW SPEC GATE + PROSE FIXES
+================================================================================
+
+Asked to confirm nothing had drifted. Swept every tracker and doc; found and fixed
+real drift, including a class the existing gates structurally could not see.
+
+Fixed:
+  - CLAUDE.md still claimed "all 40 API route files" and that development was
+    "paused until SovGrant is stable" - both long stale
+  - the docs gate matched only "N routes", so the "N route files" / "N API route
+    files" phrasings slipped through. Extended the pattern; re-running it
+    immediately caught a second stale count in .agent/todo.txt (40 -> 41)
+  - architecture.md carried a stale tree: a lib/useful line describing files that
+    are not there, "coming-soon.tsx (console placeholders)" when only /settings is
+    still a placeholder, an outdated hooks list, and "(protected)/* placeholders
+    keep the sidebar navigable"
+  - the roadmap workstream table still described Phase 6 as "A shell (done)"
+
+NEW GATE: check:openapi - scripts/check-openapi-sync.mjs
+  Diffs the routes on disk against the path keys in src/lib/useful/openapi.ts
+  (rendered by /api-docs). On its first run it found 10 undocumented routes
+  (/api/graph, /api/resources/saved, /api/resources/{id}/save, the four
+  /api/search/* endpoints, /api/users/me/onboarding, /api/users/me/profile,
+  /api/webhooks/sg) and 2 phantom paths (/api/auth/onboarding, /api/users/profile
+  - the real paths are under /api/users/me/*). All fixed: the spec now covers
+  exactly the 41 routes, and the shapes EP 20 changed (search, tags, collections)
+  were corrected to the single pagination envelope. Wired into check:all, so CI
+  enforces it from now on.
+
+Suite: 87 tests. Five gates green.

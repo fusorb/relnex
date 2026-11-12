@@ -51,6 +51,10 @@ const PATTERNS = [
   [/\b(\d+)\s+models\b/g, "models"],
   [/\b(\d+)\s+enums\b/g, "enums"],
   [/\b(\d+)\s+routes\b/g, "routes"],
+  // The same count is phrased "route files" / "API route files" in places; without
+  // these the word "routes" pattern silently skipped them (found via CLAUDE.md).
+  [/\b(\d+)\s+route files\b/g, "routes"],
+  [/\b(\d+)\s+API route files\b/g, "routes"],
   [/\b(\d+)\s+domains\b/g, "domains"],
 ];
 

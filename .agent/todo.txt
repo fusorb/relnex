@@ -30,7 +30,7 @@ PHASE 3 - AUTH CONSOLIDATION .................................. [x] DONE
   [ ] (deferred) Swap shared-secret verify for JWKS - user-owned, verifySgToken seam
 
 PHASE 4 - ROUTE FIX PASS ...................................... [x] DONE
-  [x] All 40 route files: handleApiRoute + guards + flow executor
+  [x] All 41 route files: handleApiRoute + guards + flow executor
   [x] Async params handled centrally in handleApiRoute (Next 16)
   [x] tsc --noEmit green
 
@@ -97,6 +97,9 @@ VERIFICATION CHECKLIST (current)
       list, detail, tags, versions, comments, children, and save; detail 404s
       (never 403) for non-owners of private/draft resources; tag mutations
       require ownership
+  [x] Drift audit (EP 21): handbooks/roadmap/todo re-synced; check:docs now also
+      matches "N route files" phrasing; NEW check:openapi gate diffs the OpenAPI
+      spec against the routes (was 10 undocumented + 2 phantom)
   [x] Phase E (EP 20): collections + tags + search console surfaces; ONE paginated
       envelope ({ items, total, page, limit }) on every list endpoint; unified
       search now honours ?type=; collection reads respect visibility (404)

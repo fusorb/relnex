@@ -185,6 +185,17 @@ const safeTagSchema = {
   },
 };
 
+// The tag list adds the usage count the taxonomy view renders.
+const tagListItemSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    name: { type: "string" },
+    slug: { type: "string" },
+    resourceCount: { type: "number" },
+  },
+};
+
 const searchItemSchema = {
   type: "object",
   properties: {
@@ -207,6 +218,27 @@ const searchItemSchema = {
     },
   },
 };
+
+// Shared response shapes. Every Relnex list endpoint returns the same pagination
+// envelope (`{ items, total, page, limit }` - see @/lib/pagination), and every
+// handler wraps its payload in `{ success, data }`.
+const paginated = (itemSchema: object) => ({
+  type: "object",
+  properties: {
+    items: { type: "array", items: itemSchema },
+    total: { type: "number" },
+    page: { type: "number" },
+    limit: { type: "number" },
+  },
+});
+
+const envelope = (dataSchema: object) => ({
+  type: "object",
+  properties: {
+    success: { type: "boolean" },
+    data: dataSchema,
+  },
+});
 
 export const openApiSpec = {
   openapi: "3.0.0",
@@ -419,12 +451,12 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/auth/onboarding": {
+    "/api/users/me/onboarding": {
       put: {
         summary: "Advance onboarding state",
         description:
           "Stores onboarding progress for the active user and merges step-specific payload data.",
-        tags: ["Auth"],
+        tags: ["Users"],
         requestBody: {
           required: true,
           content: {
@@ -458,8 +490,8 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/users/profile": {
-      patch: {
+    "/api/users/me/profile": {
+      put: {
         summary: "Update the active user's profile",
         description:
           "Updates the current user's display name, avatar URL, and bio.",
@@ -1632,11 +1664,7 @@ export const openApiSpec = {
                   type: "object",
                   properties: {
                     success: { type: "boolean" },
-                    count: { type: "number" },
-                    data: {
-                      type: "array",
-                      items: collectionSchema,
-                    },
+                    data: paginated(collectionSchema),
                   },
                 },
               },
@@ -2032,14 +2060,21 @@ export const openApiSpec = {
     // search
     "/api/search": {
       get: {
-        summary: "Search resources",
+        summary: "Unified search",
         description:
-          "Searches resources using query, type, tag, pagination, and tenant filters.",
+          "Searches resources, collections, and users in one call. Every section carries the same pagination envelope ({ items, total, page, limit }).",
         tags: ["Search"],
         parameters: [
-          { name: "q", in: "query", schema: { type: "string" } },
-          { name: "type", in: "query", schema: { type: "string" } },
-          { name: "tagId", in: "query", schema: { type: "string" } },
+          { name: "q", in: "query", required: true, schema: { type: "string" } },
+          {
+            name: "type",
+            in: "query",
+            schema: {
+              type: "string",
+              enum: ["all", "resources", "collections", "users"],
+              default: "all",
+            },
+          },
           { name: "limit", in: "query", schema: { type: "string" } },
           { name: "page", in: "query", schema: { type: "string" } },
         ],
@@ -2048,17 +2083,15 @@ export const openApiSpec = {
             description: "Search completed successfully",
             content: {
               "application/json": {
-                schema: {
+                schema: envelope({
                   type: "object",
                   properties: {
-                    success: { type: "boolean" },
-                    meta: { type: "object" },
-                    data: {
-                      type: "array",
-                      items: searchItemSchema,
-                    },
+                    resources: paginated(resourceSchema),
+                    collections: paginated(collectionSchema),
+                    users: paginated(publicUserSchema),
+                    query: { type: "string" },
                   },
-                },
+                }),
               },
             },
           },
@@ -2070,24 +2103,19 @@ export const openApiSpec = {
     "/api/tags": {
       get: {
         summary: "List tags",
-        description: "Returns all tags available in the current tenant scope.",
+        description:
+          "Returns the tenant's tags in the standard paginated envelope, each with a resourceCount.",
         tags: ["Tags"],
+        parameters: [
+          { name: "page", in: "query", schema: { type: "string" } },
+          { name: "limit", in: "query", schema: { type: "string" } },
+        ],
         responses: {
           200: {
             description: "Tags fetched successfully",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    success: { type: "boolean" },
-                    count: { type: "number" },
-                    data: {
-                      type: "array",
-                      items: safeTagSchema,
-                    },
-                  },
-                },
+                schema: envelope(paginated(tagListItemSchema)),
               },
             },
           },
@@ -2127,6 +2155,196 @@ export const openApiSpec = {
               },
             },
           },
+        },
+      },
+    },
+
+    // graph
+    "/api/graph": {
+      get: {
+        summary: "Fetch the signed-in user's knowledge graph",
+        description:
+          "The user's published resources as nodes plus the typed relations between them. Edges never dangle - a relation is only returned when both endpoints resolve to a visible node.",
+        tags: ["Resources"],
+        responses: {
+          200: {
+            description: "Graph fetched successfully",
+            content: {
+              "application/json": {
+                schema: envelope({
+                  type: "object",
+                  properties: {
+                    nodes: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          id: { type: "string" },
+                          title: { type: ["string", "null"] },
+                          type: { type: "string" },
+                        },
+                      },
+                    },
+                    edges: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          fromId: { type: "string" },
+                          toId: { type: "string" },
+                          type: { type: "string" },
+                        },
+                      },
+                    },
+                  },
+                }),
+              },
+            },
+          },
+        },
+      },
+    },
+
+    // saved resources
+    "/api/resources/saved": {
+      get: {
+        summary: "List the signed-in user's saved resources",
+        description:
+          "Resources bookmarked by the authenticated user, most recently saved first.",
+        tags: ["Resources"],
+        responses: {
+          200: {
+            description: "Saved resources fetched successfully",
+            content: {
+              "application/json": {
+                schema: envelope({ type: "array", items: resourceSchema }),
+              },
+            },
+          },
+        },
+      },
+    },
+    "/api/resources/{resourceId}/save": {
+      post: {
+        summary: "Save (bookmark) a resource",
+        description:
+          "Bookmarks a resource the caller is allowed to read; 404s otherwise.",
+        tags: ["Resources"],
+        parameters: [
+          { name: "resourceId", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: {
+          201: { description: "Resource saved" },
+        },
+      },
+      delete: {
+        summary: "Remove a saved resource",
+        description: "Removes the bookmark for the authenticated user.",
+        tags: ["Resources"],
+        parameters: [
+          { name: "resourceId", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: {
+          200: { description: "Bookmark removed" },
+        },
+      },
+    },
+
+    // search (per-entity endpoints)
+    "/api/search/resources": {
+      get: {
+        summary: "Search published resources",
+        description: "Resource-only search. Public; surfaces PUBLISHED + PUBLIC resources only.",
+        tags: ["Search"],
+        parameters: [
+          { name: "q", in: "query", schema: { type: "string" } },
+          { name: "page", in: "query", schema: { type: "string" } },
+          { name: "limit", in: "query", schema: { type: "string" } },
+        ],
+        responses: {
+          200: {
+            description: "Search completed successfully",
+            content: {
+              "application/json": { schema: envelope(paginated(resourceSchema)) },
+            },
+          },
+        },
+      },
+    },
+    "/api/search/collections": {
+      get: {
+        summary: "Search public collections",
+        description: "Collection-only search. Public; surfaces PUBLIC collections only.",
+        tags: ["Search"],
+        parameters: [
+          { name: "q", in: "query", schema: { type: "string" } },
+          { name: "page", in: "query", schema: { type: "string" } },
+          { name: "limit", in: "query", schema: { type: "string" } },
+        ],
+        responses: {
+          200: {
+            description: "Search completed successfully",
+            content: {
+              "application/json": { schema: envelope(paginated(collectionSchema)) },
+            },
+          },
+        },
+      },
+    },
+    "/api/search/users": {
+      get: {
+        summary: "Search the user directory",
+        description: "User-only search over username and display name.",
+        tags: ["Search"],
+        parameters: [
+          { name: "q", in: "query", schema: { type: "string" } },
+          { name: "page", in: "query", schema: { type: "string" } },
+          { name: "limit", in: "query", schema: { type: "string" } },
+        ],
+        responses: {
+          200: {
+            description: "Search completed successfully",
+            content: {
+              "application/json": { schema: envelope(paginated(publicUserSchema)) },
+            },
+          },
+        },
+      },
+    },
+    "/api/search/tags": {
+      get: {
+        summary: "Tag autocomplete",
+        description:
+          "Tags whose name or slug contains the query. Public reference data; returns a bare array (not paginated).",
+        tags: ["Search"],
+        parameters: [
+          { name: "q", in: "query", schema: { type: "string" } },
+          { name: "limit", in: "query", schema: { type: "string" } },
+        ],
+        responses: {
+          200: {
+            description: "Tags fetched successfully",
+            content: {
+              "application/json": {
+                schema: envelope({ type: "array", items: safeTagSchema }),
+              },
+            },
+          },
+        },
+      },
+    },
+
+    // webhooks
+    "/api/webhooks/sg": {
+      post: {
+        summary: "SovGrant identity lifecycle webhook",
+        description:
+          "HMAC-SHA256 signed (`x-sg-signature`). Idempotent via a webhook-event ledger; keeps the local User in sync with SovGrant identity events (suspend/delete/register).",
+        tags: ["Webhooks"],
+        responses: {
+          200: { description: "Event received (or a duplicate, ignored)" },
+          401: { description: "Invalid signature" },
+          400: { description: "Invalid JSON body" },
         },
       },
     },

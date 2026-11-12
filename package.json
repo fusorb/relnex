@@ -23,7 +23,8 @@
     "check:legacy": "node scripts/check-legacy-names.mjs",
     "check:env": "node scripts/check-env-sync.mjs",
     "check:boundaries": "node scripts/check-boundaries.mjs",
-    "check:all": "pnpm check:docs && pnpm check:legacy && pnpm check:env && pnpm check:boundaries && pnpm lint && pnpm typecheck",
+    "check:openapi": "node scripts/check-openapi-sync.mjs",
+    "check:all": "pnpm check:docs && pnpm check:legacy && pnpm check:env && pnpm check:boundaries && pnpm check:openapi && pnpm lint && pnpm typecheck",
     "prepare": "husky"
   },
   "dependencies": {

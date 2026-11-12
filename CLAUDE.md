@@ -13,9 +13,9 @@ videos, etc.) connected by typed relations. Auth is fully delegated to **SovGran
 Fastify identity service that owns passwords, MFA, sessions, and OAuth. Relnex bridges via
 `User.identityId`.
 
-**Current state:** backend stabilized - all 40 API route files follow the standard pattern,
-`pnpm typecheck` and `pnpm build` are green. Development is **paused** until SovGrant is stable;
-the frontend page build-out (Phase 6) remains. See `docs/relnex-roadmap.md`.
+**Current state:** backend stable - all 41 API route files follow the standard pattern, and
+`pnpm typecheck`, `pnpm build`, and the Vitest suite (87 tests) are green. The frontend rebuild
+(Phase 6) is at Phases A-E done, F-G pending. See `docs/relnex-roadmap.md`.
 
 ---
 

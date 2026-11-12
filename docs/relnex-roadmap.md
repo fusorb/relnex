@@ -68,9 +68,9 @@ request. `verifySgToken` prefers **JWKS/RS256** (`SG_JWKS_URL`) and falls back t
 | 1 | **Core Infrastructure** | ✅ Phase 1 | `requireAuth`, `requireOnboarded`, `handleApiRoute` created |
 | 2 | **Flow Unification** | ✅ Phase 2 | All 16 flow-using routes use object-style flows |
 | 3 | **Auth Consolidation** | ✅ Phase 3 | Legacy hand-rolled identity client and `sg/middleware` gone; `@fusorb/facet-sdk` is the single Sg boundary |
-| 4 | **Route Fix Pass** | ✅ Phase 4 | All 40 route files fixed: imports, guards, patterns unified |
+| 4 | **Route Fix Pass** | ✅ Phase 4 | All 41 route files fixed: imports, guards, patterns unified |
 | 5 | **Edge Middleware** | ✅ Phase 5 | Tenant header forwarding (`x-tenant-id`/`x-identity-id` from verified JWT) |
-| 6 | **Pages** | 🟡 Phased (A-G) | facet-based rebuild. A shell (done) -> B console/onboarding -> C resources -> D graph -> E collections/search -> F engagement -> G polish. Onboarding reuses SovGrant's onboarding SDK. |
+| 6 | **Pages** | 🟡 Phased (A-G) | facet-based rebuild. A-E done: shell -> console/onboarding -> resources -> graph -> collections/tags/search. Remaining: F engagement (comments, saved, profiles, reactions/follows) -> G polish (api-docs re-skin, a11y, states). Onboarding reuses SovGrant's onboarding SDK. |
 | 7 | **Polish & Verify** | ✅ Phase 7 | Proxy rename (Next 16), Vitest auth/flow/error suite, ESLint CLI, build check, typecheck |
 
 ---

@@ -15,7 +15,7 @@ src/
 │   ├── (protected)/        # facet ConsoleLayout: dashboard, resources (list/read/edit)
 │   ├── (onboarding)/       # Onboarding wizard (Relnex step model; SG IdentitySdk seam)
 │   ├── api-docs/           # Swagger UI documentation
-│   └── api/                # 40 API route files across 9 route modules
+│   └── api/                # 41 API route files across 9 route modules
 │       ├── auth/           # login, register, logout, me
 │       ├── users/          # profile, onboarding, admin
 │       ├── resources/      # CRUD, relations, comments, versions, usage
@@ -46,16 +46,18 @@ src/
 │   ├── sg/                 # SovGrant SDK boundary (SgClient/AuthSdk re-export + unwrap)
 │   ├── errors/             # ApiError (leaf), handleError, handleApiRoute
 │   ├── storage/            # S3/R2 client
-│   └── useful/             # api-client, openapi spec, logger, metadata
+│   ├── useful/             # api-client.ts (fetch + ApiError mapping), openapi.ts (spec)
+│   ├── onboarding.ts       # product onboarding step model (pure, unit-tested)
+│   └── pagination.ts       # the one list envelope ({ items, total, page, limit })
 │
 ├── components/             # facet-based UI glue
 │   ├── providers.tsx       # ThemeProvider + React Query + Toaster (facet)
 │   ├── layout/             # router-adapter.tsx (Next RouterAdapter for facet-layout)
-│   ├── shell/              # coming-soon.tsx (console placeholders)
-│   └── resources/          # file-upload.tsx (presign -> PUT)
+│   ├── shell/              # coming-soon.tsx (the one remaining placeholder: /settings)
+│   └── resources/          # file-upload.tsx, resource-connections.tsx (relation authoring)
 │
-├── hooks/                  # use-me, use-resources, use-resource, use-session
-├── lib/onboarding.ts       # product onboarding step model (pure, unit-tested)
+├── hooks/                  # use-me, use-session, use-resources, use-resource, use-graph,
+│                           #   use-collections, use-tags, use-search
 ├── config/                 # site.ts (constants) + layout.tsx (facet LayoutConfig)
 ├── styles/                 # globals.css + relnex-palette.css (Relnex brand)
 ├── test/                   # Vitest setup (env contract for the suite)
@@ -253,8 +255,9 @@ or icon registry (a boundary gate enforces this).
   `requiresOnboarding` guard); `use-resources.ts` wraps `/api/resources`.
   `use-session.ts` derives the facet `LayoutSession` from `useMe`.
 - **Console**: dashboard home (`(protected)/dashboard`) with recent resources and
-  empty/loading/error states; `(protected)/*` placeholders keep the sidebar
-  navigable. **Onboarding** (`(onboarding)/onboarding`) is a wizard on Relnex's
+  empty/loading/error states; the console sections (resources, collections, graph,
+  tags, search) are real pages - only `/settings` is still a placeholder.
+  **Onboarding** (`(onboarding)/onboarding`) is a wizard on Relnex's
   own step model (`src/lib/onboarding.ts`), persisting via
   `PUT /api/users/me/onboarding|profile`. SG-level identity onboarding plugs in
   via facet-sdk `IdentitySdk` once a flow is provisioned for Relnex in SovGrant.
