@@ -470,3 +470,38 @@ connections, not content. Phase D makes those edges writable.
 
 State: Phase C green (`pnpm typecheck` clean, `pnpm test` 50/50, gates green).
 Phases D-G remain.
+
+================================================================================
+EP 16 - HARDENING PASS BEFORE PHASE D
+================================================================================
+
+What happened:
+  Before building the graph edges, a cleanup pass closed the bugs and gaps the CI
+  lint annotations were pointing at.
+
+What changed:
+  - **Tenant scoping (real bug).** The proxy only set `x-tenant-id` when the
+    verified token carried a `tid`. Otherwise a client-supplied header survived
+    (spoofable), and tenant-scoped queries went unscoped (cross-tenant reads).
+    The proxy now drops any client-supplied `x-tenant-id` / `x-identity-id` and
+    always emits a concrete tenant via `resolveTenantId` (the reserved default
+    scope). Covered by two new proxy tests.
+  - **Dead code, lint to zero.** Removed the redundant `const skip` in the two
+    search routes (the repository already derives skip from page/limit, so
+    pagination was never broken), unused imports (FlowContext x4, ApiError,
+    ResourceTag, LoginDto, ConnectResourcesInput), unused params (`ctx`, `_req`),
+    the dead `resourceQueryKey` re-export, the unused `total` destructure, and the
+    leftover `okJson` helper. Adopted the `^_` convention in `eslint.config.mjs`
+    for intentionally-unused bindings.
+
+What survived:
+  Behaviour is unchanged for authenticated requests that already carried a `tid`.
+
+Lesson: the CI annotations were a to-do list, not noise - one of them was a
+cross-tenant read waiting to happen.
+
+Open gap (planned, not fixed): pagination envelopes differ across the search
+endpoints (`{ items, pagination }` vs `{ items, total, page, limit }`); normalize
+in Phase E when search is built out.
+
+State: lint zero, gates green, 52 tests, CI green. Phases D-G remain.

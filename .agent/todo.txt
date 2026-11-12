@@ -86,6 +86,10 @@ VERIFICATION CHECKLIST (current)
   [x] Phase A rebuild: pnpm typecheck clean, pnpm test 45/45, gates green
   [x] Phase B: pnpm typecheck clean, pnpm test 50/50, gates green
   [x] Phase C: pnpm typecheck clean, pnpm test 50/50, gates green
+  [x] Hardening pass: proxy tenant-header anti-spoof + always-concrete tenant;
+      all lint warnings cleared; 52 tests
+  [ ] OPEN GAP (Phase E): normalize search pagination envelopes
+      ({ items, pagination } vs { items, total, page, limit })
   [x] pnpm check:all passes (docs-sync, legacy-names, env-sync, boundaries, lint, typecheck)
   [ ] Live login -> cookie -> /api/auth/me 200 (needs running SovGrant)
   [x] Extended proxy coverage for all protected prefixes
