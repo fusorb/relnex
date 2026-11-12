@@ -15,20 +15,20 @@ importers:
         specifier: ^3.1048.0
         version: 3.1156.0
       '@fusorb/facet-auth':
-        specifier: ^2.1.0
-        version: 2.1.0(@standard-schema/spec@1.1.0)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(ajv@8.20.0)(effect@3.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(valibot@1.4.2(typescript@5.9.3))
+        specifier: ^2.1.1
+        version: 2.1.1(@standard-schema/spec@1.1.0)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(ajv@8.20.0)(effect@3.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(valibot@1.4.2(typescript@5.9.3))
       '@fusorb/facet-components':
-        specifier: ^3.2.1
-        version: 3.2.1(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: ^3.2.2
+        version: 3.2.2(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@fusorb/facet-layout':
         specifier: ^1.7.2
         version: 1.7.2(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@fusorb/facet-sdk':
-        specifier: ^2.1.1
-        version: 2.1.1
+        specifier: ^3.0.0
+        version: 3.0.0
       '@fusorb/facet-store':
-        specifier: ^1.0.4
-        version: 1.0.4(@fusorb/facet-sdk@2.1.1)(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.7.0(react@19.2.6))
+        specifier: ^1.0.5
+        version: 1.0.5(@fusorb/facet-sdk@3.0.0)(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.7.0(react@19.2.6))
       '@fusorb/facet-tokens':
         specifier: ^1.5.1
         version: 1.5.1
@@ -357,15 +357,15 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
-  '@fusorb/facet-auth@2.1.0':
-    resolution: {integrity: sha512-EeP2sjVr8uHcmXg18jWBw9XdKIl0hs3nygw0Kg4wtesz+C5rsKYNEzriakYn0HwXktyVyYgm470ZceixlDwadA==}
+  '@fusorb/facet-auth@2.1.1':
+    resolution: {integrity: sha512-cqrjxDc8/0SR2VPwIzsrlRRhYFGcziUzDC7tKEBm/QezUTFoSS5TOBlHbyfrsvGJIY6Y8KRbwfDiCH8osl0jOg==}
     engines: {node: '>=20'}
     peerDependencies:
       react: ^19
       react-dom: ^19
 
-  '@fusorb/facet-components@3.2.1':
-    resolution: {integrity: sha512-zxiNVwxmwKnazclcVmH6u6erhWCFZLNb5HHqxZcq5HY7y4XGEgDLHxnMXQQq8icrU+yGdvkWfXVTo5KcnMKCRg==}
+  '@fusorb/facet-components@3.2.2':
+    resolution: {integrity: sha512-dwLIl3CP4BiXsMgOj72G4a4r0xiEDey39GWOqP7/Q1G52BWLOZrUuCSe6XisIx61lZicS8MiOEd9/cHKkTc5DA==}
     engines: {node: '>=20'}
     peerDependencies:
       '@fusorb/facet-sandbox': ^3.0.1
@@ -382,22 +382,22 @@ packages:
       react: ^19
       react-dom: ^19
 
-  '@fusorb/facet-motion@1.2.2':
-    resolution: {integrity: sha512-cFs+l5QQk/dlp5ZpdB/rPOuS5ks2q2e+EVtiIzFIRrUVeiGJvmlHYendWlmPBMRu5mXyizQOCKWWrw7sAGzWTA==}
+  '@fusorb/facet-motion@1.2.3':
+    resolution: {integrity: sha512-SlMuRP3J/GFdD6im4CjSdAJyWhAvqeFT6KtiVl2iQ3QbEsOFsMbdCSNTStB7tH3LIQfNcX5aQj2iC4QWY8jvLw==}
     engines: {node: '>=20'}
     peerDependencies:
       react: ^19
       react-dom: ^19
 
-  '@fusorb/facet-sdk@2.1.1':
-    resolution: {integrity: sha512-YpmKmjlAdw78CzW9Lbg5NSkrY2fZMdmHs//B/iwHgNmA6POt5NSi7dLvLWisYIkgEplMRJBSkOLq2t/HojyxIQ==}
+  '@fusorb/facet-sdk@3.0.0':
+    resolution: {integrity: sha512-P9SKaTwg/sbQN9+vwnMn0aZkT8tPE0CJ0ovqFrjKyuFumZYIhKG6c228lQHHGo4BLHFvsyj2zk6Cu/t/mRBfbw==}
     engines: {node: '>=20'}
 
-  '@fusorb/facet-store@1.0.4':
-    resolution: {integrity: sha512-dOXrX9SSWGm4dThSMo3mMfjlTnY/QBcBf54ruD/imTxYc++oo/K01yeJp7HDoKfRu15IKHYaEGR4DDkdrGqrkg==}
+  '@fusorb/facet-store@1.0.5':
+    resolution: {integrity: sha512-Q8pC9//M7OTBDdQAmxIerTYa0dZxk4MdtKiBMnOaeOy1hXphQ9JD1l1bR5jY9yAP18PbnoR/G/u3lwca9KbTBA==}
     engines: {node: '>=22'}
     peerDependencies:
-      '@fusorb/facet-sdk': ^2.1.1
+      '@fusorb/facet-sdk': ^3.0.0
 
   '@fusorb/facet-tokens@1.5.1':
     resolution: {integrity: sha512-cQMiJHYeEAmOcATfTbbsnGZ3/C0WewTN7kgE8NrK/Qabwlq/QcmdmhJR5QpLucTclA38RjrHCJ/mVvXgmiF8Fg==}
@@ -5174,10 +5174,10 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@fusorb/facet-auth@2.1.0(@standard-schema/spec@1.1.0)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(ajv@8.20.0)(effect@3.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(valibot@1.4.2(typescript@5.9.3))':
+  '@fusorb/facet-auth@2.1.1(@standard-schema/spec@1.1.0)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(ajv@8.20.0)(effect@3.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(valibot@1.4.2(typescript@5.9.3))':
     dependencies:
-      '@fusorb/facet-components': 3.2.1(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@fusorb/facet-sdk': 2.1.1
+      '@fusorb/facet-components': 3.2.2(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@fusorb/facet-sdk': 3.0.0
       '@hookform/resolvers': 5.9.2(@standard-schema/spec@1.1.0)(ajv@8.20.0)(effect@3.20.0)(react-hook-form@7.90.0(@types/react@19.2.15)(react@19.2.6))(valibot@1.4.2(typescript@5.9.3))(zod@4.6.7)
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
@@ -5211,9 +5211,9 @@ snapshots:
       - vest
       - yup
 
-  '@fusorb/facet-components@3.2.1(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@fusorb/facet-components@3.2.2(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@fusorb/facet-motion': 1.2.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@fusorb/facet-motion': 1.2.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@fusorb/facet-tokens': 1.5.1
       '@fusorb/facet-utils': 0.1.1
       '@radix-ui/react-accordion': 1.3.1(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -5258,7 +5258,7 @@ snapshots:
 
   '@fusorb/facet-layout@1.7.2(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@fusorb/facet-components': 3.2.1(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@fusorb/facet-components': 3.2.2(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
     transitivePeerDependencies:
@@ -5266,18 +5266,18 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  '@fusorb/facet-motion@1.2.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@fusorb/facet-motion@1.2.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@fusorb/facet-tokens': 1.5.1
       '@fusorb/facet-utils': 0.1.1
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
 
-  '@fusorb/facet-sdk@2.1.1': {}
+  '@fusorb/facet-sdk@3.0.0': {}
 
-  '@fusorb/facet-store@1.0.4(@fusorb/facet-sdk@2.1.1)(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.7.0(react@19.2.6))':
+  '@fusorb/facet-store@1.0.5(@fusorb/facet-sdk@3.0.0)(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.7.0(react@19.2.6))':
     dependencies:
-      '@fusorb/facet-sdk': 2.1.1
+      '@fusorb/facet-sdk': 3.0.0
       zustand: 5.0.16(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.7.0(react@19.2.6))
     transitivePeerDependencies:
       - '@types/react'
