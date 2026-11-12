@@ -540,3 +540,39 @@ Lesson: never silence an "unused" warning with an ignore pattern until you have
 read WHY the binding exists. `_viewerId` was not dead - it was unwired.
 
 State: lint zero, gates green, 61 tests, CI green. Phases D-G remain.
+
+================================================================================
+EP 18 - PHASE D: RELATIONS + THE GRAPH
+================================================================================
+
+Goal: make the graph real - author typed relations, then see them.
+
+Relation authoring (no new backend):
+  - `useConnectResource` / `useDisconnectResource` over the existing
+    POST/DELETE `/api/resources/[resourceId]/relations`.
+  - New `ResourceConnections` component replaces the read-only card: owners get a
+    Connect dialog (type Select + searchable target list) and a per-edge Remove;
+    guests see the neighbourhood read-only.
+  - Both mutations invalidate `["resource", id]` AND `["graph"]`, so an edit
+    cannot leave the map stale.
+
+Graph view:
+  - New `GET /api/graph` (`requireOnboarded`) -> `UserService.getKnowledgeGraph`.
+  - `UserService.assembleGraph` is dangling-edge-safe: a relation is only returned
+    when BOTH ends resolve to a visible node, and visible external targets
+    (other authors' published resources) are pulled in as nodes. The previous
+    `getUserKnowledgeGraph` returned edges pointing at resources it never listed.
+  - `/graph` replaces its ComingSoon placeholder: a dependency-free radial SVG
+    with hover highlighting, click/Enter to open a resource, a relation legend,
+    and a keyboard-accessible relation list.
+
+Stress test:
+  - `knowledge-graph.test.ts` (4) covers the empty-graph short-circuit, a dropped
+    dangling edge, a dropped invisible target, and tenant scoping on both queries.
+  - Verified the `--chart-*` tokens exist in the palette before painting edges (a
+    missing var renders invisible edges), and confirmed `unlink`/`link` exist in
+    facet's icon registry (`x` does not).
+
+Counts moved: routes 40 -> 41 (docs synced; the docs gate enforces the number).
+
+State: typecheck clean, 65 tests, four gates green, CI green. Phases E-G remain.

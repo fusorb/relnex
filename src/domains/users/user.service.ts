@@ -50,16 +50,65 @@ export class UserService {
   async getUserKnowledgeGraph(username: string) {
     const user = await this.repo.findByUsername(username);
     if (!user) throw ApiError.notFound("User not found");
-    const resources = await this.db.resource.findMany({
+    const own = await this.db.resource.findMany({
       where: { authorId: user.id, status: "PUBLISHED", deletedAt: null },
-      select: { id: true, title: true },
+      select: { id: true, title: true, type: true },
     });
-    const edges = await this.db.relation.findMany({
-      where: { fromId: { in: resources.map(r => r.id) } },
+    return this.assembleGraph(own, user.tenantId);
+  }
+
+  /** The signed-in user's knowledge graph, scoped to the verified tenant. */
+  async getKnowledgeGraph(userId: string, tenantId?: string | null) {
+    const own = await this.db.resource.findMany({
+      where: {
+        authorId: userId,
+        status: "PUBLISHED",
+        deletedAt: null,
+        ...(tenantId ? { tenantId } : {}),
+      },
+      select: { id: true, title: true, type: true },
+    });
+    return this.assembleGraph(own, tenantId);
+  }
+
+  /**
+   * Builds a renderable graph from a node set. Edges never dangle: a relation is
+   * only returned when both ends resolve to a visible node, and visible external
+   * targets (other authors' published resources) are pulled in as extra nodes.
+   */
+  private async assembleGraph(
+    own: { id: string; title: string | null; type: string }[],
+    tenantId?: string | null,
+  ) {
+    if (own.length === 0) return { nodes: [], edges: [] };
+
+    const tenantFilter = tenantId ? { tenantId } : {};
+    const ownIds = own.map((r) => r.id);
+    const relations = await this.db.relation.findMany({
+      where: { fromId: { in: ownIds }, ...tenantFilter },
       select: { fromId: true, toId: true, type: true },
     });
-    const nodes = resources.map(r => ({ id: r.id, title: r.title }));
-    return { nodes, edges };
+
+    const ownIdSet = new Set(ownIds);
+    const targetIds = [...new Set(relations.map((r) => r.toId))].filter((id) => !ownIdSet.has(id));
+    const external = targetIds.length
+      ? await this.db.resource.findMany({
+          where: {
+            id: { in: targetIds },
+            status: "PUBLISHED",
+            visibility: { in: ["PUBLIC", "UNLISTED"] },
+            deletedAt: null,
+            ...tenantFilter,
+          },
+          select: { id: true, title: true, type: true },
+        })
+      : [];
+
+    const visibleIds = new Set([...ownIds, ...external.map((r) => r.id)]);
+    return {
+      nodes: [...own, ...external].map((r) => ({ id: r.id, title: r.title, type: r.type })),
+      edges: relations.filter((r) => visibleIds.has(r.toId)),
+    };
   }
 
   async getUserNestedResources(username: string, viewerId?: string | null) {

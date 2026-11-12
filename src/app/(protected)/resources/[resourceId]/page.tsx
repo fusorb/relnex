@@ -20,33 +20,12 @@ import {
   useResourceChildren,
   type RelationEdge,
 } from "@/hooks/use-resource";
+import { requiresOnboarding, useMe } from "@/hooks/use-me";
+import { ResourceConnections } from "@/components/resources/resource-connections";
 
 function formatDate(iso: string | null): string {
   if (!iso) return "not yet";
   return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
-}
-
-function RelationList({ edges, direction }: { edges: RelationEdge[]; direction: "out" | "in" }) {
-  if (edges.length === 0) {
-    return <p className="text-xs text-muted-foreground">No {direction === "out" ? "outgoing" : "incoming"} relations yet.</p>;
-  }
-  return (
-    <ul className="space-y-2">
-      {edges.map((edge) => (
-        <li key={edge.id} className="flex items-center gap-2 text-sm">
-          <Badge variant="outline" className="shrink-0 text-[10px]">
-            {edge.type}
-          </Badge>
-          <Link
-            href={`/resources/${edge.resource.id}`}
-            className="truncate font-medium text-foreground hover:text-primary"
-          >
-            {edge.resource.title ?? "Untitled resource"}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
 }
 
 export default function ResourceDetailPage() {
@@ -55,6 +34,7 @@ export default function ResourceDetailPage() {
 
   const { data: resource, isLoading } = useResource(id);
   const { data: children } = useResourceChildren(id);
+  const { data: me } = useMe();
   const publish = usePublishResource(id);
 
   if (isLoading) {
@@ -84,6 +64,7 @@ export default function ResourceDetailPage() {
   }
 
   const isDraft = resource.status === "DRAFT";
+  const isOwner = !requiresOnboarding(me) && me?.id === resource.author.id;
 
   const outgoing: RelationEdge[] = resource.outgoingRelations.map((r) => ({
     id: r.id,
@@ -166,27 +147,12 @@ export default function ResourceDetailPage() {
             </CardContent>
           </Card>
 
-          {(incoming.length > 0 || outgoing.length > 0) && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Connections</CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-6 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    References
-                  </p>
-                  <RelationList edges={outgoing} direction="out" />
-                </div>
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Referenced by
-                  </p>
-                  <RelationList edges={incoming} direction="in" />
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          <ResourceConnections
+            resourceId={resource.id}
+            canEdit={isOwner}
+            outgoing={outgoing}
+            incoming={incoming}
+          />
         </div>
 
         <div className="space-y-6">

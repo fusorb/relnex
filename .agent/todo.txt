@@ -3,14 +3,14 @@ Updated: 2026-11-10
 Source of truth: docs/relnex-roadmap.md
 
 ================================================================================
-STATUS: Phases 0-5 and 7 complete; frontend rebuild Phases A-C done.
-Repo builds clean; Vitest suite green (50 tests). Remaining: rebuild Phases D-G.
+STATUS: Phases 0-5 and 7 complete; frontend rebuild Phases A-D done.
+Repo builds clean; Vitest suite green (65 tests). Remaining: rebuild Phases E-G.
 ================================================================================
 
 PHASE 0 - DOCUMENTATION ........................................ [x] DONE
   [x] README, AGENTS.md, CLAUDE.md, docs/architecture.md present
   [x] Namespace canonical (Relnex / SovGrant / sg / @fusorb/facet-*)
-  [x] Docs re-synced to repo state (15 models, 9 enums, 40 routes, 9 domains)
+  [x] Docs re-synced to repo state (15 models, 9 enums, 41 routes, 9 domains)
 
 PHASE 1 - CORE INFRASTRUCTURE ................................. [x] DONE
   [x] requireAuth / requireOnboarded guards (@/core/auth)
@@ -80,7 +80,7 @@ PHASE 8 - AUDIT, NAMESPACE SYNC & GATES (2026-11-10) .......... [x] DONE
 VERIFICATION CHECKLIST (current)
 ================================================================================
   [x] pnpm typecheck passes with zero errors
-  [x] pnpm build passes; 27 static pages, 40 routes emitted
+  [x] pnpm build passes; 27 static pages, 41 routes emitted
   [x] pnpm lint runs via the ESLint CLI (was `next lint`)
   [x] pnpm test passes (Vitest: auth jwt/session/guards, flows, api-client, proxy)
   [x] Phase A rebuild: pnpm typecheck clean, pnpm test 45/45, gates green
@@ -90,6 +90,9 @@ VERIFICATION CHECKLIST (current)
       all lint warnings cleared; 52 tests
   [x] Authz fix (EP 17): profile nested endpoints + resource children now filter
       non-owner reads by visibility; saved resources are owner-only; 61 tests
+  [x] Phase D: relation authoring (connect/disconnect) on the read view; graph
+      view at /graph over GET /api/graph (dangling-edge-safe assembler); 65 tests,
+      gates green (routes 40 -> 41)
   [ ] OPEN GAP (Phase D/C): GET /api/resources/[id] returns any resource in the
       tenant to any authenticated caller (no visibility/ownership check)
   [ ] OPEN GAP (Phase E): normalize search pagination envelopes

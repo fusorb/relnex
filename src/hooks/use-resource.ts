@@ -194,3 +194,52 @@ export function usePublishResource(id: string) {
     },
   });
 }
+
+export const RELATION_TYPES = [
+  "RELATED",
+  "REFERENCES",
+  "DEPENDS_ON",
+  "PREREQUISITE",
+  "NEXT",
+  "PREVIOUS",
+] as const;
+
+export type RelationType = (typeof RELATION_TYPES)[number];
+
+// Connecting/disconnecting changes both this resource's neighbourhood and the
+// signed-in user's graph, so both caches are invalidated.
+function useInvalidateRelations(id: string) {
+  const queryClient = useQueryClient();
+  return () => {
+    queryClient.invalidateQueries({ queryKey: resourceDetailKey(id) });
+    queryClient.invalidateQueries({ queryKey: ["graph"] });
+  };
+}
+
+export function useConnectResource(id: string) {
+  const invalidate = useInvalidateRelations(id);
+  return useMutation({
+    mutationFn: async (input: { targetId: string; type: string }): Promise<{ id: string }> =>
+      (
+        await apiClient<ApiEnvelope<{ id: string }>>(`/api/resources/${id}/relations`, {
+          method: "POST",
+          bodyData: input,
+        })
+      ).data,
+    onSuccess: invalidate,
+  });
+}
+
+export function useDisconnectResource(id: string) {
+  const invalidate = useInvalidateRelations(id);
+  return useMutation({
+    mutationFn: async (input: { targetId: string; type: string }): Promise<unknown> =>
+      (
+        await apiClient<ApiEnvelope<unknown>>(`/api/resources/${id}/relations`, {
+          method: "DELETE",
+          bodyData: input,
+        })
+      ).data,
+    onSuccess: invalidate,
+  });
+}
