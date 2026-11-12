@@ -14,10 +14,11 @@ const resourceService = new ResourceService();
 
 export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
-    await requireOnboarded(req);
+    const session = await requireOnboarded(req);
     const tenantId = req.headers.get("x-tenant-id") ?? null;
     const tags = await resourceService.getResourceTags(
       params.resourceId,
+      session.userId,
       tenantId,
     );
     return NextResponse.json({ success: true, count: tags.length, data: tags });
@@ -26,7 +27,7 @@ export const GET = handleApiRoute(
 
 export const POST = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
-    await requireOnboarded(req);
+    const session = await requireOnboarded(req);
     const tenantId = req.headers.get("x-tenant-id") ?? null;
     const body = await req.json();
     const parsed = associateTagsSchema.safeParse(body);
@@ -34,6 +35,7 @@ export const POST = handleApiRoute(
       throw ApiError.badRequest(parsed.error.issues[0].message);
     await resourceService.attachTags(
       params.resourceId,
+      session.userId,
       tenantId,
       parsed.data.tagIds,
     );
@@ -46,7 +48,7 @@ export const POST = handleApiRoute(
 
 export const DELETE = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
-    await requireOnboarded(req);
+    const session = await requireOnboarded(req);
     const tenantId = req.headers.get("x-tenant-id") ?? null;
     const body = await req.json();
     const parsed = associateTagsSchema.safeParse(body);
@@ -54,6 +56,7 @@ export const DELETE = handleApiRoute(
       throw ApiError.badRequest(parsed.error.issues[0].message);
     await resourceService.detachTags(
       params.resourceId,
+      session.userId,
       tenantId,
       parsed.data.tagIds,
     );

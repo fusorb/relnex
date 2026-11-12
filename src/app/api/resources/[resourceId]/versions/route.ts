@@ -15,10 +15,11 @@ const resourceService = new ResourceService();
 // GET - list version history (read: direct service call, no transaction overhead)
 export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
-    await requireOnboarded(req);
+    const session = await requireOnboarded(req);
     const tenantId = req.headers.get("x-tenant-id") ?? null;
     const versions = await resourceService.listVersions(
       params.resourceId,
+      session.userId,
       tenantId,
     );
     return NextResponse.json({ success: true, data: versions });

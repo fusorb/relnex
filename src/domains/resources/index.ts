@@ -20,6 +20,10 @@ export type {
 // ── Presenters ─────────────────────────────────────────────────────────
 export { presentResource } from "./resources.presenter";
 
+// ── Read-access rule ───────────────────────────────────────────────────
+export { canViewResource, visibleResourceWhere } from "./resource.visibility";
+export type { VisibilitySubject } from "./resource.visibility";
+
 // ── Services & Repositories ────────────────────────────────────────────
 export { ResourceService } from "./resource.service";
 export { ResourceRepository } from "./resource.repository";

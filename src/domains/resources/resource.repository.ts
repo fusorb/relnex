@@ -1,6 +1,7 @@
 import type { DbClient }   from "@/core/flows/flow-context";
 import type { Prisma }     from "@prisma-client";
 import type { ListResourcesInput } from "./resource.dto";
+import { visibleResourceWhere } from "./resource.visibility";
 
 export class ResourceRepository {
   constructor(private db: DbClient) {}
@@ -29,7 +30,7 @@ export class ResourceRepository {
     });
   }
 
-  async findMany(params: ListResourcesInput) {
+  async findMany(params: ListResourcesInput & { viewerId?: string | null }) {
     const where: Prisma.ResourceWhereInput = {
       deletedAt: null,
       ...(params.type       ? { type: params.type }           : {}),
@@ -37,6 +38,8 @@ export class ResourceRepository {
       ...(params.visibility ? { visibility: params.visibility } : {}),
       ...(params.authorId   ? { authorId: params.authorId }   : {}),
       ...(params.tenantId   ? { tenantId: params.tenantId }   : {}),
+      // Conjunction, so the caller's own filters can never widen the result set.
+      AND: [visibleResourceWhere(params.viewerId)],
     };
 
     const [items, total] = await Promise.all([

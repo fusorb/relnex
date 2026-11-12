@@ -13,9 +13,15 @@ const resourceService = new ResourceService();
 
 export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
-    await requireOnboarded(req);
+    const session = await requireOnboarded(req);
     const tenantId = req.headers.get("x-tenant-id") ?? null;
-    const resource = await resourceService.getResource(params.resourceId, tenantId);
+    // 404s unless the caller authored this resource or it is published and
+    // non-private - private resources are not discoverable by id.
+    const resource = await resourceService.assertVisible(
+      params.resourceId,
+      session.userId,
+      tenantId,
+    );
     return NextResponse.json({ success: true, data: resource });
   },
 );

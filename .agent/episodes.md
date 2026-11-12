@@ -576,3 +576,39 @@ Stress test:
 Counts moved: routes 40 -> 41 (docs synced; the docs gate enforces the number).
 
 State: typecheck clean, 65 tests, four gates green, CI green. Phases E-G remain.
+
+================================================================================
+EP 19 - RESOURCE READ ACCESS: ONE RULE, APPLIED EVERYWHERE
+================================================================================
+
+What happened:
+  Closing the gap recorded in EP 17/18 (`GET /api/resources/:id` had no visibility
+  check) showed the same hole ran through every resource surface, not just one.
+
+What was wrong:
+  - `GET /api/resources`                         listed every resource in the tenant,
+                                                 including other users' PRIVATE + DRAFT
+  - `GET /api/resources/:id`                     any authenticated caller could read
+                                                 any resource by id
+  - `GET /api/resources/:id/{tags,versions,comments}`  leaked metadata and discussion of
+                                                 private resources
+  - `POST`/`DELETE /api/resources/:id/tags`      NO ownership check - any authenticated
+                                                 user could mutate another user's tags
+  - `POST /api/resources/:id/save`               bookmark anything, visible or not
+  - `GET /api/resources/:id/children`            the parent's visibility was never checked
+
+The rule (new `domains/resources/resource.visibility.ts`):
+  - the author sees their own resource in any state
+  - everyone else sees it only when it is PUBLISHED and not PRIVATE (PUBLIC/UNLISTED)
+  - `canViewResource` for single reads, `visibleResourceWhere` for list queries
+  - denial is 404, never 403, so private resources cannot be found by probing ids
+
+Applied through `ResourceService.assertVisible` (detail, tags, versions, comments,
+children, save) and `visibleResourceWhere` (list). Tag mutations now go through
+`assertOwnership`. Deleted the now-unused `ResourceService.getResource`.
+
+Tests: +11 - resource.visibility (6, the pure rule), resource.service (4, the
+assertVisible/ownership wiring), get-children (1, an invisible parent 404s).
+Suite: 76 tests.
+
+State: gates green, 76 tests, CI green. Phases E-G remain.

@@ -264,6 +264,17 @@ or icon registry (a boundary gate enforces this).
   forms, a publish action, and file uploads (`/api/uploads/presign` -> PUT).
   `use-resource.ts` wraps detail/children/create/update/publish. The read view's
   neighborhood comes from one `findById` include (parent + relations + collections).
+- **Relations & graph**: the read view's Connections card authors typed relations
+  (`POST`/`DELETE /api/resources/[resourceId]/relations`); `/graph` renders the
+  signed-in user's knowledge graph from `GET /api/graph`. The assembler never
+  emits a dangling edge - a relation is dropped unless both ends resolve to a
+  visible node, and visible external targets are pulled in as nodes.
+- **Resource read access**: one rule, in `domains/resources/resource.visibility.ts`
+  (`canViewResource` / `visibleResourceWhere`). The author sees their own resource
+  in any state; everyone else sees it only when it is PUBLISHED and not PRIVATE
+  (PUBLIC or UNLISTED). It gates the list, the detail read (404, never 403, so
+  private ids cannot be probed), tags, versions, comments, children, and save.
+  Tag mutations additionally require ownership.
 - **Brand**: `src/styles/relnex-palette.css` overrides the facet semantic tokens
   (the documented "bring your own palette" pattern).
 

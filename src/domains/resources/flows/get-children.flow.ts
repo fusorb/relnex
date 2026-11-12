@@ -17,7 +17,8 @@ export const getChildrenFlow: Flow<z.infer<typeof Input>> = {
 
   async execute(input, ctx: FlowContext) {
     const service = new ResourceService(ctx.db);
-    const parent = await service.assertExists(input.resourceId, ctx.tenantId);
+    // The parent must itself be visible to the caller, or this 404s.
+    const parent = await service.assertVisible(input.resourceId, input.viewerId, ctx.tenantId);
     const isOwner = input.viewerId != null && parent.authorId === input.viewerId;
 
     // Anyone may browse a resource's children, but only the owner sees private

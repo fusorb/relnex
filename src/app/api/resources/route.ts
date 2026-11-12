@@ -11,13 +11,13 @@ import { prisma } from "@/core/db";
 const resourceService = new ResourceService(prisma);
 
 export const GET = handleApiRoute(async (req: NextRequest) => {
-  await requireOnboarded(req);
+  const session = await requireOnboarded(req);
   const tenantId = req.headers.get("x-tenant-id") ?? null;
   const { searchParams } = new URL(req.url);
   const filters = listResourcesSchema.parse(
     Object.fromEntries(searchParams.entries()),
   );
-  const result = await resourceService.listResources(tenantId, filters);
+  const result = await resourceService.listResources(tenantId, filters, session.userId);
   return NextResponse.json({ success: true, data: result });
 });
 

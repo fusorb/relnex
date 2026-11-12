@@ -4,12 +4,18 @@ import { describe, expect, it, vi } from "vitest";
 import type { FlowContext } from "@/core/flows/flow-context";
 import { getChildrenFlow } from "./get-children.flow";
 
-const PARENT = { id: "res_parent", authorId: "usr_owner", tenantId: "relnex-default" };
+const PARENT = {
+  id: "res_parent",
+  authorId: "usr_owner",
+  tenantId: "relnex-default",
+  status: "PUBLISHED",
+  visibility: "PUBLIC",
+};
 
-function makeCtx() {
+function makeCtx(parent: unknown = PARENT) {
   const db = {
     resource: {
-      findFirst: vi.fn(async (_arg: unknown) => PARENT),
+      findFirst: vi.fn(async (_arg: unknown) => parent),
       findMany: vi.fn(async (_arg: unknown) => [] as unknown[]),
       count: vi.fn(async (_arg: unknown) => 0),
     },
@@ -47,5 +53,16 @@ describe("getChildrenFlow visibility", () => {
     const arg = db.resource.findMany.mock.calls[0][0] as unknown as WhereArg;
     expect(arg.where).not.toHaveProperty("visibility");
     expect(arg.where).not.toHaveProperty("status");
+  });
+
+  it("404s when the parent is not visible to the caller", async () => {
+    const draftParent = { ...PARENT, status: "DRAFT", visibility: "PRIVATE" };
+    const { ctx } = makeCtx(draftParent);
+    await expect(
+      getChildrenFlow.execute(
+        { resourceId: "res_parent", page: 1, limit: 20, viewerId: "usr_other" },
+        ctx,
+      ),
+    ).rejects.toThrow("Resource not found");
   });
 });

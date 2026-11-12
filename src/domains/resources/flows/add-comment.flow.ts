@@ -17,7 +17,8 @@ export const addCommentFlow: Flow<z.infer<typeof Input>, { comment: unknown }> =
 
   async execute(input, ctx: FlowContext) {
     const service = new ResourceService(ctx.db);
-    await service.assertExists(input.resourceId, ctx.tenantId);
+    // You can only comment on a resource you are allowed to read.
+    await service.assertVisible(input.resourceId, ctx.userId, ctx.tenantId);
 
     const comment = await ctx.db.comment.create({
       data: {

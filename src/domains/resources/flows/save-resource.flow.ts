@@ -13,7 +13,8 @@ export const saveResourceFlow: Flow<z.infer<typeof Input>> = {
 
   async execute(input, ctx: FlowContext) {
     const service = new ResourceService(ctx.db);
-    await service.assertExists(input.resourceId, ctx.tenantId);
+    // You can only bookmark a resource you are allowed to read.
+    await service.assertVisible(input.resourceId, ctx.userId, ctx.tenantId);
 
     await ctx.db.savedResource.upsert({
       where:  { userId_resourceId: { userId: ctx.userId!, resourceId: input.resourceId } },

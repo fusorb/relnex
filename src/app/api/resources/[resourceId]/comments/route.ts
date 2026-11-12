@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
 import { flowExecutor } from "@/core/flows";
-import { addCommentFlow } from "@/domains/resources";
+import { addCommentFlow, ResourceService } from "@/domains/resources";
 import { CommentService } from "@/domains/comments/comment.service";
 
 interface RouteParams {
@@ -11,11 +11,15 @@ interface RouteParams {
 }
 
 const commentService = new CommentService();
+const resourceService = new ResourceService();
 
 // GET - root-level comments for this resource
 export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
-    await requireOnboarded(req);
+    const session = await requireOnboarded(req);
+    const tenantId = req.headers.get("x-tenant-id") ?? null;
+    // You can only read a discussion on a resource you are allowed to read.
+    await resourceService.assertVisible(params.resourceId, session.userId, tenantId);
     const comments = await commentService.getRootComments(params.resourceId);
     return NextResponse.json({ success: true, data: comments });
   },
