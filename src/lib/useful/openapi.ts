@@ -1,17 +1,3 @@
-const okJson = {
-  description: "Successful response",
-  content: {
-    "application/json": {
-      schema: {
-        type: "object",
-        properties: {
-          success: { type: "boolean" },
-        },
-      },
-    },
-  },
-};
-
 const userSchema = {
   type: "object",
   properties: {
