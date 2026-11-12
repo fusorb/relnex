@@ -25,7 +25,6 @@ const PROTECTED_PREFIXES = [
   "/graph",
   "/tags",
   "/settings",
-  "/profile",
 ];
 
 function isProtectedPage(pathname: string) {

@@ -12,11 +12,15 @@ import {
 } from "@fusorb/facet-components";
 import { useCreateTag, useTags } from "@/hooks/use-tags";
 
+const PAGE_SIZE = 100;
+
 export default function TagsPage() {
-  const { data, isLoading, isError } = useTags(1, 200);
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isError } = useTags(page, PAGE_SIZE);
   const create = useCreateTag();
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -89,6 +93,30 @@ export default function TagsPage() {
           title="No tags yet"
           description="Tags appear here once you attach them to resources."
         />
+      )}
+
+      {data && data.total > PAGE_SIZE && (
+        <div className="flex items-center justify-between">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {page} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page >= totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </Button>
+        </div>
       )}
     </div>
   );

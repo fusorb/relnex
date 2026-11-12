@@ -679,3 +679,38 @@ NEW GATE: check:openapi - scripts/check-openapi-sync.mjs
   enforces it from now on.
 
 Suite: 87 tests. Five gates green.
+
+================================================================================
+EP 22 - IMPLEMENTATION AUDIT: FIVE DRIFTS IN MY OWN WORK
+================================================================================
+
+Asked to confirm the *implementations* had not drifted either - not just the docs.
+Audited code-against-contract instead of re-running the gates. Five real findings:
+
+ 1. SECURITY - the anonymous profile graph leaked private resources.
+    `GET /api/users/[username]/graph` has no auth guard and called
+    `getUserKnowledgeGraph`, which filtered the author's resources by status only -
+    so PRIVATE-but-published resources appeared as public graph nodes.
+    `assembleGraph` gained a `publicOnly` mode (PUBLIC enforced for both the
+    author's nodes and the external targets); the self graph is unchanged.
+    +2 regression tests.
+
+ 2. Dead config: `/profile` sat in PROTECTED_PREFIXES with no page and no nav link
+    anywhere. Removed - Phase F re-adds it with the real page.
+
+ 3. A lying type: `RelatedResource.status` was declared in use-resource.ts, but
+    findById's relation summary select returns only id/title/slug/type. The field
+    was always undefined, and nothing read it. Removed.
+
+ 4. Dead hook: `useUpdateCollection` was exported and never used - collections were
+    create/read/delete only, despite the plan saying CRUD. Wired an Edit dialog
+    (title / description / visibility) onto the collection detail page.
+
+ 5. Silent truncation: the collections and tags pages ignored `total`, so anything
+    past the first page vanished with no pager. Both now page properly.
+
+Verified clean (not drift): the resources list envelope, the graph page's
+node/edge contract, each hook's response type against its route, and the
+collection slug rules.
+
+Suite: 89 tests. Five gates green.

@@ -22,14 +22,103 @@ import {
   Input,
   Label,
   Skeleton,
+  Textarea,
 } from "@fusorb/facet-components";
 import {
+  COLLECTION_VISIBILITIES,
   useAddResourceToCollection,
   useCollection,
   useDeleteCollection,
   useRemoveResourceFromCollection,
+  useUpdateCollection,
 } from "@/hooks/use-collections";
 import { useResources } from "@/hooks/use-resources";
+
+const selectClass =
+  "h-9 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus-visible:border-ring";
+
+function EditCollectionForm({
+  collectionId,
+  initial,
+  onDone,
+}: {
+  collectionId: string;
+  initial: { title: string; description: string | null; visibility: string };
+  onDone: () => void;
+}) {
+  const update = useUpdateCollection(collectionId);
+  const [title, setTitle] = useState(initial.title);
+  const [description, setDescription] = useState(initial.description ?? "");
+  const [visibility, setVisibility] = useState(initial.visibility);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    if (!title.trim()) {
+      setError("A title is required.");
+      return;
+    }
+    setError(null);
+    try {
+      await update.mutateAsync({
+        title: title.trim(),
+        description: description.trim() || undefined,
+        visibility,
+      });
+      onDone();
+    } catch (err) {
+      setError((err as Error).message || "Could not update the collection.");
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-1.5">
+        <Label htmlFor="edit-collection-title">Title</Label>
+        <Input
+          id="edit-collection-title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="edit-collection-description">Description</Label>
+        <Textarea
+          id="edit-collection-description"
+          rows={3}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="What belongs in here?"
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="edit-collection-visibility">Visibility</Label>
+        <select
+          id="edit-collection-visibility"
+          className={selectClass}
+          value={visibility}
+          onChange={(e) => setVisibility(e.target.value)}
+        >
+          {COLLECTION_VISIBILITIES.map((value) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
+      </div>
+      {error && (
+        <p className="rounded-xl border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {error}
+        </p>
+      )}
+      <DialogFooter>
+        <Button type="submit" size="sm" disabled={update.isPending}>
+          {update.isPending ? "Saving..." : "Save changes"}
+        </Button>
+      </DialogFooter>
+    </form>
+  );
+}
 
 function AddResourceForm({
   collectionId,
@@ -129,6 +218,7 @@ export default function CollectionDetailPage() {
   const id = params?.collectionId ?? "";
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
 
   const { data: collection, isLoading } = useCollection(id);
   const remove = useRemoveResourceFromCollection(id);
@@ -169,6 +259,9 @@ export default function CollectionDetailPage() {
         description={collection.description ?? undefined}
         actions={
           <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>
+              <Icon name="pencil" className="size-4" aria-hidden /> Edit
+            </Button>
             <Button size="sm" variant="outline" onClick={() => setOpen(true)}>
               <Icon name="plus" className="size-4" aria-hidden /> Add resource
             </Button>
@@ -240,6 +333,26 @@ export default function CollectionDetailPage() {
               collectionId={id}
               existingIds={existingIds}
               onDone={() => setOpen(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit collection</DialogTitle>
+            <DialogDescription>Update the title, description, or visibility.</DialogDescription>
+          </DialogHeader>
+          {editOpen && (
+            <EditCollectionForm
+              collectionId={id}
+              initial={{
+                title: collection.title,
+                description: collection.description,
+                visibility: collection.visibility,
+              }}
+              onDone={() => setEditOpen(false)}
             />
           )}
         </DialogContent>

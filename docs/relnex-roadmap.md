@@ -5,7 +5,7 @@
 > Relnex owns User profile, Resources, Collections, Comments, Tags, and Search.
 
 > **Status (2026-11-10).** Phases 0-5, 7, and frontend rebuild Phases A-E are
-> complete; the repo builds clean and carries a Vitest suite (87 tests). The
+> complete; the repo builds clean and carries a Vitest suite (89 tests). The
 > remaining work is rebuild Phases F-G.
 > Auth verification runs through one seam (`verifySgToken`): JWKS/RS256 when
 > `SG_JWKS_URL` is set, shared secret (HS256) as the dev/e2e fallback.
@@ -25,7 +25,7 @@
 | Auth infrastructure | ✅ **Complete** | `core/auth/` JWT verify + cookies + guards; `proxy.ts` forwards tenant/identity headers; login route sets cookies. Sg boundary is `@fusorb/facet-sdk` via `@/lib/sg`. |
 | API routes | ✅ **41/41 fixed** | `handleApiRoute` + `requireAuth`/`requireOnboarded` + flow executor everywhere; `tsc --noEmit` green (incl. Next 16 async `params` via `handleApiRoute` unwrap). |
 | Frontend pages | 🟡 **Rebuild (A-G)** | Phases A-E done: facet shell + console/dashboard/onboarding + resource surfaces (browse, read view, create/edit, publish, uploads) + relation authoring & graph view + collections, tags, and search. Remaining: Phases F-G. |
-| Test suite | ✅ **Vitest (87)** | `pnpm test` covers auth (jwt/session/guards), the flow executor, api-client error mapping, proxy gating, resource + collection read-access rules, profile visibility, search envelopes, and the graph assembler. Runs in CI. |
+| Test suite | ✅ **Vitest (89)** | `pnpm test` covers auth (jwt/session/guards), the flow executor, api-client error mapping, proxy gating, resource + collection read-access rules, profile visibility, the public profile graph, search envelopes, and the graph assembler. Runs in CI. |
 | Providers | ✅ **Complete** | facet `ThemeProvider` → React Query → facet `Toaster`; session via `use-me`/`use-session`. The facet-auth `SgProvider` swap (Model A) is a later slice. |
 | Documentation | ✅ **Present** | CLAUDE.md, AGENTS.md, architecture docs, and episode tracker all migrated to the Relnex/SovGrant/Facet namespace |
 

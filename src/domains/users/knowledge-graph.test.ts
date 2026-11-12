@@ -63,3 +63,41 @@ describe("UserService.getKnowledgeGraph", () => {
     expect(relWhere.tenantId).toBe("t1");
   });
 });
+
+describe("UserService.getUserKnowledgeGraph (anonymous profile graph)", () => {
+  // GET /api/users/[username]/graph has no auth guard, so every node it can reach
+  // must be PUBLIC - a user's private-but-published resources must never leak.
+  function makePublicDb(
+    external: { id: string; title: string | null; type: string }[],
+    relations: unknown[],
+  ) {
+    const findMany = vi
+      .fn(async (_arg: unknown) => OWN as { id: string; title: string | null; type: string }[])
+      .mockResolvedValueOnce(OWN)
+      .mockResolvedValueOnce(external);
+    return {
+      user: { findFirst: vi.fn(async (_arg: unknown) => ({ id: "u1", tenantId: "t1" })) },
+      resource: { findMany },
+      relation: { findMany: vi.fn(async (_arg: unknown) => relations) },
+    };
+  }
+
+  it("restricts the author's own nodes to PUBLIC", async () => {
+    const db = makePublicDb([], []);
+    const service = new UserService(db as unknown as DbClient);
+    await service.getUserKnowledgeGraph("ada");
+
+    const ownWhere = (db.resource.findMany.mock.calls[0][0] as { where: Record<string, unknown> }).where;
+    expect(ownWhere.visibility).toBe("PUBLIC");
+    expect(ownWhere.status).toBe("PUBLISHED");
+  });
+
+  it("restricts external target nodes to PUBLIC (not UNLISTED)", async () => {
+    const db = makePublicDb([], [{ fromId: "r1", toId: "r2", type: "RELATED" }]);
+    const service = new UserService(db as unknown as DbClient);
+    await service.getUserKnowledgeGraph("ada");
+
+    const externalWhere = (db.resource.findMany.mock.calls[1][0] as { where: Record<string, unknown> }).where;
+    expect(externalWhere.visibility).toBe("PUBLIC");
+  });
+});

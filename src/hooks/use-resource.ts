@@ -17,12 +17,13 @@ export interface ResourceTagRef {
   slug: string;
 }
 
+// Shape of the neighbour returned by the detail endpoint's relation summary
+// select (resource.repository.findById: id/title/slug/type only).
 export interface RelatedResource {
   id: string;
   title: string | null;
   slug: string | null;
   type: string;
-  status: string;
 }
 
 export interface RelationEdge {

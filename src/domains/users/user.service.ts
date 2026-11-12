@@ -47,14 +47,24 @@ export class UserService {
     });
   }
 
+  /**
+   * The PUBLIC profile graph (`GET /api/users/[username]/graph`, unauthenticated).
+   * Only PUBLIC resources may appear here - without the visibility filter a user's
+   * private-but-published resources leaked into an anonymous endpoint.
+   */
   async getUserKnowledgeGraph(username: string) {
     const user = await this.repo.findByUsername(username);
     if (!user) throw ApiError.notFound("User not found");
     const own = await this.db.resource.findMany({
-      where: { authorId: user.id, status: "PUBLISHED", deletedAt: null },
+      where: {
+        authorId: user.id,
+        status: "PUBLISHED",
+        visibility: "PUBLIC",
+        deletedAt: null,
+      },
       select: { id: true, title: true, type: true },
     });
-    return this.assembleGraph(own, user.tenantId);
+    return this.assembleGraph(own, user.tenantId, true);
   }
 
   /** The signed-in user's knowledge graph, scoped to the verified tenant. */
@@ -75,14 +85,21 @@ export class UserService {
    * Builds a renderable graph from a node set. Edges never dangle: a relation is
    * only returned when both ends resolve to a visible node, and visible external
    * targets (other authors' published resources) are pulled in as extra nodes.
+   *
+   * `publicOnly` narrows every visibility check to PUBLIC - required for the
+   * anonymous profile graph, which must never surface UNLISTED or PRIVATE rows.
    */
   private async assembleGraph(
     own: { id: string; title: string | null; type: string }[],
     tenantId?: string | null,
+    publicOnly = false,
   ) {
     if (own.length === 0) return { nodes: [], edges: [] };
 
     const tenantFilter = tenantId ? { tenantId } : {};
+    const visibleVisibility: Prisma.ResourceWhereInput["visibility"] = publicOnly
+      ? "PUBLIC"
+      : { in: ["PUBLIC", "UNLISTED"] };
     const ownIds = own.map((r) => r.id);
     const relations = await this.db.relation.findMany({
       where: { fromId: { in: ownIds }, ...tenantFilter },
@@ -96,7 +113,7 @@ export class UserService {
           where: {
             id: { in: targetIds },
             status: "PUBLISHED",
-            visibility: { in: ["PUBLIC", "UNLISTED"] },
+            visibility: visibleVisibility,
             deletedAt: null,
             ...tenantFilter,
           },

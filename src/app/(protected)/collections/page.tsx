@@ -33,6 +33,8 @@ import {
 const selectClass =
   "h-9 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus-visible:border-ring";
 
+const PAGE_SIZE = 50;
+
 function CreateCollectionForm({ onDone }: { onDone: () => void }) {
   const create = useCreateCollection();
   const [title, setTitle] = useState("");
@@ -128,7 +130,9 @@ function CreateCollectionForm({ onDone }: { onDone: () => void }) {
 
 export default function CollectionsPage() {
   const [open, setOpen] = useState(false);
-  const { data, isLoading, isError } = useCollections(1, 50);
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isError } = useCollections(page, PAGE_SIZE);
+  const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
 
   return (
     <div className="space-y-6">
@@ -191,6 +195,30 @@ export default function CollectionsPage() {
             </Button>
           }
         />
+      )}
+
+      {data && data.total > PAGE_SIZE && (
+        <div className="flex items-center justify-between">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {page} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page >= totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </Button>
+        </div>
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>
