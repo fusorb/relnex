@@ -88,6 +88,10 @@ VERIFICATION CHECKLIST (current)
   [x] Phase C: pnpm typecheck clean, pnpm test 50/50, gates green
   [x] Hardening pass: proxy tenant-header anti-spoof + always-concrete tenant;
       all lint warnings cleared; 52 tests
+  [x] Authz fix (EP 17): profile nested endpoints + resource children now filter
+      non-owner reads by visibility; saved resources are owner-only; 61 tests
+  [ ] OPEN GAP (Phase D/C): GET /api/resources/[id] returns any resource in the
+      tenant to any authenticated caller (no visibility/ownership check)
   [ ] OPEN GAP (Phase E): normalize search pagination envelopes
       ({ items, pagination } vs { items, total, page, limit })
   [x] pnpm check:all passes (docs-sync, legacy-names, env-sync, boundaries, lint, typecheck)

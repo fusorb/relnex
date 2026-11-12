@@ -505,3 +505,38 @@ endpoints (`{ items, pagination }` vs `{ items, total, page, limit }`); normaliz
 in Phase E when search is built out.
 
 State: lint zero, gates green, 52 tests, CI green. Phases D-G remain.
+
+> Corrected in EP 17: this pass was incomplete. The `^_` ignore rule I added
+> silenced three warnings whose root cause was real - the `_viewerId` params were
+> unwired visibility filters, not dead code.
+
+================================================================================
+EP 17 - AUTHZ FIX: THE WARNINGS I HAD SILENCED WERE REAL
+================================================================================
+
+What happened:
+  A re-read of the warnings I had "fixed" with the `^_` ignore rule showed the
+  rule had HIDDEN three authorization gaps. `_viewerId` was accepted and silently
+  ignored, so the endpoints returned more than their own comments promised.
+
+What changed:
+  - `GET /api/users/[username]/resources` served PRIVATE + DRAFT resources to
+    unauthenticated / non-owner callers (its comment promised PUBLIC+UNLISTED).
+    `UserService.getUserNestedResources` now filters non-owners to
+    PUBLISHED + PUBLIC/UNLISTED.
+  - `GET /api/users/[username]/collections` served PRIVATE collections to anyone.
+    `getUserNestedCollections` now filters non-owners to PUBLIC/UNLISTED.
+  - `GET /api/users/[username]/saved` claimed a 403 ownership check that did not
+    exist; `getUserNestedSaved` now throws 403 unless the viewer is the owner.
+  - `GET /api/resources/[resourceId]/children` (public) returned private/draft
+    children; `getChildrenFlow` now takes an optional `viewerId` and hides
+    non-published / private children from non-owners.
+  - Regression tests: `user.service.test.ts` (7) and `get-children.flow.test.ts` (2).
+
+What survived:
+  Owner views are unchanged; only non-owner / anonymous reads are now filtered.
+
+Lesson: never silence an "unused" warning with an ignore pattern until you have
+read WHY the binding exists. `_viewerId` was not dead - it was unwired.
+
+State: lint zero, gates green, 61 tests, CI green. Phases D-G remain.
