@@ -7,8 +7,9 @@ export class TagService {
   repo: TagRepository;
   constructor(db: DbClient = prisma) { this.repo = new TagRepository(db); }
 
-  async getAllTags(tenantId?: string | null) {
-    return this.repo.findAll(tenantId);
+  async getAllTags(tenantId?: string | null, page = 1, limit = 100) {
+    const { items, total } = await this.repo.findAll(tenantId, page, limit);
+    return { items, total, page, limit };
   }
 
   async createTag(input: CreateTagInput, tenantId?: string | null) {

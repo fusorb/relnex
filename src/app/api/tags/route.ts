@@ -7,6 +7,7 @@ import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
 import { TagService } from "@/domains/tags/tag.service";
 import { createTagSchema, toSafeTagDTO } from "@/domains/tags/tag.dto";
+import { paginate } from "@/lib/pagination";
 import { ApiError } from "@/lib/errors";
 
 const tagService = new TagService();
@@ -14,11 +15,13 @@ const tagService = new TagService();
 export const GET = handleApiRoute(async (req: NextRequest) => {
   await requireOnboarded(req);
   const tenantId = req.headers.get("x-tenant-id") ?? null;
-  const allTags = await tagService.getAllTags(tenantId);
+  const { searchParams } = new URL(req.url);
+  const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
+  const limit = Math.min(200, Math.max(1, Number(searchParams.get("limit") ?? "100") || 100));
+  const { items, total } = await tagService.getAllTags(tenantId, page, limit);
   return NextResponse.json({
     success: true,
-    count: allTags.length,
-    data: allTags.map(toSafeTagDTO),
+    data: paginate(items.map(toSafeTagDTO), total, page, limit),
   });
 });
 

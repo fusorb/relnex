@@ -2,6 +2,7 @@ import { prisma } from "@/core/db";
 import type { DbClient } from "@/core/flows/flow-context";
 import { CollectionRepository } from "./collection.repository";
 import type { CreateCollectionInput } from "./collection.dto";
+import { canViewCollection } from "./collection.visibility";
 import { ApiError } from "@/lib/errors";
 import { resolveTenantId } from "@/core/tenancy";
 
@@ -9,8 +10,9 @@ export class CollectionService {
   private repo: CollectionRepository;
   constructor(private db: DbClient = prisma) { this.repo = new CollectionRepository(db); }
 
-  async getUserCollections(userId: string, tenantId?: string | null) {
-    return this.repo.findByAuthor(userId, tenantId);
+  async getUserCollections(userId: string, tenantId?: string | null, page = 1, limit = 50) {
+    const { items, total } = await this.repo.findByAuthor(userId, tenantId, page, limit);
+    return { items, total, page, limit };
   }
 
   async createCollection(userId: string, input: CreateCollectionInput, tenantId?: string | null) {
@@ -30,9 +32,19 @@ export class CollectionService {
     return full;
   }
 
-  async getCollection(id: string, tenantId?: string | null) {
-    const collection = await this.repo.findById(id, tenantId);
-    if (!collection) throw ApiError.notFound("Collection not found");
+  /**
+   * Returns a collection only if the viewer may read it; otherwise 404s (never
+   * 403), so private collections cannot be discovered by probing ids.
+   */
+  async assertVisible(
+    collectionId: string,
+    viewerId: string | null | undefined,
+    tenantId?: string | null,
+  ) {
+    const collection = await this.repo.findById(collectionId, tenantId);
+    if (!collection || !canViewCollection(collection, viewerId)) {
+      throw ApiError.notFound("Collection not found");
+    }
     return collection;
   }
 

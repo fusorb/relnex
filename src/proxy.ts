@@ -21,6 +21,7 @@ const PROTECTED_PREFIXES = [
   "/onboarding",
   "/resources",
   "/collections",
+  "/search",
   "/graph",
   "/tags",
   "/settings",

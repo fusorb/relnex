@@ -3,8 +3,8 @@ Updated: 2026-11-10
 Source of truth: docs/relnex-roadmap.md
 
 ================================================================================
-STATUS: Phases 0-5 and 7 complete; frontend rebuild Phases A-D done.
-Repo builds clean; Vitest suite green (76 tests). Remaining: rebuild Phases E-G.
+STATUS: Phases 0-5 and 7 complete; frontend rebuild Phases A-E done.
+Repo builds clean; Vitest suite green (87 tests). Remaining: rebuild Phases F-G.
 ================================================================================
 
 PHASE 0 - DOCUMENTATION ........................................ [x] DONE
@@ -97,8 +97,9 @@ VERIFICATION CHECKLIST (current)
       list, detail, tags, versions, comments, children, and save; detail 404s
       (never 403) for non-owners of private/draft resources; tag mutations
       require ownership
-  [ ] OPEN GAP (Phase E): normalize search pagination envelopes
-      ({ items, pagination } vs { items, total, page, limit })
+  [x] Phase E (EP 20): collections + tags + search console surfaces; ONE paginated
+      envelope ({ items, total, page, limit }) on every list endpoint; unified
+      search now honours ?type=; collection reads respect visibility (404)
   [x] pnpm check:all passes (docs-sync, legacy-names, env-sync, boundaries, lint, typecheck)
   [ ] Live login -> cookie -> /api/auth/me 200 (needs running SovGrant)
   [x] Extended proxy coverage for all protected prefixes

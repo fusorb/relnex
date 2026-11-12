@@ -25,7 +25,9 @@ export const resourceSearchSchema = z.object({
 
 export const unifiedSearchSchema = z.object({
   q:        z.string().min(1),
-  types:    z.array(z.enum(["resource", "collection", "user"])).optional(),
+  // Which entity types to search. Without this the unified route always searched
+  // everything (zod silently dropped the unknown `type` param).
+  type:     z.enum(["resources", "collections", "users", "all"]).default("all"),
   page:     z.coerce.number().min(1).default(1),
   limit:    z.coerce.number().min(1).max(50).default(20),
   tenantId: z.string().nullable().optional(),

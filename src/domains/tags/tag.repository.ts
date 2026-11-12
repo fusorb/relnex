@@ -4,12 +4,19 @@ import { resolveTenantId } from "@/core/tenancy";
 export class TagRepository {
   constructor(private db: DbClient) {}
 
-  async findAll(tenantId?: string | null) {
-    return this.db.tag.findMany({
-      where:   { ...(tenantId ? { tenantId } : {}) },
-      include: { _count: { select: { resources: true } } },
-      orderBy: { name: "asc" },
-    });
+  async findAll(tenantId?: string | null, page = 1, limit = 100) {
+    const where = { ...(tenantId ? { tenantId } : {}) };
+    const [items, total] = await Promise.all([
+      this.db.tag.findMany({
+        where,
+        include: { _count: { select: { resources: true } } },
+        orderBy: { name: "asc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.db.tag.count({ where }),
+    ]);
+    return { items, total };
   }
 
   async upsert(name: string, tenantId?: string | null) {

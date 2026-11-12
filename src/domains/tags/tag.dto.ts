@@ -15,10 +15,11 @@ export const associateTagsSchema = z.object({
 
 export type AssociateTagsInput = z.infer<typeof associateTagsSchema>;
 
-export function toSafeTagDTO(tag: Tag) {
+export function toSafeTagDTO(tag: Tag & { _count?: { resources: number } }) {
   return {
     id: tag.id,
     name: tag.name,
     slug: tag.slug,
+    resourceCount: tag._count?.resources ?? 0,
   };
 }

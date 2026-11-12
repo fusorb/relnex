@@ -73,4 +73,10 @@ describe("proxy", () => {
     const res = await proxy(req("/dashboard", { cookie: "valid.token" }));
     expect(res.headers.get("x-middleware-request-x-tenant-id")).toBe("relnex-default");
   });
+
+  it("gates the search console prefix", async () => {
+    const res = await proxy(req("/search"));
+    expect(res.status).toBe(307);
+    expect(new URL(res.headers.get("location")!).pathname).toBe("/login");
+  });
 });

@@ -33,15 +33,22 @@ export class CollectionRepository {
     return this.db.collection.findFirst({ where: { slug, authorId, ...(tenantId ? { tenantId } : {}), deletedAt: null } });
   }
 
-  async findByAuthor(authorId: string, tenantId?: string | null) {
-    return this.db.collection.findMany({
-      where: { authorId, ...(tenantId ? { tenantId } : {}), deletedAt: null },
-      include: {
-        author: { select: { id: true, username: true, displayName: true, avatarUrl: true, bio: true, archetype: true, createdAt: true } },
-        _count: { select: { resources: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+  async findByAuthor(authorId: string, tenantId?: string | null, page = 1, limit = 50) {
+    const where = { authorId, ...(tenantId ? { tenantId } : {}), deletedAt: null };
+    const [items, total] = await Promise.all([
+      this.db.collection.findMany({
+        where,
+        include: {
+          author: { select: { id: true, username: true, displayName: true, avatarUrl: true, bio: true, archetype: true, createdAt: true } },
+          _count: { select: { resources: true } },
+        },
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.db.collection.count({ where }),
+    ]);
+    return { items, total };
   }
 
   async create(data: Prisma.CollectionCreateInput) {

@@ -275,6 +275,14 @@ or icon registry (a boundary gate enforces this).
   (PUBLIC or UNLISTED). It gates the list, the detail read (404, never 403, so
   private ids cannot be probed), tags, versions, comments, children, and save.
   Tag mutations additionally require ownership.
+- **Collections, tags, search**: `/collections` (list + create; detail with ordered
+  resources and add/remove), `/tags` (the taxonomy with per-tag resource counts),
+  and `/search` (type tabs over the unified endpoint). Collection reads go through
+  `collection.visibility.ts` - the author, or anyone when it is not PRIVATE (else 404).
+- **Pagination contract**: every list endpoint returns
+  `{ items, total, page, limit }` (`@/lib/pagination`). The old mix of
+  `{ items, pagination }` and `{ count, data }` is gone; unified search returns one
+  such envelope per section.
 - **Brand**: `src/styles/relnex-palette.css` overrides the facet semantic tokens
   (the documented "bring your own palette" pattern).
 

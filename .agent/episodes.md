@@ -612,3 +612,38 @@ assertVisible/ownership wiring), get-children (1, an invisible parent 404s).
 Suite: 76 tests.
 
 State: gates green, 76 tests, CI green. Phases E-G remain.
+
+================================================================================
+EP 20 - PHASE E: COLLECTIONS, TAGS, SEARCH + ONE PAGINATION SHAPE
+================================================================================
+
+Goal: finish the "group and find" half of the product, on a single contract.
+
+The pagination gap (recorded since EP 16) is closed:
+  - three list shapes existed: `{ items, total }` (search/resources),
+    `{ items, pagination: {...} }` (search/collections, search/users) and
+    `{ count, data: [...] }` (collections, tags)
+  - now every list endpoint returns `{ items, total, page, limit }` via
+    `@/lib/pagination`, and unified search returns one such envelope PER SECTION
+  - collections and tags gained real page/limit support instead of dumping everything
+
+Found and fixed while building:
+  - unified `/api/search` silently ignored `?type=` - zod stripped the unknown key,
+    so the route always searched all three entities and the tab filter could never
+    work. `unifiedSearchSchema` now declares `type`
+  - `GET /api/collections/[collectionId]` had no visibility check - the very hole
+    EP 19 fixed for resources. Added `collection.visibility.ts`; reads 404 for
+    non-authors of PRIVATE collections (mutations already required ownership)
+  - `/search` was missing from the proxy's protected prefixes
+
+Surfaces:
+  - `/collections` list + create dialog (the slug derives from the title), and
+    `/collections/[id]` detail with add/remove of ordered resources
+  - `/tags` - the taxonomy with per-tag resource counts (`_count` now surfaced
+    through `toSafeTagDTO`)
+  - `/search` - query input, type tabs, per-section result cards, paging
+
+Tests: +11 (collection.visibility 8, search.service 2, proxy `/search` 1).
+Suite: 87.
+
+State: gates green, 87 tests, CI green. Phases F-G remain.

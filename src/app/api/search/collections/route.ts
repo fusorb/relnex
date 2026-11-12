@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute, ApiError } from "@/lib/errors";
 import { SearchRepository } from "@/domains/search/search.repository";
 import { toCollectionSearchResultDTO } from "@/domains/search/search.dto";
+import { paginate } from "@/lib/pagination";
 import { z } from "zod";
 
 const schema = z.object({
@@ -33,9 +34,6 @@ export const GET = handleApiRoute(async (req: NextRequest) => {
 
   return NextResponse.json({
     success: true,
-    data: {
-      items: items.map(toCollectionSearchResultDTO),
-      pagination: { total, totalPages: Math.ceil(total / limit), currentPage: page, limit },
-    },
+    data: paginate(items.map(toCollectionSearchResultDTO), total, page, limit),
   });
 });

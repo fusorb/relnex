@@ -16,6 +16,10 @@ export { toSafeCollectionDTO, presentCollectionListItem, type CollectionDTO, typ
 export { CollectionService } from "./collection.service";
 export { CollectionRepository } from "./collection.repository";
 
+// ── Read-access rule ───────────────────────────────────────────────────
+export { canViewCollection, visibleCollectionWhere } from "./collection.visibility";
+export type { CollectionVisibilitySubject } from "./collection.visibility";
+
 // ── Flows ──────────────────────────────────────────────────────────────
 // Note: createCollectionFlow is handled directly in the route via CollectionService
 export { updateCollectionFlow } from "./flows/update-collection.flow";

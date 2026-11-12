@@ -13,10 +13,12 @@ const collectionService = new CollectionService();
 
 export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
-    await requireOnboarded(req);
+    const session = await requireOnboarded(req);
     const tenantId = req.headers.get("x-tenant-id") ?? null;
-    const collection = await collectionService.getCollection(
+    // 404s unless the caller authored this collection or it is non-private.
+    const collection = await collectionService.assertVisible(
       params.collectionId,
+      session.userId,
       tenantId,
     );
     return NextResponse.json({ success: true, data: collection });
