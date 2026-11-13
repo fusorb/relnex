@@ -753,3 +753,41 @@ along with the resources-list and children response shapes.
 Routes: unchanged at 41 files - the new comment moderation is an added METHOD
 (PATCH /api/comments/[commentId]) on an existing route, not a new file. Suite:
 89 -> 92.
+
+================================================================================
+EP 24 - CAPACITY AUDIT: WHAT THE SYSTEM CAN DO vs WHAT IS REACHABLE
+================================================================================
+
+Asked to check the full capacities of every domain for anything missing,
+misimplemented, or erroneous. Audited with evidence rather than by eye: a script
+compares the 41 routes, the 15 Prisma models, and every public service method, then
+checks which routes any UI code actually calls.
+
+Headline: the backend is far ahead of the product. 18 of 41 routes have no UI
+consumer, and two whole services have no route at all.
+
+Biggest gap - ENGAGEMENTS IS UNROUTED:
+  ReactionService and FollowService (addReaction, removeReaction, listByResource,
+  follow, unfollow, isFollowing, listFollowers, listFollowing) plus their four flows
+  have no routes. Reactions and follows are modelled, implemented, and unreachable.
+  This is the "Engagements (4 flows, unrouted)" line the roadmap has carried.
+
+Missing CRUD that should probably exist:
+  - Tags are append-only: POST/GET only. No update, rename, merge, or delete, so
+    the taxonomy accumulates junk with no way to clean it.
+  - Version snapshots exist but there is NO rollback/restore to a version.
+  - Archive is one-way (no unarchive).
+
+Exposed but unwired (capability exists, nothing calls it):
+  - Usage telemetry: POST /resources/{id}/usage has no client, so view metrics only
+    ever move via save/unsave.
+  - Version history, comments (incl. the now-live moderation), saved/bookmarks,
+    bulk actions, and collection reorder all have live endpoints and no UI.
+  - Public profile surfaces (/users/{username}/{analytics,saved,graph} and the user
+    directory) exist only as API.
+
+Recorded in .agent/todo.txt under OPEN CAPABILITY GAPS so none of it is lost.
+Not drift: /api/search/{resources,collections,users,tags} are simply superseded by
+the unified /api/search for the console's purposes.
+
+Verified: five gates green (check:openapi now also checks methods), 92 tests.

@@ -111,8 +111,28 @@ VERIFICATION CHECKLIST (current)
   [x] Phase E (EP 20): collections + tags + search console surfaces; ONE paginated
       envelope ({ items, total, page, limit }) on every list endpoint; unified
       search now honours ?type=; collection reads respect visibility (404)
-  [x] pnpm check:all passes (docs-sync, legacy-names, env-sync, boundaries, lint, typecheck)
+  [x] pnpm check:all passes (docs-sync, legacy-names, env-sync, boundaries, openapi, lint, typecheck)
   [ ] Live login -> cookie -> /api/auth/me 200 (needs running SovGrant)
+
+================================================================================
+OPEN CAPABILITY GAPS (audit - EP 24). Exposed in the API, unreachable in the product.
+================================================================================
+  [ ] ENGAGEMENTS UNROUTED: ReactionService + FollowService (7 methods, 4 flows)
+      have no routes at all - reactions and follows cannot be used by anyone
+  [ ] Tags are append-only in the API: no update/rename/merge/delete for a tag
+  [ ] Version history: no UI, and no rollback/restore to a snapshot (create only)
+  [ ] Archive is one-way: POST /resources/{id}/archive, no unarchive
+  [ ] Comments: no UI (read/post/reply/moderation endpoints are all live)
+  [ ] Saved/bookmarks: no UI (POST/DELETE /resources/{id}/save, GET /resources/saved)
+  [ ] Bulk actions: POST /resources/bulk has no UI
+  [ ] Collection reorder: POST /collections/{id}/reorder has no UI (Phase E listed it)
+  [ ] Usage telemetry is never called by the UI, so view counts only move on
+      save/unsave - POST /resources/{id}/usage has no client
+  [ ] Public profiles: /users/{username}/{analytics,saved,graph} and the user
+      directory have no console page (Phase F)
+Note: /api/search/{resources,collections,users,tags} are exposed but unused by the
+console (the unified /api/search supersedes them) - not a gap, just extra surface.
+================================================================================
   [x] Extended proxy coverage for all protected prefixes
   [ ] JWKS activation: pending SovGrant publishing the access-token signing key
       (+ kid) in its JWKS - see sovgrant/.agent/todo.txt. Relnex is ready: set
