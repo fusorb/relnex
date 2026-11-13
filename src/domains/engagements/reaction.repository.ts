@@ -11,11 +11,19 @@ export class ReactionRepository {
     });
   }
 
-  async findByResource(resourceId: string, tenantId?: string | null) {
-    return this.db.reaction.findMany({
-      where: { resourceId, ...(tenantId ? { tenantId } : {}) },
-      include: { user: { select: { id: true, username: true, displayName: true, avatarUrl: true } } },
-    });
+  async findByResource(resourceId: string, tenantId?: string | null, page = 1, limit = 50) {
+    const where = { resourceId, ...(tenantId ? { tenantId } : {}) };
+    const [items, total] = await Promise.all([
+      this.db.reaction.findMany({
+        where,
+        include: { user: { select: { id: true, username: true, displayName: true, avatarUrl: true } } },
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.db.reaction.count({ where }),
+    ]);
+    return { items, total };
   }
 
   async create(data: { userId: string; resourceId: string; type: ReactionType; tenantId?: string | null }) {

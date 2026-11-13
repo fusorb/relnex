@@ -71,11 +71,26 @@ export class ResourceRepository {
     });
   }
 
-  async incrementMetric(resourceId: string, field: "views" | "opens" | "downloads" | "shares" | "likes" | "bookmarks" | "comments") {
-    const m = await this.db.resourceMetrics.upsert({
+  /**
+   * Moves one counter by +1/-1 and recomputes the derived engagement score.
+   * Counters never go below zero, so un-reacting without a prior reaction cannot
+   * corrupt the totals.
+   */
+  async adjustMetric(
+    resourceId: string,
+    field: "views" | "opens" | "downloads" | "shares" | "likes" | "bookmarks" | "comments",
+    delta: number,
+  ) {
+    const current = await this.db.resourceMetrics.upsert({
       where:  { resourceId },
-      create: { resourceId, [field]: 1 },
-      update: { [field]: { increment: 1 } },
+      create: { resourceId, [field]: delta > 0 ? delta : 0 },
+      update: {},
+    });
+    if (delta < 0 && current[field] <= 0) return;
+
+    const m = await this.db.resourceMetrics.update({
+      where: { resourceId },
+      data:  { [field]: { increment: delta } },
     });
 
     // Derived engagement score (weighted counters), kept in sync on every event.
@@ -84,6 +99,10 @@ export class ResourceRepository {
     if (m.engagementScore !== engagementScore) {
       await this.db.resourceMetrics.update({ where: { resourceId }, data: { engagementScore } });
     }
+  }
+
+  async incrementMetric(resourceId: string, field: "views" | "opens" | "downloads" | "shares" | "likes" | "bookmarks" | "comments") {
+    return this.adjustMetric(resourceId, field, 1);
   }
 
   async attachTags(resourceId: string, tagIds: string[]) {

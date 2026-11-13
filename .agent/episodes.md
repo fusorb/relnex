@@ -791,3 +791,36 @@ Not drift: /api/search/{resources,collections,users,tags} are simply superseded 
 the unified /api/search for the console's purposes.
 
 Verified: five gates green (check:openapi now also checks methods), 92 tests.
+
+================================================================================
+EP 25 - ENGAGEMENTS ROUTED (reactions + follows)
+================================================================================
+
+The audit's headline gap: ReactionService and FollowService (7 methods, 4 flows) were
+fully implemented and had no routes at all. Both are now reachable:
+
+  GET    /api/resources/[resourceId]/reactions   list (visible resources only, 404)
+  POST   /api/resources/[resourceId]/reactions   add the caller's LIKE (idempotent)
+  DELETE /api/resources/[resourceId]/reactions   remove it
+  GET    /api/users/[username]/follow            is the caller following?
+  POST   /api/users/[username]/follow            follow (400 on self-follow)
+  DELETE /api/users/[username]/follow            unfollow (404 when not following)
+  GET    /api/users/[username]/followers         paginated, PublicUser shape
+  GET    /api/users/[username]/following         paginated, PublicUser shape
+
+Two real defects found and fixed while wiring:
+  1. addReactionFlow never asserted visibility, so a caller could react to a private
+     resource by id. It now goes through ResourceService.assertVisible (404, not 403),
+     matching add-comment and save.
+  2. Reactions never touched ResourceMetrics.likes, and metrics had no way to go down.
+     ResourceRepository.adjustMetric(resourceId, field, +1/-1) now backs both, clamps at
+     zero so it can never corrupt totals, and recomputes the engagement score; the flow
+     moves the counter only when the reaction is genuinely new (addReaction reports
+     `created`).
+
+Also brought in line with the documented conventions: both engagement services now take
+`(db: DbClient = prisma)` like every other service, and follower/following/reaction lists
+return the standard paginated envelope.
+
+Routes: 41 -> 45 files. Suite: 92 -> 98 (+6 engagement tests). Spec, roadmap, todo, and
+all count literals re-synced in the same change; five gates green.

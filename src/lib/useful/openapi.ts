@@ -73,6 +73,26 @@ const commentSchema = {
   },
 };
 
+const reactionSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    type: { type: "string" },
+    resourceId: { type: "string" },
+    userId: { type: "string" },
+    createdAt: { type: "string", format: "date-time" },
+    user: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        username: { type: "string" },
+        displayName: { type: ["string", "null"] },
+        avatarUrl: { type: ["string", "null"] },
+      },
+    },
+  },
+};
+
 const resourceSchema = {
   type: "object",
   properties: {
@@ -773,6 +793,92 @@ export const openApiSpec = {
                 },
               },
             },
+          },
+        },
+      },
+    },
+
+    "/api/users/{username}/follow": {
+      get: {
+        summary: "Is the caller following this user?",
+        description: "Returns the caller's follow state for the profile.",
+        tags: ["Engagements"],
+        parameters: [
+          { name: "username", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: {
+          200: {
+            description: "Follow state fetched successfully",
+            content: {
+              "application/json": {
+                schema: envelope({
+                  type: "object",
+                  properties: { following: { type: "boolean" } },
+                }),
+              },
+            },
+          },
+        },
+      },
+      post: {
+        summary: "Follow a user",
+        description: "Creates a follow edge. Idempotent; 400 when following yourself.",
+        tags: ["Engagements"],
+        parameters: [
+          { name: "username", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: {
+          201: { description: "Now following" },
+          400: { description: "Cannot follow yourself" },
+        },
+      },
+      delete: {
+        summary: "Unfollow a user",
+        description: "Removes the caller's follow edge. 404s when not following.",
+        tags: ["Engagements"],
+        parameters: [
+          { name: "username", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: {
+          200: { description: "Unfollowed" },
+          404: { description: "Not following" },
+        },
+      },
+    },
+    "/api/users/{username}/followers": {
+      get: {
+        summary: "List a user's followers",
+        description:
+          "Users following this profile, newest first, in the standard paginated envelope.",
+        tags: ["Engagements"],
+        parameters: [
+          { name: "username", in: "path", required: true, schema: { type: "string" } },
+          { name: "page", in: "query", schema: { type: "number" } },
+          { name: "limit", in: "query", schema: { type: "number" } },
+        ],
+        responses: {
+          200: {
+            description: "Followers fetched successfully",
+            content: { "application/json": { schema: envelope(paginated(publicUserSchema)) } },
+          },
+        },
+      },
+    },
+    "/api/users/{username}/following": {
+      get: {
+        summary: "List the users a user follows",
+        description:
+          "Profiles this user follows, newest first, in the standard paginated envelope.",
+        tags: ["Engagements"],
+        parameters: [
+          { name: "username", in: "path", required: true, schema: { type: "string" } },
+          { name: "page", in: "query", schema: { type: "number" } },
+          { name: "limit", in: "query", schema: { type: "number" } },
+        ],
+        responses: {
+          200: {
+            description: "Following fetched successfully",
+            content: { "application/json": { schema: envelope(paginated(publicUserSchema)) } },
           },
         },
       },
@@ -1574,6 +1680,66 @@ export const openApiSpec = {
       },
     },
 
+    "/api/resources/{resourceId}/reactions": {
+      get: {
+        summary: "List reactions on a resource",
+        description:
+          "Returns the LIKE reactions on a resource the caller may read (404 otherwise), newest first, in the standard paginated envelope.",
+        tags: ["Engagements"],
+        parameters: [
+          { name: "resourceId", in: "path", required: true, schema: { type: "string" } },
+          { name: "page", in: "query", schema: { type: "number" } },
+          { name: "limit", in: "query", schema: { type: "number" } },
+        ],
+        responses: {
+          200: {
+            description: "Reactions fetched successfully",
+            content: { "application/json": { schema: envelope(paginated(reactionSchema)) } },
+          },
+        },
+      },
+      post: {
+        summary: "React to a resource",
+        description:
+          "Adds the caller's LIKE. Idempotent: 201 when the reaction is new, 200 when it already existed. 404s for a resource the caller may not read.",
+        tags: ["Engagements"],
+        parameters: [
+          { name: "resourceId", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: {
+          201: {
+            description: "Reaction added",
+            content: {
+              "application/json": {
+                schema: envelope({
+                  type: "object",
+                  properties: {
+                    added: { type: "boolean" },
+                    reactionId: { type: "string" },
+                  },
+                }),
+              },
+            },
+          },
+          200: { description: "Reaction already present" },
+          404: { description: "Resource not visible" },
+        },
+      },
+      delete: {
+        summary: "Remove the caller's reaction",
+        description:
+          "Removes the caller's LIKE from the resource. 404s when they had not reacted.",
+        tags: ["Engagements"],
+        parameters: [
+          { name: "resourceId", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: {
+          200: { description: "Reaction removed" },
+          404: { description: "No reaction to remove" },
+        },
+      },
+    },
+
     // collections
     "/api/collections": {
       get: {
@@ -2339,6 +2505,7 @@ export const openApiSpec = {
       DirectoryUser: directoryUserSchema,
       Tag: tagSchema,
       Comment: commentSchema,
+      Reaction: reactionSchema,
       Resource: resourceSchema,
       Collection: collectionSchema,
       SafeTag: safeTagSchema,

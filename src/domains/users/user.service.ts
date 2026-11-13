@@ -25,10 +25,15 @@ export class UserService {
     return items.map(presentPublicUser);
   }
 
-  async getPublicProfile(username: string) {
+  /** The raw user behind a username, or 404. Shared by the profile surfaces. */
+  async getUserByUsername(username: string) {
     const user = await this.repo.findByUsername(username);
     if (!user) throw ApiError.notFound("User not found");
-    return presentPublicUser(user);
+    return user;
+  }
+
+  async getPublicProfile(username: string) {
+    return presentPublicUser(await this.getUserByUsername(username));
   }
 
   async getUserNestedCollections(username: string, viewerId?: string | null) {

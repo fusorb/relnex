@@ -4,13 +4,13 @@ Source of truth: docs/relnex-roadmap.md
 
 ================================================================================
 STATUS: Phases 0-5 and 7 complete; frontend rebuild Phases A-E done.
-Repo builds clean; Vitest suite green (92 tests). Remaining: rebuild Phases F-G.
+Repo builds clean; Vitest suite green (98 tests). Remaining: rebuild Phases F-G.
 ================================================================================
 
 PHASE 0 - DOCUMENTATION ........................................ [x] DONE
   [x] README, AGENTS.md, CLAUDE.md, docs/architecture.md present
   [x] Namespace canonical (Relnex / SovGrant / sg / @fusorb/facet-*)
-  [x] Docs re-synced to repo state (15 models, 9 enums, 41 routes, 9 domains)
+  [x] Docs re-synced to repo state (15 models, 9 enums, 45 routes, 9 domains)
 
 PHASE 1 - CORE INFRASTRUCTURE ................................. [x] DONE
   [x] requireAuth / requireOnboarded guards (@/core/auth)
@@ -30,7 +30,7 @@ PHASE 3 - AUTH CONSOLIDATION .................................. [x] DONE
   [ ] (deferred) Swap shared-secret verify for JWKS - user-owned, verifySgToken seam
 
 PHASE 4 - ROUTE FIX PASS ...................................... [x] DONE
-  [x] All 41 route files: handleApiRoute + guards + flow executor
+  [x] All 45 route files: handleApiRoute + guards + flow executor
   [x] Async params handled centrally in handleApiRoute (Next 16)
   [x] tsc --noEmit green
 
@@ -80,7 +80,7 @@ PHASE 8 - AUDIT, NAMESPACE SYNC & GATES (2026-11-10) .......... [x] DONE
 VERIFICATION CHECKLIST (current)
 ================================================================================
   [x] pnpm typecheck passes with zero errors
-  [x] pnpm build passes; 27 static pages, 41 routes emitted
+  [x] pnpm build passes; 27 static pages, 45 routes emitted
   [x] pnpm lint runs via the ESLint CLI (was `next lint`)
   [x] pnpm test passes (Vitest: auth jwt/session/guards, flows, api-client, proxy)
   [x] Phase A rebuild: pnpm typecheck clean, pnpm test 45/45, gates green
@@ -92,7 +92,7 @@ VERIFICATION CHECKLIST (current)
       non-owner reads by visibility; saved resources are owner-only; 61 tests
   [x] Phase D: relation authoring (connect/disconnect) on the read view; graph
       view at /graph over GET /api/graph (dangling-edge-safe assembler); 65 tests,
-      gates green (routes 40 -> 41)
+      gates green (routes now 45)
   [x] Resource read access (EP 19): one rule (resource.visibility) now gates the
       list, detail, tags, versions, comments, children, and save; detail 404s
       (never 403) for non-owners of private/draft resources; tag mutations
@@ -117,8 +117,11 @@ VERIFICATION CHECKLIST (current)
 ================================================================================
 OPEN CAPABILITY GAPS (audit - EP 24). Exposed in the API, unreachable in the product.
 ================================================================================
-  [ ] ENGAGEMENTS UNROUTED: ReactionService + FollowService (7 methods, 4 flows)
-      have no routes at all - reactions and follows cannot be used by anyone
+  [x] ENGAGEMENTS ROUTED (EP 25): reactions (GET/POST/DELETE on
+      /resources/{id}/reactions) and follows (GET/POST/DELETE on
+      /users/{username}/follow, plus followers/following lists) are live; the
+      reaction flow now asserts resource visibility, and reactions keep the likes
+      counter honest (adjustMetric +/-1, counters never go negative)
   [ ] Tags are append-only in the API: no update/rename/merge/delete for a tag
   [ ] Version history: no UI, and no rollback/restore to a snapshot (create only)
   [ ] Archive is one-way: POST /resources/{id}/archive, no unarchive

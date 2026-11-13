@@ -1,10 +1,11 @@
+import { prisma } from "@/core/db";
 import type { DbClient } from "@/core/flows/flow-context";
 import { FollowRepository } from "./follow.repository";
 import { ApiError } from "@/lib/errors";
 
 export class FollowService {
   private repo: FollowRepository;
-  constructor(private db: DbClient) {
+  constructor(private db: DbClient = prisma) {
     this.repo = new FollowRepository(db);
   }
 
@@ -28,11 +29,13 @@ export class FollowService {
     return !!existing;
   }
 
-  async listFollowers(userId: string) {
-    return this.repo.findFollowers(userId);
+  async listFollowers(userId: string, page = 1, limit = 50) {
+    const { items, total } = await this.repo.findFollowers(userId, page, limit);
+    return { items, total, page, limit };
   }
 
-  async listFollowing(userId: string) {
-    return this.repo.findFollowing(userId);
+  async listFollowing(userId: string, page = 1, limit = 50) {
+    const { items, total } = await this.repo.findFollowing(userId, page, limit);
+    return { items, total, page, limit };
   }
 }
