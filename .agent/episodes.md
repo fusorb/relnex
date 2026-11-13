@@ -824,3 +824,24 @@ return the standard paginated envelope.
 
 Routes: 41 -> 45 files. Suite: 92 -> 98 (+6 engagement tests). Spec, roadmap, todo, and
 all count literals re-synced in the same change; five gates green.
+
+================================================================================
+EP 26 - TAG MANAGEMENT (rename, delete, merge)
+================================================================================
+
+The audit's other missing CRUD: tags could be created and listed but never corrected,
+so the taxonomy could only accumulate. Now:
+
+  PATCH  /api/tags/[tagId]        rename (slug re-derived; 409 on a name/slug clash)
+  DELETE /api/tags/[tagId]        remove (ResourceTag links cascade at the DB level)
+  POST   /api/tags/[tagId]/merge  move this tag's resources onto another, then delete it
+
+Merge skips pairs the target already links, so the (resourceId, tagId) primary key is
+never violated and no resource ends up double-tagged. Rename and create share one
+`slugify` helper, so a tag's name and slug can never disagree.
+
+Conventions held: tags stay service-only (no flows) - they are reference data, as the
+existing /api/tags handlers already documented - and the new handlers use the same
+module-scope singleton + `safeParse` + ApiError shape.
+
+Routes: 45 -> 47 files. Suite: 98 -> 105 (+7 tag tests).

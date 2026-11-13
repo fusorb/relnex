@@ -2258,6 +2258,80 @@ export const openApiSpec = {
       },
     },
 
+    "/api/tags/{tagId}": {
+      patch: {
+        summary: "Rename a tag",
+        description:
+          "Renames a tag and re-derives its slug. 409s when the tenant already has that name or slug.",
+        tags: ["Tags"],
+        parameters: [
+          { name: "tagId", in: "path", required: true, schema: { type: "string" } },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["name"],
+                properties: { name: { type: "string" } },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: "Tag renamed successfully",
+            content: { "application/json": { schema: envelope(safeTagSchema) } },
+          },
+          409: { description: "A tag with that name already exists" },
+        },
+      },
+      delete: {
+        summary: "Delete a tag",
+        description: "Deletes a tag; its resource links cascade away with it.",
+        tags: ["Tags"],
+        parameters: [
+          { name: "tagId", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: {
+          200: { description: "Tag deleted successfully" },
+          404: { description: "Tag not found" },
+        },
+      },
+    },
+    "/api/tags/{tagId}/merge": {
+      post: {
+        summary: "Merge a tag into another",
+        description:
+          "Moves every resource linked to this tag onto the target tag, skipping pairs the target already has, then deletes this one.",
+        tags: ["Tags"],
+        parameters: [
+          { name: "tagId", in: "path", required: true, schema: { type: "string" } },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["intoTagId"],
+                properties: { intoTagId: { type: "string" } },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: "Tags merged successfully",
+            content: { "application/json": { schema: envelope(safeTagSchema) } },
+          },
+          400: { description: "Cannot merge a tag into itself" },
+          404: { description: "Tag not found" },
+        },
+      },
+    },
+
     // graph
     "/api/graph": {
       get: {

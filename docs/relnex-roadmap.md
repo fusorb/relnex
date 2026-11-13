@@ -5,7 +5,7 @@
 > Relnex owns User profile, Resources, Collections, Comments, Tags, and Search.
 
 > **Status (2026-11-10).** Phases 0-5, 7, and frontend rebuild Phases A-E are
-> complete; the repo builds clean and carries a Vitest suite (98 tests). The
+> complete; the repo builds clean and carries a Vitest suite (105 tests). The
 > remaining work is rebuild Phases F-G.
 > Auth verification runs through one seam (`verifySgToken`): JWKS/RS256 when
 > `SG_JWKS_URL` is set, shared secret (HS256) as the dev/e2e fallback.
@@ -23,9 +23,9 @@
 | Prisma schema | ✅ **Stable** | 15 models, 9 enums, `User.identityId` bridge to SovGrant. Last change: webhook idempotency ledger (EP 11). |
 | Domain layers | ✅ **Functional** | Resources (13 flows), Collections (2 flows), Users (3 flows), Auth (2 flows), Engagements (4 flows, routed), Search, Uploads, Tags, Comments |
 | Auth infrastructure | ✅ **Complete** | `core/auth/` JWT verify + cookies + guards; `proxy.ts` forwards tenant/identity headers; login route sets cookies. Sg boundary is `@fusorb/facet-sdk` via `@/lib/sg`. |
-| API routes | ✅ **45/45 fixed** | `handleApiRoute` + `requireAuth`/`requireOnboarded` + flow executor everywhere; `tsc --noEmit` green (incl. Next 16 async `params` via `handleApiRoute` unwrap). |
+| API routes | ✅ **47/47 fixed** | `handleApiRoute` + `requireAuth`/`requireOnboarded` + flow executor everywhere; `tsc --noEmit` green (incl. Next 16 async `params` via `handleApiRoute` unwrap). |
 | Frontend pages | 🟡 **Rebuild (A-G)** | Phases A-E done: facet shell + console/dashboard/onboarding + resource surfaces (browse, read view, create/edit, publish, uploads) + relation authoring & graph view + collections, tags, and search. Remaining: Phases F-G. |
-| Test suite | ✅ **Vitest (98)** | `pnpm test` covers auth (jwt/session/guards), the flow executor, api-client error mapping, proxy gating, resource + collection read-access rules, profile visibility, the public profile graph, comment moderation, engagement rules (follow + reaction), search envelopes, and the graph assembler. Runs in CI. |
+| Test suite | ✅ **Vitest (105)** | `pnpm test` covers auth (jwt/session/guards), the flow executor, api-client error mapping, proxy gating, resource + collection read-access rules, profile visibility, the public profile graph, comment moderation, engagement rules (follow + reaction), tag rename/delete/merge, search envelopes, and the graph assembler. Runs in CI. |
 | Providers | ✅ **Complete** | facet `ThemeProvider` → React Query → facet `Toaster`; session via `use-me`/`use-session`. The facet-auth `SgProvider` swap (Model A) is a later slice. |
 | Documentation | ✅ **Present** | CLAUDE.md, AGENTS.md, architecture docs, and episode tracker all migrated to the Relnex/SovGrant/Facet namespace |
 
@@ -68,7 +68,7 @@ request. `verifySgToken` prefers **JWKS/RS256** (`SG_JWKS_URL`) and falls back t
 | 1 | **Core Infrastructure** | ✅ Phase 1 | `requireAuth`, `requireOnboarded`, `handleApiRoute` created |
 | 2 | **Flow Unification** | ✅ Phase 2 | All 16 flow-using routes use object-style flows |
 | 3 | **Auth Consolidation** | ✅ Phase 3 | Legacy hand-rolled identity client and `sg/middleware` gone; `@fusorb/facet-sdk` is the single Sg boundary |
-| 4 | **Route Fix Pass** | ✅ Phase 4 | All 45 route files fixed: imports, guards, patterns unified |
+| 4 | **Route Fix Pass** | ✅ Phase 4 | All 47 route files fixed: imports, guards, patterns unified |
 | 5 | **Edge Middleware** | ✅ Phase 5 | Tenant header forwarding (`x-tenant-id`/`x-identity-id` from verified JWT) |
 | 6 | **Pages** | 🟡 Phased (A-G) | facet-based rebuild. A-E done: shell -> console/onboarding -> resources -> graph -> collections/tags/search. Remaining: F engagement (comments, saved, profiles, reactions/follows) -> G polish (api-docs re-skin, a11y, states). Onboarding reuses SovGrant's onboarding SDK. |
 | 7 | **Polish & Verify** | ✅ Phase 7 | Proxy rename (Next 16), Vitest auth/flow/error suite, ESLint CLI, build check, typecheck |

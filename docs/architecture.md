@@ -15,7 +15,7 @@ src/
 │   ├── (protected)/        # facet ConsoleLayout: dashboard, resources (list/read/edit)
 │   ├── (onboarding)/       # Onboarding wizard (Relnex step model; SG IdentitySdk seam)
 │   ├── api-docs/           # Swagger UI documentation
-│   └── api/                # 45 API route files across 9 route modules
+│   └── api/                # 47 API route files across 9 route modules
 │       ├── auth/           # login, register, logout, me
 │       ├── users/          # profile, onboarding, admin
 │       ├── resources/      # CRUD, relations, comments, versions, usage

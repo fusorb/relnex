@@ -12,7 +12,7 @@ Package manager: **pnpm**. TypeScript strict mode.
 
 ## Current Status (2026-11-10)
 
-Phases 0-5 and 7 complete; the repo builds clean and has a Vitest suite (98 tests).
+Phases 0-5 and 7 complete; the repo builds clean and has a Vitest suite (105 tests).
 The remaining work is the frontend rebuild Phases F-G.
 
 - Phase 0-5 ✅ - docs, core infra, flow unification, auth consolidation, route fix pass, edge middleware
