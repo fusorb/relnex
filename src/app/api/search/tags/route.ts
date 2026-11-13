@@ -5,8 +5,10 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute, ApiError } from "@/lib/errors";
-import { prisma } from "@/core/db";
+import { TagService } from "@/domains/tags";
 import { z } from "zod";
+
+const tagService = new TagService();
 
 const schema = z.object({
   q: z.string().default(""),
@@ -22,20 +24,6 @@ export const GET = handleApiRoute(async (req: NextRequest) => {
   const { q, limit } = parsed.data;
   const take = parseInt(limit, 10);
 
-  const tags = await prisma.tag.findMany({
-    where: {
-      ...(tenantId !== null && { tenantId }),
-      ...(q.trim().length > 0 && {
-        OR: [
-          { name: { contains: q, mode: "insensitive" } },
-          { slug: { contains: q, mode: "insensitive" } },
-        ],
-      }),
-    },
-    select: { id: true, name: true, slug: true },
-    orderBy: { name: "asc" },
-    take,
-  });
-
+  const tags = await tagService.searchTags(q, tenantId, take);
   return NextResponse.json({ success: true, data: tags });
 });

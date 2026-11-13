@@ -77,8 +77,8 @@ export default function DashboardPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Resources" value={data?.total ?? 0} icon="library" hint="nodes in your graph" />
-        <StatCard label="Collections" value={0} icon="layers" hint="lands in Phase E" />
-        <StatCard label="Relations" value={0} icon="share2" hint="lands in Phase D" />
+        <StatCard label="Collections" value={0} icon="layers" hint="browse in Collections" />
+        <StatCard label="Relations" value={0} icon="share2" hint="see your graph" />
         <StatCard label="Onboarding" value={`${onboarding}%`} icon="sparkles" hint="profile setup" />
       </div>
 

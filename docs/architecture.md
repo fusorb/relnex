@@ -15,29 +15,31 @@ src/
 │   ├── (protected)/        # facet ConsoleLayout: dashboard, resources (list/read/edit)
 │   ├── (onboarding)/       # Onboarding wizard (Relnex step model; SG IdentitySdk seam)
 │   ├── api-docs/           # Swagger UI documentation
-│   └── api/                # 47 API route files across 9 route modules
+│   └── api/                # 47 API route files across 10 route modules
 │       ├── auth/           # login, register, logout, me
-│       ├── users/          # profile, onboarding, admin
-│       ├── resources/      # CRUD, relations, comments, versions, usage
+│       ├── users/          # profile, onboarding, admin, follow graph
+│       ├── resources/      # CRUD, relations, comments, versions, usage, reactions, save
 │       ├── collections/    # CRUD, resource management, reorder
 │       ├── comments/       # get, update status, replies
-│       ├── tags/           # list, create
+│       ├── tags/           # list, create, rename, delete, merge
 │       ├── search/         # unified search across entities
+│       ├── graph/          # signed-in knowledge graph
 │       ├── uploads/        # presigned upload URLs
 │       └── webhooks/       # SG identity lifecycle sync
 │
 ├── core/                   # Infrastructure (no business logic)
 │   ├── auth/               # JWT verify, guards, cookies, session
 │   ├── db/                 # Prisma client singleton (pg adapter)
-│   └── flows/              # Flow system (executor, context, errors)
+│   ├── flows/              # Flow system (executor, context, errors)
+│   └── tenancy.ts          # tenant resolution helpers (default scope)
 │
 ├── domains/                # Business logic (9 domains)
 │   ├── auth/               # Auth service + DTOs (register, login flows)
 │   ├── users/              # User service + repository + 3 flows
-│   ├── resources/          # 14 flows (CRUD, relations, comments, versions, usage)
-│   ├── collections/        # 4 flows (CRUD, resource management)
+│   ├── resources/          # 13 flows (CRUD, relations, comments, versions, usage)
+│   ├── collections/        # 2 flows (CRUD, resource management)
 │   ├── comments/           # Repository + service
-│   ├── engagements/        # Reactions, follows (4 flows; no API surface yet)
+│   ├── engagements/        # Reactions, follows (4 flows, routed)
 │   ├── tags/               # Repository + service
 │   ├── search/             # Search service + repository
 │   └── uploads/            # S3 presigned upload service
@@ -200,6 +202,7 @@ barrel pulls the server-only chain (`@/core/flows` -> Prisma -> `pg`) into the b
 | `@/core/auth` | `requireAuth`, `requireOnboarded`, `getSession`, `verifySgToken`, `setAuthCookies`, `clearAuthCookies` | Auth guards, JWT, cookies |
 | `@/core/db` | `prisma` | Database access |
 | `@/core/flows` | `flowExecutor`, `Flow`, `FlowContext`, `FlowError` | Write operation flows |
+| `@/core/tenancy` | `resolveTenantId`, default-tenant helpers | Tenant resolution (default scope) |
 | `@/lib/errors` | `ApiError`, `handleError`, `handleApiRoute` | Error handling (server) |
 | `@/lib/errors/api-error` | `ApiError` | Error handling (client leaf) |
 | `@/lib/sg` | `SgClient`, `AuthSdk`, `SgError`, `unwrap`, `createServerSgClient` | SovGrant SDK calls |

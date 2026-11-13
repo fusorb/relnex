@@ -4,8 +4,7 @@ export default function SettingsPage() {
   return (
     <ComingSoon
       title="Settings"
-      description="Profile, preferences, and workspace configuration."
-      phase="Phase G"
+      description="Profile, preferences, and workspace configuration are planned for Phase G."
     />
   );
 }

@@ -4,11 +4,12 @@
 > Auth is fully delegated to **SovGrant** (separate Fastify service, code prefix `sg`).
 > Relnex owns User profile, Resources, Collections, Comments, Tags, and Search.
 
-> **Status (2026-11-10).** Phases 0-5, 7, and frontend rebuild Phases A-E are
-> complete; the repo builds clean and carries a Vitest suite (105 tests). The
-> remaining work is rebuild Phases F-G.
-> Auth verification runs through one seam (`verifySgToken`): JWKS/RS256 when
-> `SG_JWKS_URL` is set, shared secret (HS256) as the dev/e2e fallback.
+> **Status (2026-11-13).** Phases 0-5, 7, and frontend rebuild Phases A-E are
+> complete. The repo is green: `typecheck`, `lint`, `test` (105), `build`, and all
+> drift gates pass (validated with `@fusorb/facet-sdk` 4.0.1).
+> Remaining work: rebuild Phases F-G.
+> Auth verification runs through one seam (`verifySgToken`): JWKS/RS256, a pinned
+> public key, or the shared secret (HS256) dev/e2e fallback.
 
 > Counts in this file (models, enums, routes, domains) are machine-verified by `pnpm check:docs`.
 

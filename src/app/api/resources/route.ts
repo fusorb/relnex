@@ -6,9 +6,8 @@ import { flowExecutor } from "@/core/flows";
 import { createResourceFlow } from "@/domains/resources";
 import { ResourceService } from "@/domains/resources/resource.service";
 import { listResourcesSchema } from "@/domains/resources";
-import { prisma } from "@/core/db";
 
-const resourceService = new ResourceService(prisma);
+const resourceService = new ResourceService();
 
 export const GET = handleApiRoute(async (req: NextRequest) => {
   const session = await requireOnboarded(req);

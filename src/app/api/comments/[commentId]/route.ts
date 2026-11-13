@@ -1,6 +1,6 @@
 // src/app/api/comments/[commentId]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { handleApiRoute } from "@/lib/errors";
+import { handleApiRoute, ApiError } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
 import { flowExecutor } from "@/core/flows";
 import { addCommentFlow, updateCommentStatusFlow } from "@/domains/resources";
@@ -17,9 +17,7 @@ export const GET = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     await requireOnboarded(req);
     const comment = await commentService.findById(params.commentId);
-    if (!comment) {
-      return NextResponse.json({ success: false, error: "Comment not found" }, { status: 404 });
-    }
+    if (!comment) throw ApiError.notFound("Comment not found");
     return NextResponse.json({ success: true, data: comment });
   },
 );

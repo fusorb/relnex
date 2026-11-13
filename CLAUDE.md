@@ -14,8 +14,8 @@ Fastify identity service that owns passwords, MFA, sessions, and OAuth. Relnex b
 `User.identityId`.
 
 **Current state:** backend stable - all 47 API route files follow the standard pattern, and
-`pnpm typecheck`, `pnpm build`, and the Vitest suite (105 tests) are green. The frontend rebuild
-(Phase 6) is at Phases A-E done, F-G pending. See `docs/relnex-roadmap.md`.
+`pnpm typecheck`, `pnpm lint`, `pnpm build`, `pnpm test`, and `pnpm check:all` are green. The
+frontend rebuild (Phase 6) is at Phases A-E done, F-G pending. See `docs/relnex-roadmap.md`.
 
 ---
 
@@ -47,6 +47,7 @@ export const GET = handleApiRoute(async (req, { params }) => {
 | Prisma client | `@/core/db` | Singleton, not from `@/lib/useful/db-client` |
 | FlowExecutor, Flow, FlowContext | `@/core/flows` | |
 | ApiError, handleApiRoute, handleError | `@/lib/errors` | Barrel is server-only; client code imports `@/lib/errors/api-error` |
+| Tenant helpers (resolveTenantId, default scope) | `@/core/tenancy` | Use `@/core/auth/jwt` leaf in edge code |
 | Sg SDK (SgClient, AuthSdk, unwrap) | `@/lib/sg` | Only for SDK calls to SovGrant |
 
 ### Flow Pattern - Object Style
@@ -122,10 +123,10 @@ Every domain in `src/domains/<n>/` owns:
 pnpm dev          # Next.js dev server (Turbopack)
 pnpm build        # Production build
 pnpm typecheck    # tsc --noEmit
+pnpm lint         # ESLint CLI (eslint .)
+pnpm test         # Vitest suite
+pnpm check:all    # drift gates + lint + typecheck
 ```
-
-> `pnpm lint` currently points at `next lint`, removed in Next.js 16. Lint is being
-> migrated to the ESLint CLI (Phase 7). Use `pnpm typecheck` as the green gate today.
 
 ---
 
@@ -138,9 +139,14 @@ Full decision: [docs/identity-model.md](./docs/identity-model.md).
 
 ## Auth Verification Direction
 
-`verifySgToken` (`src/core/auth/jwt.ts`) currently verifies with the shared `SG_JWT_SECRET`.
-The plan is to switch to **JWKS** verification (fetch SovGrant's JWKS, verify via `jose`). This
-is user-owned; `verifySgToken` is the single seam to change.
+`verifySgToken` (`src/core/auth/jwt.ts`) supports three trust anchors, resolved in order:
+**JWKS/RS256** (`SG_JWKS_URL`, the target), a **pinned public key** (`SG_JWT_PUBLIC_KEY`, interim),
+then the shared `SG_JWT_SECRET` (HS256) dev/e2e fallback. Algorithms are pinned per anchor.
+
+**Blocker:** SovGrant's JWKS currently publishes the tenant VC/DID keys, not the RSA
+access-token signing key, and access tokens carry no `kid` (tracked in `sovgrant/.agent/todo.txt`;
+see `docs/identity-model.md`). Until then, use `SG_JWT_PUBLIC_KEY` or the shared secret;
+switching to JWKS is one env var (`SG_JWKS_URL`) with no code change.
 
 ---
 
@@ -148,4 +154,4 @@ is user-owned; `verifySgToken` is the single seam to change.
 
 See `docs/relnex-roadmap.md` for the live rebuild status. This file is the compressed rules copy - keep it in sync with the roadmap.
 
-_Last updated: 2026-10-31_
+_Last updated: 2026-11-13_

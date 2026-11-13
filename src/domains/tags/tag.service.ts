@@ -14,6 +14,11 @@ export class TagService {
     return { items, total, page, limit };
   }
 
+  /** Tag autocomplete for pickers/filters - name or slug contains the query. */
+  async searchTags(query: string, tenantId?: string | null, limit = 20) {
+    return this.repo.search(query, tenantId, limit);
+  }
+
   async createTag(input: CreateTagInput, tenantId?: string | null) {
     return this.repo.upsert(input.name, tenantId ?? undefined);
   }

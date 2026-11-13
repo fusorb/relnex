@@ -845,3 +845,44 @@ existing /api/tags handlers already documented - and the new handlers use the sa
 module-scope singleton + `safeParse` + ApiError shape.
 
 Routes: 45 -> 47 files. Suite: 98 -> 105 (+7 tag tests).
+
+================================================================================
+EP 27 - FULL AUDIT + DRIFT/CONSISTENCY FIXES (2026-11-13)
+================================================================================
+
+What happened:
+  A full-repo audit (git state, docs, routes/domains, frontend, validations) was
+  run against the uncommitted facet dependency bump, then `facet up` + `pnpm i`
+  landed: facet-sdk 3.0.0 -> 4.0.1, facet-auth 2.1.1 -> 2.1.2, facet-store
+  1.0.5 -> 1.0.6 (installed, lockfile synced).
+
+What changed (safe fixes, no feature work):
+  - Route/pattern cleanup: stale comment in api/tags/route.ts; comment routes now
+    throw ApiError.notFound (no manual 404 JSON); resources list route dropped a
+    redundant prisma arg; /api/search/tags now resolves through TagService.searchTags
+    (TagService/TagRepository gained search) instead of inline prisma.
+  - UI copy: dashboard removed stale "lands in Phase D/E" hints; settings/ComingSoon
+    copy made phase-agnostic (Phase G still planned).
+  - proxy.ts header comment corrected (no longer claims to be a deleted placeholder).
+  - Docs/trackers re-synced: CLAUDE.md (current gates/state, lint/test/check:all,
+    three-anchor auth + SovGrant JWKS blocker, @/core/tenancy, date), architecture.md
+    (10 route modules incl graph; tags rename/delete/merge; engagements routed;
+    core/tenancy; flow counts 13/2 resources/collections; import table), roadmap +
+    todo (status/date, Phase 6 A-E marked done, /search in protected prefixes),
+    capacity-and-fragmentation.md (proxy.ts ref).
+  - Dependency hygiene: removed unused deps (next-themes, framer-motion, radix-ui,
+    canvas-confetti, react-day-picker); lockfile/workspace updated via facet up + pnpm i.
+
+Left intentionally (needs care / separate work):
+  - api/webhooks/sg/route.ts is still the only route not wrapped in handleApiRoute
+    and contains inline Prisma logic (raw-body HMAC + idempotency). Refactor only with
+    a wrapper that preserves raw-body access and webhook semantics.
+  - Phase F (comments/saved/profiles/reactions+follows UI) and Phase G (api-docs
+    re-skin, a11y/states polish) remain open; capability gaps (versions rollback,
+    unarchive, bulk/reorder UI, usage telemetry, public profile pages) unchanged.
+  - facet-sdk 4.0.1 bump: validated green (no Relnex-side SDK API changes required);
+    nothing to report to ../facet as needed updates.
+
+Validations (post-install): pnpm check:all pass (docs, legacy, env, boundaries,
+openapi, lint, typecheck); pnpm test 105/105 (19 files); pnpm build succeeded
+(36 static pages, 47 routes, proxy). Note: next/font/google requires network.

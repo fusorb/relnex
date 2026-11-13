@@ -77,7 +77,7 @@ must *never* get the secret - they must use JWKS.
 
 - **Day-1 rule:** `relnex-default` is reserved forever (collision check enforced at
   tenant creation in SovGrant). Tenant isolation must never rely on a client-supplied
-  tenant header alone - it comes from the verified JWT `tid` (see `src/middleware.ts`).
+  tenant header alone - it comes from the verified JWT `tid` (see `src/proxy.ts`).
 - **Follow-up:** consider Postgres RLS as a second layer for tenant-scoped tables.
 
 ### 5. Scale: reads, search, pagination, soft-delete

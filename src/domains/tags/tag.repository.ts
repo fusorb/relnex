@@ -34,6 +34,25 @@ export class TagRepository {
     });
   }
 
+  /** Autocomplete lookup: tags whose name or slug contains the query string. */
+  async search(query: string, tenantId?: string | null, limit = 20) {
+    const q = query.trim();
+    return this.db.tag.findMany({
+      where: {
+        ...(tenantId ? { tenantId } : {}),
+        ...(q.length > 0 && {
+          OR: [
+            { name: { contains: q, mode: "insensitive" } },
+            { slug: { contains: q, mode: "insensitive" } },
+          ],
+        }),
+      },
+      select: { id: true, name: true, slug: true },
+      orderBy: { name: "asc" },
+      take: limit,
+    });
+  }
+
   async upsert(name: string, tenantId?: string | null) {
     const slug = slugify(name);
     const tenant = resolveTenantId(tenantId);
