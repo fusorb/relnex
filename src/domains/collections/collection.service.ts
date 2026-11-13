@@ -65,9 +65,13 @@ export class CollectionService {
 
   async addResource(collectionId: string, resourceId: string, userId: string, tenantId?: string | null) {
     await this.assertOwnership(collectionId, userId, tenantId);
+    // Idempotent: re-adding an existing member is a no-op. The previous plain
+    // create hit the (collectionId, resourceId) unique key and 500'd.
     const maxIndex = await this.repo.getMaxOrderIndex(collectionId);
-    return this.db.collectionResource.create({
-      data: { collectionId, resourceId, orderIndex: maxIndex + 1, tenantId: resolveTenantId(tenantId) },
+    return this.db.collectionResource.upsert({
+      where: { collectionId_resourceId: { collectionId, resourceId } },
+      create: { collectionId, resourceId, orderIndex: maxIndex + 1, tenantId: resolveTenantId(tenantId) },
+      update: {},
     });
   }
 

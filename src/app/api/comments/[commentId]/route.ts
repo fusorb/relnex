@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { handleApiRoute } from "@/lib/errors";
 import { requireOnboarded } from "@/core/auth";
 import { flowExecutor } from "@/core/flows";
-import { addCommentFlow } from "@/domains/resources";
+import { addCommentFlow, updateCommentStatusFlow } from "@/domains/resources";
 import { CommentService } from "@/domains/comments/comment.service";
 
 interface RouteParams {
@@ -39,5 +39,20 @@ export const POST = handleApiRoute(
       { success: true, data: result.comment },
       { status: 201 },
     );
+  },
+);
+
+// PATCH - moderate a comment (author or admin): ACTIVE/HIDDEN/DELETED/ARCHIVED/SPAM
+export const PATCH = handleApiRoute(
+  async (req: NextRequest, { params }: RouteParams) => {
+    const session = await requireOnboarded(req);
+    const tenantId = req.headers.get("x-tenant-id") ?? null;
+    const body = await req.json();
+    const result = await flowExecutor.run(
+      updateCommentStatusFlow,
+      { commentId: params.commentId, ...body },
+      { userId: session.userId, identityId: session.identityId, tenantId },
+    );
+    return NextResponse.json({ success: true, data: result.comment });
   },
 );

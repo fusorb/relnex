@@ -46,7 +46,8 @@ src/
 │   ├── sg/                 # SovGrant SDK boundary (SgClient/AuthSdk re-export + unwrap)
 │   ├── errors/             # ApiError (leaf), handleError, handleApiRoute
 │   ├── storage/            # S3/R2 client
-│   ├── useful/             # api-client.ts (fetch + ApiError mapping), openapi.ts (spec)
+│   ├── useful/             # api-client.ts (fetch + ApiError), openapi.ts (spec),
+│   │                       #   utils/ (logger, metadata)
 │   ├── onboarding.ts       # product onboarding step model (pure, unit-tested)
 │   └── pagination.ts       # the one list envelope ({ items, total, page, limit })
 │

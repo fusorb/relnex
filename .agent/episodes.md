@@ -714,3 +714,42 @@ node/edge contract, each hook's response type against its route, and the
 collection slug rules.
 
 Suite: 89 tests. Five gates green.
+
+================================================================================
+EP 23 - DEAD CODE vs UNWIRED CAPABILITY (QUESTIONED, AND CORRECTED)
+================================================================================
+
+A dead-export sweep flagged 85 symbols. The honest answer was more nuanced than
+"dead": there are two causes, and treating them as one was my mistake.
+
+A. OBSOLETE / SUPERSEDED - deletion was right
+   - `list-versions.flow.ts` - the route goes through `ResourceService.listVersions`
+     (now viewer-aware); the flow re-implemented it with the weaker `assertExists`.
+   - `add/remove-resource-from-collection.flow.ts` - the routes call the service.
+     Their logic was actually BETTER (upsert = idempotent), so the real fix went into
+     `CollectionService.addResource`, which previously 500'd on a re-add by hitting
+     the (collectionId, resourceId) unique key.
+   - `src/lib/utils.ts` (`cn`) - with no consumer it is three lines of nothing.
+   - Unused DTO surface (`PublishResourceDto`, `ConnectResourcesInput`, the
+     `create/updateResourceSchema` aliases) and the unused `presentUserList`.
+
+B. UNWIRED CAPABILITY - deletion was WRONG, restored
+   - `update-comment-status.flow.ts`: comment moderation existed with its own
+     author-or-admin check but NO route exposed it. Restored AND wired:
+     `PATCH /api/comments/[commentId]` (+3 tests).
+   - `presentPrivateUser`: `/api/auth/me` hand-built its own projection, which
+     omitted `bio` and `archetype` - fields both the `PrivateUser` contract and the
+     client's `MeUser` hook declare. `authService.getProfile` now returns
+     `presentPrivateUser`, so the three shapes agree.
+   - `lib/sg/browser-client.ts`: unused until the facet-auth `SgProvider` slice
+     (Model A), which the plan explicitly defers.
+
+Found while verifying: the spec claimed `PUT`/`DELETE` on `/api/comments/{id}`, plus
+`GET /api/resources/{id}/relations` and `POST /api/comments/{id}/replies` - none of
+which existed. The openapi gate now checks METHODS as well as paths (that is how
+these surfaced); on its first run it found 6 more method mismatches, all now fixed,
+along with the resources-list and children response shapes.
+
+Routes: unchanged at 41 files - the new comment moderation is an added METHOD
+(PATCH /api/comments/[commentId]) on an existing route, not a new file. Suite:
+89 -> 92.

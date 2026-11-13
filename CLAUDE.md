@@ -14,7 +14,7 @@ Fastify identity service that owns passwords, MFA, sessions, and OAuth. Relnex b
 `User.identityId`.
 
 **Current state:** backend stable - all 41 API route files follow the standard pattern, and
-`pnpm typecheck`, `pnpm build`, and the Vitest suite (89 tests) are green. The frontend rebuild
+`pnpm typecheck`, `pnpm build`, and the Vitest suite (92 tests) are green. The frontend rebuild
 (Phase 6) is at Phases A-E done, F-G pending. See `docs/relnex-roadmap.md`.
 
 ---

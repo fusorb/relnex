@@ -3,9 +3,9 @@
 Next.js 16 knowledge-graph application. Auth is delegated to [SovGrant](https://github.com/fusorb/sovgrant)
 (a Fastify identity service, code prefix `sg`).
 
-> **Status: paused (2026-10-31).** Backend is stabilized and the app builds clean; the
-> frontend page build-out (Phase 6) is deferred until SovGrant is stable. See
-> [docs/relnex-roadmap.md](./docs/relnex-roadmap.md) for the live plan.
+> **Status (2026-11-10).** Backend is stable; the frontend rebuild (Phase 6) is at
+> Phases A-E done (shell, console/onboarding, resources, graph, collections/tags/
+> search) with F-G pending. See [docs/relnex-roadmap.md](./docs/relnex-roadmap.md).
 
 ## Stack
 
@@ -80,11 +80,13 @@ domains/{name}/
 |---------|---------|
 | `pnpm dev` | Development server (Turbopack) |
 | `pnpm build` | Production build |
+| `pnpm lint` | ESLint CLI (not the removed `next lint`) |
 | `pnpm typecheck` | TypeScript type checking |
+| `pnpm test` | Vitest suite |
+| `pnpm check:all` | Drift gates + lint + typecheck |
 | `pnpm format` | Prettier formatting |
 | `pnpm prisma:generate` | Generate Prisma client |
 | `pnpm prisma:migrate` | Run database migrations |
 
-> **Note:** `pnpm lint` currently points at `next lint`, which Next.js 16 removed.
-> Moving lint to the ESLint CLI is tracked in Phase 7. Use `pnpm typecheck` as the
-> current green gate.
+> **Gates:** `pnpm check:all` runs docs-sync, legacy-names, env-sync, boundaries, and the
+> OpenAPI-to-routes check, then lint and typecheck. CI runs it on every push.

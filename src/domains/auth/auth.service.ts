@@ -2,6 +2,7 @@ import { prisma } from "@/core/db/prisma";
 import { ApiError } from "@/lib/errors";
 import { AuthSdk, createServerSgClient, unwrap } from "@/lib/sg";
 import type { DbClient } from "@/core/flows/flow-context";
+import { presentPrivateUser } from "../users/users.presenter";
 import type { RegisterInput, LoginInput } from "./auth.dto";
 
 export const authService = {
@@ -38,19 +39,8 @@ export const authService = {
   async getProfile(db: DbClient = prisma, userId: string) {
     const user = await db.user.findUnique({ where: { id: userId } });
     if (!user) throw ApiError.notFound("User not found");
-    return {
-      id:          user.id,
-      identityId:  user.identityId,
-      username:    user.username,
-      displayName: user.displayName,
-      avatarUrl:   user.avatarUrl,
-      role:        user.role,
-      email:       null, // Populated from Sg identity
-      identity:    null, // Populated from Sg
-      onboardingStep: user.onboardingStep,
-      preferences:   user.preferences,
-      createdAt:     user.createdAt.toISOString(),
-      updatedAt:     user.updatedAt.toISOString(),
-    };
+    // The documented contract is PrivateUser - the hand-built literal this
+    // replaced omitted `bio` and `archetype`, which the client hook declares.
+    return presentPrivateUser(user);
   },
 };

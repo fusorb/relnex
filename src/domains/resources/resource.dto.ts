@@ -20,10 +20,6 @@ export const CreateResourceDto = z.object({
 
 export const UpdateResourceDto = CreateResourceDto.partial();
 
-export const PublishResourceDto = z.object({
-  publishedContentJson: z.record(z.string(), z.any()).optional(),
-});
-
 export const ConnectResourcesDto = z.object({
   targetId: z.string(),
   type:     z.enum(["RELATED","REFERENCES","DEPENDS_ON","PREREQUISITE","NEXT","PREVIOUS"]),
@@ -42,13 +38,10 @@ export const ListResourcesDto = z.object({
 
 export type CreateResourceInput  = z.infer<typeof CreateResourceDto>;
 export type UpdateResourceInput  = z.infer<typeof UpdateResourceDto>;
-export type ConnectResourcesInput = z.infer<typeof ConnectResourcesDto>;
 export type ListResourcesInput   = z.infer<typeof ListResourcesDto>;
 
-// Aliases for route compatibility
+// Alias for route compatibility
 export const listResourcesSchema = ListResourcesDto;
-export const createResourceSchema = CreateResourceDto;
-export const updateResourceSchema = UpdateResourceDto;
 
 // Presenters
 export function toSafeResourceDTO(resource: {

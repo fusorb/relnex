@@ -67,26 +67,3 @@ export function presentPrivateUser(user: User): PrivateUser {
     updatedAt: user.updatedAt.toISOString(),
   };
 }
-
-// ── Paginated list ──────────────────────────────────────────────────────
-
-export interface UserListResponse {
-  items: PublicUser[];
-  total: number;
-  page: number;
-  limit: number;
-}
-
-export function presentUserList(
-  users: User[],
-  total: number,
-  page: number,
-  limit: number
-): UserListResponse {
-  return {
-    items: users.map(presentPublicUser),
-    total,
-    page,
-    limit,
-  };
-}

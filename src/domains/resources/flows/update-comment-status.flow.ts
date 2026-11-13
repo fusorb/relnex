@@ -8,7 +8,7 @@ const Input = z.object({
   status:    z.enum(["ACTIVE","HIDDEN","DELETED","ARCHIVED","SPAM"]),
 });
 
-export const updateCommentStatusFlow: Flow<z.infer<typeof Input>> = {
+export const updateCommentStatusFlow: Flow<z.infer<typeof Input>, { comment: unknown }> = {
   name:        "resource:update-comment-status",
   inputSchema: Input,
 

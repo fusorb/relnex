@@ -12,10 +12,10 @@ interface PresignResponse {
   fileKey: string;
 }
 
-export const ACCEPTED_UPLOAD_TYPES =
+const ACCEPTED_UPLOAD_TYPES =
   "image/jpeg,image/png,image/webp,image/gif,application/pdf,video/mp4,audio/mpeg,text/plain";
 
-export async function uploadFile(file: File): Promise<string> {
+async function uploadFile(file: File): Promise<string> {
   const res = await apiClient<{ success: boolean; data: PresignResponse }>("/api/uploads/presign", {
     method: "POST",
     bodyData: { filename: file.name, contentType: file.type, sizeInBytes: file.size },

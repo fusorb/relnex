@@ -4,7 +4,7 @@ Source of truth: docs/relnex-roadmap.md
 
 ================================================================================
 STATUS: Phases 0-5 and 7 complete; frontend rebuild Phases A-E done.
-Repo builds clean; Vitest suite green (89 tests). Remaining: rebuild Phases F-G.
+Repo builds clean; Vitest suite green (92 tests). Remaining: rebuild Phases F-G.
 ================================================================================
 
 PHASE 0 - DOCUMENTATION ........................................ [x] DONE
@@ -104,6 +104,10 @@ VERIFICATION CHECKLIST (current)
       private resources, a dead /profile prefix, a lying RelatedResource type, the
       unused useUpdateCollection (now an Edit dialog), and unpaged collections/tags
       lists
+  [x] Dead-code sweep (EP 23): removed genuinely obsolete duplicates; RESTORED and
+      wired what was only unwired (comment moderation -> PATCH /api/comments/[id];
+      presentPrivateUser -> /api/auth/me now returns bio/archetype); fixed the
+      collection re-add 500 (upsert); openapi gate now checks methods too
   [x] Phase E (EP 20): collections + tags + search console surfaces; ONE paginated
       envelope ({ items, total, page, limit }) on every list endpoint; unified
       search now honours ?type=; collection reads respect visibility (404)

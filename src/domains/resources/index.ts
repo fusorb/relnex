@@ -2,18 +2,14 @@
 export {
   CreateResourceDto,
   UpdateResourceDto,
-  PublishResourceDto,
   ConnectResourcesDto,
   ListResourcesDto,
-  createResourceSchema,
-  updateResourceSchema,
   listResourcesSchema,
   toSafeResourceDTO,
 } from "./resource.dto";
 export type {
   CreateResourceInput,
   UpdateResourceInput,
-  ConnectResourcesInput,
   ListResourcesInput,
 } from "./resource.dto";
 
@@ -37,9 +33,9 @@ export { connectResourcesFlow } from "./flows/connect-resources.flow";
 export { disconnectResourcesFlow } from "./flows/disconnect-resources.flow";
 export { saveResourceFlow } from "./flows/save-resource.flow";
 export { unsaveResourceFlow } from "./flows/unsave-resource.flow";
-export { listVersionsFlow } from "./flows/list-versions.flow";
 export { getChildrenFlow } from "./flows/get-children.flow";
 export { createVersionFlow } from "./flows/create-version.flow";
 export { trackUsageFlow } from "./flows/track-usage.flow";
-export { updateCommentStatusFlow } from "./flows/update-comment-status.flow";
 export { addCommentFlow } from "./flows/add-comment.flow";
+// Comment moderation. Live via PATCH /api/comments/[commentId].
+export { updateCommentStatusFlow } from "./flows/update-comment-status.flow";

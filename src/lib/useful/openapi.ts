@@ -783,32 +783,21 @@ export const openApiSpec = {
       get: {
         summary: "List resources",
         description:
-          "Returns resources filtered by author, type, status, search text, pagination, and tenant context.",
+          "Lists the resources the caller may see - their own in any state, plus everyone's published non-private ones. Standard paginated envelope.",
         tags: ["Resources"],
         parameters: [
-          { name: "authorId", in: "query", schema: { type: "string" } },
           { name: "type", in: "query", schema: { type: "string" } },
           { name: "status", in: "query", schema: { type: "string" } },
-          { name: "search", in: "query", schema: { type: "string" } },
+          { name: "visibility", in: "query", schema: { type: "string" } },
+          { name: "authorId", in: "query", schema: { type: "string" } },
+          { name: "page", in: "query", schema: { type: "number" } },
           { name: "limit", in: "query", schema: { type: "number" } },
-          { name: "skip", in: "query", schema: { type: "number" } },
         ],
         responses: {
           200: {
             description: "Resources fetched successfully",
             content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    success: { type: "boolean" },
-                    data: {
-                      type: "array",
-                      items: resourceSchema,
-                    },
-                  },
-                },
-              },
+              "application/json": { schema: envelope(paginated(resourceSchema)) },
             },
           },
         },
@@ -1081,19 +1070,7 @@ export const openApiSpec = {
           200: {
             description: "Child resources fetched successfully",
             content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    success: { type: "boolean" },
-                    count: { type: "number" },
-                    data: {
-                      type: "array",
-                      items: resourceSchema,
-                    },
-                  },
-                },
-              },
+              "application/json": { schema: envelope(paginated(resourceSchema)) },
             },
           },
         },
@@ -1213,58 +1190,6 @@ export const openApiSpec = {
       },
     },
     "/api/resources/{resourceId}/relations": {
-      get: {
-        summary: "Fetch resource relations",
-        description: "Returns outgoing relation edges for a resource.",
-        tags: ["Resources"],
-        parameters: [
-          {
-            name: "resourceId",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-        ],
-        responses: {
-          200: {
-            description: "Relations fetched successfully",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    success: { type: "boolean" },
-                    count: { type: "number" },
-                    data: {
-                      type: "array",
-                      items: {
-                        type: "object",
-                        properties: {
-                          id: { type: "string" },
-                          type: { type: "string" },
-                          fromId: { type: "string" },
-                          toId: { type: "string" },
-                          metadata: { type: ["object", "null"] },
-                          createdAt: { type: "string", format: "date-time" },
-                          targetNode: {
-                            type: "object",
-                            properties: {
-                              id: { type: "string" },
-                              title: { type: ["string", "null"] },
-                              type: { type: "string" },
-                              status: { type: "string" },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
       post: {
         summary: "Create a resource relation",
         description:
@@ -1741,6 +1666,43 @@ export const openApiSpec = {
           },
         },
       },
+      patch: {
+        summary: "Update a collection",
+        description:
+          "Updates the title, description, or visibility of a collection owned by the caller.",
+        tags: ["Collections"],
+        parameters: [
+          {
+            name: "collectionId",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  description: { type: ["string", "null"] },
+                  visibility: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: "Collection updated successfully",
+            content: {
+              "application/json": { schema: envelope(collectionSchema) },
+            },
+          },
+        },
+      },
       delete: {
         summary: "Delete a collection",
         description: "Soft-deletes a collection owned by the current user.",
@@ -1904,9 +1866,50 @@ export const openApiSpec = {
 
     // comments
     "/api/comments/{commentId}": {
+      get: {
+        summary: "Fetch a comment",
+        description: "Returns a single comment by id.",
+        tags: ["Comments"],
+        parameters: [
+          { name: "commentId", in: "path", required: true, schema: { type: "string" } },
+        ],
+        responses: {
+          200: {
+            description: "Comment fetched successfully",
+            content: { "application/json": { schema: envelope(commentSchema) } },
+          },
+        },
+      },
+      post: {
+        summary: "Reply to a comment",
+        description: "Creates a reply beneath this comment.",
+        tags: ["Comments"],
+        parameters: [
+          { name: "commentId", in: "path", required: true, schema: { type: "string" } },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["content"],
+                properties: { content: { type: "string" } },
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: "Reply created successfully",
+            content: { "application/json": { schema: envelope(commentSchema) } },
+          },
+        },
+      },
       patch: {
-        summary: "Update a comment",
-        description: "Updates comment text or status.",
+        summary: "Moderate a comment",
+        description:
+          "Sets a comment's status (author or admin only). DELETED also soft-deletes it.",
         tags: ["Comments"],
         parameters: [
           {
@@ -1922,9 +1925,12 @@ export const openApiSpec = {
             "application/json": {
               schema: {
                 type: "object",
+                required: ["status"],
                 properties: {
-                  content: { type: "string" },
-                  status: { type: "string" },
+                  status: {
+                    type: "string",
+                    enum: ["ACTIVE", "HIDDEN", "DELETED", "ARCHIVED", "SPAM"],
+                  },
                 },
               },
             },
@@ -1940,35 +1946,6 @@ export const openApiSpec = {
                   properties: {
                     success: { type: "boolean" },
                     data: commentSchema,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      delete: {
-        summary: "Delete a comment",
-        description: "Marks a comment as deleted.",
-        tags: ["Comments"],
-        parameters: [
-          {
-            name: "commentId",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-        ],
-        responses: {
-          200: {
-            description: "Comment deleted successfully",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    success: { type: "boolean" },
-                    message: { type: "string" },
                   },
                 },
               },
@@ -2004,50 +1981,6 @@ export const openApiSpec = {
                       type: "array",
                       items: commentSchema,
                     },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      post: {
-        summary: "Create a reply",
-        description: "Creates a direct reply beneath a comment.",
-        tags: ["Comments"],
-        parameters: [
-          {
-            name: "commentId",
-            in: "path",
-            required: true,
-            schema: { type: "string" },
-          },
-        ],
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                required: ["content"],
-                properties: {
-                  content: { type: "string" },
-                },
-              },
-            },
-          },
-        },
-        responses: {
-          201: {
-            description: "Reply created successfully",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    success: { type: "boolean" },
-                    message: { type: "string" },
-                    data: commentSchema,
                   },
                 },
               },

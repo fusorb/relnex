@@ -21,8 +21,7 @@ export { canViewCollection, visibleCollectionWhere } from "./collection.visibili
 export type { CollectionVisibilitySubject } from "./collection.visibility";
 
 // ── Flows ──────────────────────────────────────────────────────────────
-// Note: createCollectionFlow is handled directly in the route via CollectionService
+// Membership and creation are handled directly in the routes via
+// CollectionService; only the update/delete lifecycles are flows.
 export { updateCollectionFlow } from "./flows/update-collection.flow";
 export { deleteCollectionFlow } from "./flows/delete-collection.flow";
-export { addResourceToCollectionFlow } from "./flows/add-resource-to-collection.flow";
-export { removeResourceFromCollectionFlow } from "./flows/remove-resource-from-collection.flow";
