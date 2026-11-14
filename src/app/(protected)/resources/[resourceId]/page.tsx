@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { PageHeader } from "@fusorb/facet-layout";
@@ -24,6 +24,9 @@ import {
   type RelationEdge,
 } from "@/hooks/use-resource";
 import { requiresOnboarding, useMe } from "@/hooks/use-me";
+import { useIsResourceSaved, useToggleSaveResource } from "@/hooks/use-saved";
+import { useResourceReactions, useToggleLike } from "@/hooks/use-reactions";
+import { ResourceComments } from "@/components/resources/resource-comments";
 import { ResourceConnections } from "@/components/resources/resource-connections";
 import { apiClient } from "@/lib/useful/api-client";
 
@@ -42,6 +45,11 @@ export default function ResourceDetailPage() {
   const publish = usePublishResource(id);
   const archive = useArchiveResource(id);
   const unarchive = useUnarchiveResource(id);
+  const viewerId = !requiresOnboarding(me) ? me?.id ?? null : null;
+  const { data: savedStatus } = useIsResourceSaved(id, Boolean(viewerId));
+  const toggleSave = useToggleSaveResource(id, Boolean(savedStatus));
+  const { data: reactions } = useResourceReactions(id, viewerId);
+  const toggleLike = useToggleLike(id, Boolean(reactions?.reacted));
 
   useEffect(() => {
     if (!id || !resource) return;
@@ -170,7 +178,34 @@ export default function ResourceDetailPage() {
         )}
         <span>·</span>
         <span>{resource.metrics?.views ?? 0} views</span>
+        <span>·</span>
+        <span>{resource.metrics?.likes ?? 0} likes</span>
+        <span>·</span>
+        <span>{resource.metrics?.bookmarks ?? 0} saves</span>
       </div>
+
+      {viewerId && (
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            size="sm"
+            variant={reactions?.reacted ? "default" : "outline"}
+            onClick={() => toggleLike.mutate()}
+            disabled={toggleLike.isPending}
+          >
+            <Icon name="heart" className="size-4" aria-hidden />
+            {reactions?.reacted ? "Liked" : "Like"}
+          </Button>
+          <Button
+            size="sm"
+            variant={savedStatus ? "default" : "outline"}
+            onClick={() => toggleSave.mutate()}
+            disabled={toggleSave.isPending}
+          >
+            <Icon name="bookmark" className="size-4" aria-hidden />
+            {savedStatus ? "Saved" : "Save"}
+          </Button>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
@@ -203,6 +238,8 @@ export default function ResourceDetailPage() {
             outgoing={outgoing}
             incoming={incoming}
           />
+
+          <ResourceComments resourceId={resource.id} viewerId={viewerId} isOwner={isOwner} />
         </div>
 
         <div className="space-y-6">

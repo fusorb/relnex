@@ -21,6 +21,7 @@ export const consoleLayoutConfig: LayoutConfig = {
       items: [
         { href: "/dashboard", label: "Overview", icon: <Icon name="layout-dashboard" /> },
         { href: "/resources", label: "Resources", icon: <Icon name="library" /> },
+        { href: "/resources/saved", label: "Saved", icon: <Icon name="bookmark" /> },
         { href: "/collections", label: "Collections", icon: <Icon name="layers" /> },
         { href: "/search", label: "Search", icon: <Icon name="search" /> },
       ],

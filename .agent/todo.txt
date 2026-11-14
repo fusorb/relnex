@@ -117,30 +117,51 @@ VERIFICATION CHECKLIST (current)
 
 ================================================================================
 OPEN CAPABILITY GAPS (audit - EP 24). Exposed in the API, unreachable in the product.
-================================================================================
-  [x] ENGAGEMENTS ROUTED (EP 25): reactions (GET/POST/DELETE on
-      /resources/{id}/reactions) and follows (GET/POST/DELETE on
-      /users/{username}/follow, plus followers/following lists) are live; the
-      reaction flow now asserts resource visibility, and reactions keep the likes
-      counter honest (adjustMetric +/-1, counters never go negative)
-  [x] TAGS MANAGED (EP 26): PATCH /api/tags/{id} (rename, slug re-derived, 409 on
-      clash), DELETE /api/tags/{id} (links cascade), POST /api/tags/{id}/merge
-      (moves links, skips duplicates, deletes the source)
-  [ ] Version history: no UI, and no rollback/restore to a snapshot (create only)
-  [x] Archive/unarchive: owner-only POST + DELETE /resources/{id}/archive (DELETE
-      restores ARCHIVED -> DRAFT) with UI on the resource detail page (EP 28)
-  [ ] Comments: no UI (read/post/reply/moderation endpoints are all live)
-  [ ] Saved/bookmarks: no UI (POST/DELETE /resources/{id}/save, GET /resources/saved)
-  [ ] Bulk actions: POST /resources/bulk has no UI
-  [ ] Collection reorder: POST /collections/{id}/reorder has no UI (Phase E listed it)
-  [~] Usage telemetry: POST /resources/{id}/usage is now called (VIEW) from the
-      resource detail page (fire-and-forget); broader UI event coverage may expand
-  [ ] Public profiles: /users/{username}/{analytics,saved,graph} and the user
-      directory have no console page (Phase F)
+===============================================================================
+Priority plan (2026-11-14): focus Phase F on wiring existing contracts first.
+
+  NOW - Phase F Slice 1 (high value, low design/API risk)
+  [ ] Comments UI: read + create (root/reply) + owner/moderation status on resource
+      detail (APIs: /api/resources/{id}/comments, /api/comments/{id}, /replies)
+  [ ] Saved/bookmarks UI: save/unsave on resource detail + saved list surface
+      (APIs: POST|DELETE /api/resources/{id}/save, GET /api/resources/saved,
+      GET /api/users/{username}/saved) — confirm toggle path/shape vs routes/OpenAPI
+  [ ] Reactions UI: LIKE toggle on resource detail (GET/POST/DELETE
+      /api/resources/{id}/reactions) + counts/state
+
+  NOW - Phase F Slice 2 (management UX, moderate complexity)
+  [ ] Bulk actions UI on resources list (POST /api/resources/bulk)
+  [ ] Collection reorder UI (POST /api/collections/{id}/reorder)
+  [ ] Tag management UI: rename/delete/merge on tags page (APIs live per EP 26)
+
+  NOW - Phase F Slice 3 (public/identity surfaces, design decisions)
+  [ ] Public profile pages (/(public)/users/[username]/*) wiring existing
+      /api/users/{username}, resources/collections/graph/analytics/follow*; respect
+      visibility/403/404 and owner-only saved views
+
+  ENV-DEPENDENT (parallel, when env/access ready)
+  [ ] JWKS activation & e2e: set SG_JWKS_URL, validate login -> cookie ->
+      GET /api/auth/me (RS256 + kid, access token), confirm fallback; update
+      docs/environment.md only after live proof. Keep HS256/pinned-key fallback until
+      verified. (SovGrant access-token key/kid reported 2026-11-11)
+
+  DEFER (design/product-heavy or intentional)
+  [ ] Version history UX beyond view: rollback/restore to snapshot (needs product
+      rules + restore flow/route/ownership semantics; create/list only today)
+  [~] Usage telemetry: POST /resources/{id}/usage called (VIEW) from resource detail
+      (fire-and-forget); defer broader event taxonomy/UI
+  [ ] Phase G polish: api-docs re-skin, broad a11y, wider empty/loading/error states
+  [ ] Webhook refactor (intentional): keep /api/webhooks/sg as-is unless redesigned
+      to preserve raw-body HMAC + idempotency semantics with tests
+
+  DONE / context
+  [x] ENGAGEMENTS ROUTED (EP 25): reactions & follows endpoints live; visibility
+      asserted; likes counter kept honest (adjustMetric +/-1)
+  [x] TAGS MANAGED (EP 26): PATCH /api/tags/{id} (rename), DELETE, POST merge
+  [x] Archive/unarchive: owner-only POST + DELETE /resources/{id}/archive (EP 28)
+
 Note: /api/search/{resources,collections,users,tags} are exposed but unused by the
 console (the unified /api/search supersedes them) - not a gap, just extra surface.
-================================================================================
-  [x] Extended proxy coverage for all protected prefixes
-  [ ] JWKS activation: SovGrant reports resolved (2026-11-11, access-token RSA key
-      + kid published) - see sovgrant/.agent/todo.txt. Verify, set SG_JWKS_URL, and
-      validate end-to-end; interim anchors: SG_JWT_PUBLIC_KEY / SG_JWT_SECRET.
+===============================================================================
+  [x] Extended proxy coverage for all protected prefixes=
+(legacy items consolidated into prioritized plan above)
