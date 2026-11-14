@@ -23,6 +23,7 @@ export const POST = handleApiRoute(
       { resourceId: params.resourceId, ...body },
       { userId, identityId: null, tenantId },
     );
-    return NextResponse.json({ success: true }, { status: 202 });
+    // 202 Accepted: fire-and-forget telemetry; clients should not block on it.
+    return NextResponse.json({ success: true, message: "Usage event recorded." }, { status: 202 });
   },
 );

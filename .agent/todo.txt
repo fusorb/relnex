@@ -127,19 +127,20 @@ OPEN CAPABILITY GAPS (audit - EP 24). Exposed in the API, unreachable in the pro
       clash), DELETE /api/tags/{id} (links cascade), POST /api/tags/{id}/merge
       (moves links, skips duplicates, deletes the source)
   [ ] Version history: no UI, and no rollback/restore to a snapshot (create only)
-  [ ] Archive is one-way: POST /resources/{id}/archive, no unarchive
+  [x] Archive/unarchive: owner-only POST + DELETE /resources/{id}/archive (DELETE
+      restores ARCHIVED -> DRAFT) with UI on the resource detail page (EP 28)
   [ ] Comments: no UI (read/post/reply/moderation endpoints are all live)
   [ ] Saved/bookmarks: no UI (POST/DELETE /resources/{id}/save, GET /resources/saved)
   [ ] Bulk actions: POST /resources/bulk has no UI
   [ ] Collection reorder: POST /collections/{id}/reorder has no UI (Phase E listed it)
-  [ ] Usage telemetry is never called by the UI, so view counts only move on
-      save/unsave - POST /resources/{id}/usage has no client
+  [~] Usage telemetry: POST /resources/{id}/usage is now called (VIEW) from the
+      resource detail page (fire-and-forget); broader UI event coverage may expand
   [ ] Public profiles: /users/{username}/{analytics,saved,graph} and the user
       directory have no console page (Phase F)
 Note: /api/search/{resources,collections,users,tags} are exposed but unused by the
 console (the unified /api/search supersedes them) - not a gap, just extra surface.
 ================================================================================
   [x] Extended proxy coverage for all protected prefixes
-  [ ] JWKS activation: pending SovGrant publishing the access-token signing key
-      (+ kid) in its JWKS - see sovgrant/.agent/todo.txt. Relnex is ready: set
-      SG_JWKS_URL. Interim asymmetric anchor: SG_JWT_PUBLIC_KEY (RS256 pinned key).
+  [ ] JWKS activation: SovGrant reports resolved (2026-11-11, access-token RSA key
+      + kid published) - see sovgrant/.agent/todo.txt. Verify, set SG_JWKS_URL, and
+      validate end-to-end; interim anchors: SG_JWT_PUBLIC_KEY / SG_JWT_SECRET.

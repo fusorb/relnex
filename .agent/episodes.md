@@ -873,6 +873,10 @@ What changed (safe fixes, no feature work):
   - Dependency hygiene: removed unused deps (next-themes, framer-motion, radix-ui,
     canvas-confetti, react-day-picker); lockfile/workspace updated via facet up + pnpm i.
 
+Validations (post-install): pnpm check:all pass (docs, legacy, env, boundaries,
+openapi, lint, typecheck); pnpm test 105/105 (19 files); pnpm build succeeded
+(36 static pages, 47 routes, proxy). Note: next/font/google requires network.
+
 Left intentionally (needs care / separate work):
   - api/webhooks/sg/route.ts is still the only route not wrapped in handleApiRoute
     and contains inline Prisma logic (raw-body HMAC + idempotency). Refactor only with
@@ -883,6 +887,41 @@ Left intentionally (needs care / separate work):
   - facet-sdk 4.0.1 bump: validated green (no Relnex-side SDK API changes required);
     nothing to report to ../facet as needed updates.
 
-Validations (post-install): pnpm check:all pass (docs, legacy, env, boundaries,
-openapi, lint, typecheck); pnpm test 105/105 (19 files); pnpm build succeeded
-(36 static pages, 47 routes, proxy). Note: next/font/google requires network.
+State: committed as d5d299d (deps/prune) and 64b1779 (audit fixes + doc/agent sync).
+
+================================================================================
+EP 28 - SAFE CAPABILITY UPGRADES WHILE AWAITING SG (2026-11-13)
+================================================================================
+
+Goal:
+  Close low-risk capability gaps and harden contracts without drifting from the
+  canonical goal (connected knowledge/resources) while SovGrant-side JWKS work lands.
+
+What changed:
+  - Unarchive (was one-way): `ResourceService.unarchiveResource` (owner-only,
+    ARCHIVED -> DRAFT so it can be reviewed before republishing), exposed as
+    `DELETE /api/resources/[resourceId]/archive` alongside the existing POST archive.
+  - UI: resource detail page now shows Archive/Unarchive for owners (publish/edit
+    owner-gated too), and reflects ARCHIVED state; hooks `useArchiveResource` /
+    `useUnarchiveResource` added.
+  - Usage telemetry wired: resource detail posts `POST /api/resources/[id]/usage`
+    (event VIEW) fire-and-forget on load (202 Accepted semantics) so view counts can
+    move via the telemetry path, not only save/unsave.
+  - track-usage flow fixed to allow anonymous actors (`actorId: ctx.userId ?? null`,
+    metadata passthrough) matching the unauthenticated-friendly usage route.
+  - OpenAPI updated: archive now documents POST+DELETE (200) and usage documents 202.
+  - Docs/trackers noted: unarchive path in architecture; todo records addressed gaps,
+    JWKS-verification steps (SG reports resolved 2026-11-11 with access-token RSA key +
+    `kid` published at jwks_uri - verify here, set SG_JWKS_URL, validate live
+    login->cookie->/api/auth/me), and a safe/future-proof webhook boundary pattern.
+
+Not changed (intentional):
+  - Webhook (api/webhooks/sg) left as-is; requires a dedicated raw-body/HMAC wrapper
+    or formal exception - not forced into handleApiRoute.
+  - Version rollback/restore, comments/saved/profiles/bulk/reorder UI, and other
+    Phase F/G work remain open.
+
+Lesson:
+  Prefer additive, owner-checked state transitions and fire-and-forget telemetry that
+  cannot break reads; document the contract (OpenAPI) in the same change. Auth anchor
+  activation (JWKS) is config+verification once SG publishes the right key.

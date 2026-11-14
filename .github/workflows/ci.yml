@@ -27,10 +27,8 @@ jobs:
       STORAGE_REGION: auto
     steps:
       - uses: actions/checkout@v4
-      # pnpm 10+ (the workspace file uses pnpm 10+ settings keys).
+      # pnpm version is sourced from package.json#packageManager (single source of truth).
       - uses: pnpm/action-setup@v4
-        with:
-          version: 12.6.0
       - uses: actions/setup-node@v4
         with:
           node-version: 20

@@ -1130,7 +1130,7 @@ export const openApiSpec = {
     "/api/resources/{resourceId}/archive": {
       post: {
         summary: "Archive a resource",
-        description: "Marks a resource as archived.",
+        description: "Marks a resource as archived. Owner only.",
         tags: ["Resources"],
         parameters: [
           {
@@ -1143,6 +1143,37 @@ export const openApiSpec = {
         responses: {
           200: {
             description: "Resource archived successfully",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean" },
+                    message: { type: "string" },
+                    data: resourceSchema,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      delete: {
+        summary: "Unarchive a resource",
+        description:
+          "Restores an archived resource to DRAFT so the owner can review before republishing. Owner only.",
+        tags: ["Resources"],
+        parameters: [
+          {
+            name: "resourceId",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
+        responses: {
+          200: {
+            description: "Resource unarchived successfully",
             content: {
               "application/json": {
                 schema: {
@@ -1554,8 +1585,8 @@ export const openApiSpec = {
           },
         },
         responses: {
-          201: {
-            description: "Usage event recorded successfully",
+          202: {
+            description: "Usage event accepted for recording (fire-and-forget)",
             content: {
               "application/json": {
                 schema: {

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@12.6.0",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -33,7 +34,7 @@
     "@fusorb/facet-auth": "^2.1.2",
     "@fusorb/facet-components": "^3.2.2",
     "@fusorb/facet-layout": "^1.7.2",
-    "@fusorb/facet-sdk": "4.0.1",
+    "@fusorb/facet-sdk": "4.1.0",
     "@fusorb/facet-store": "^1.0.6",
     "@fusorb/facet-tokens": "^1.5.1",
     "@hookform/resolvers": "^5.2.2",

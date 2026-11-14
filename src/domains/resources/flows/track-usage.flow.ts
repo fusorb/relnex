@@ -28,10 +28,10 @@ export const trackUsageFlow: Flow<z.infer<typeof Input>> = {
     await ctx.db.resourceUsage.create({
       data: {
         resourceId: input.resourceId,
-        actorId:    ctx.userId!,
+        actorId:    ctx.userId ?? null,
         event:      input.event,
         sessionId:  input.sessionId,
-        metadata:   input.metadata,
+        metadata:   input.metadata ?? undefined,
         tenantId:   resolveTenantId(ctx.tenantId),
       },
     });

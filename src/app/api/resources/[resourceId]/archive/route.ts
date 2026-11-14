@@ -9,13 +9,14 @@ interface RouteParams {
   };
 }
 
+const resourceService = new ResourceService();
+
 export const POST = handleApiRoute(
   async (req: NextRequest, { params }: RouteParams) => {
     const session = await requireOnboarded(req);
     const tenantId = req.headers.get("x-tenant-id") ?? null;
     const { resourceId } = params;
 
-    const resourceService = new ResourceService();
     const archivedResource = await resourceService.archiveResource(
       resourceId,
       session.userId,
@@ -26,6 +27,26 @@ export const POST = handleApiRoute(
       success: true,
       message: "Resource archived.",
       data: toSafeResourceDTO(archivedResource),
+    });
+  },
+);
+
+export const DELETE = handleApiRoute(
+  async (req: NextRequest, { params }: RouteParams) => {
+    const session = await requireOnboarded(req);
+    const tenantId = req.headers.get("x-tenant-id") ?? null;
+    const { resourceId } = params;
+
+    const unarchivedResource = await resourceService.unarchiveResource(
+      resourceId,
+      session.userId,
+      tenantId,
+    );
+
+    return NextResponse.json({
+      success: true,
+      message: "Resource unarchived.",
+      data: toSafeResourceDTO(unarchivedResource),
     });
   },
 );

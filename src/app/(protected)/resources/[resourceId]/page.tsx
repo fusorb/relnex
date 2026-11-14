@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { PageHeader } from "@fusorb/facet-layout";
@@ -15,13 +16,16 @@ import {
   Skeleton,
 } from "@fusorb/facet-components";
 import {
+  useArchiveResource,
   usePublishResource,
   useResource,
   useResourceChildren,
+  useUnarchiveResource,
   type RelationEdge,
 } from "@/hooks/use-resource";
 import { requiresOnboarding, useMe } from "@/hooks/use-me";
 import { ResourceConnections } from "@/components/resources/resource-connections";
+import { apiClient } from "@/lib/useful/api-client";
 
 function formatDate(iso: string | null): string {
   if (!iso) return "not yet";
@@ -36,6 +40,19 @@ export default function ResourceDetailPage() {
   const { data: children } = useResourceChildren(id);
   const { data: me } = useMe();
   const publish = usePublishResource(id);
+  const archive = useArchiveResource(id);
+  const unarchive = useUnarchiveResource(id);
+
+  useEffect(() => {
+    if (!id || !resource) return;
+    // Fire-and-forget view telemetry (endpoint is 202 Accepted).
+    void apiClient(`/api/resources/${id}/usage`, {
+      method: "POST",
+      bodyData: { event: "VIEW" },
+    }).catch(() => {
+      // Telemetry must never block or break the read experience.
+    });
+  }, [id, resource]);
 
   if (isLoading) {
     return (
@@ -64,6 +81,7 @@ export default function ResourceDetailPage() {
   }
 
   const isDraft = resource.status === "DRAFT";
+  const isArchived = resource.status === "ARCHIVED";
   const isOwner = !requiresOnboarding(me) && me?.id === resource.author.id;
 
   const outgoing: RelationEdge[] = resource.outgoingRelations.map((r) => ({
@@ -84,7 +102,7 @@ export default function ResourceDetailPage() {
         description={resource.excerpt ?? undefined}
         actions={
           <div className="flex items-center gap-2">
-            {isDraft && (
+            {isOwner && isDraft && (
               <Button
                 size="sm"
                 onClick={() => publish.mutate()}
@@ -94,18 +112,50 @@ export default function ResourceDetailPage() {
                 {publish.isPending ? "Publishing..." : "Publish"}
               </Button>
             )}
-            <Link href={`/resources/${resource.id}/edit`}>
-              <Button variant="outline" size="sm">
-                <Icon name="pencil" className="size-4" aria-hidden /> Edit
+            {isOwner && !isArchived && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => archive.mutate()}
+                disabled={archive.isPending}
+              >
+                <Icon name="archive" className="size-4" aria-hidden />
+                {archive.isPending ? "Archiving..." : "Archive"}
               </Button>
-            </Link>
+            )}
+            {isOwner && isArchived && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => unarchive.mutate()}
+                disabled={unarchive.isPending}
+              >
+                <Icon name="archive-restore" className="size-4" aria-hidden />
+                {unarchive.isPending ? "Restoring..." : "Unarchive"}
+              </Button>
+            )}
+            {isOwner && (
+              <Link href={`/resources/${resource.id}/edit`}>
+                <Button variant="outline" size="sm">
+                  <Icon name="pencil" className="size-4" aria-hidden /> Edit
+                </Button>
+              </Link>
+            )}
           </div>
         }
       />
 
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
         <Badge variant="secondary">{resource.type}</Badge>
-        <Badge variant={resource.status === "PUBLISHED" ? "success" : "outline"}>
+        <Badge
+          variant={
+            resource.status === "PUBLISHED"
+              ? "success"
+              : resource.status === "ARCHIVED"
+                ? "destructive"
+                : "outline"
+          }
+        >
           {resource.status}
         </Badge>
         <Badge variant="outline">{resource.visibility}</Badge>

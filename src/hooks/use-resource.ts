@@ -196,6 +196,38 @@ export function usePublishResource(id: string) {
   });
 }
 
+export function useArchiveResource(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (): Promise<unknown> =>
+      (
+        await apiClient<ApiEnvelope<unknown>>(`/api/resources/${id}/archive`, {
+          method: "POST",
+        })
+      ).data,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: resourceDetailKey(id) });
+      queryClient.invalidateQueries({ queryKey: ["resources"] });
+    },
+  });
+}
+
+export function useUnarchiveResource(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (): Promise<unknown> =>
+      (
+        await apiClient<ApiEnvelope<unknown>>(`/api/resources/${id}/archive`, {
+          method: "DELETE",
+        })
+      ).data,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: resourceDetailKey(id) });
+      queryClient.invalidateQueries({ queryKey: ["resources"] });
+    },
+  });
+}
+
 export const RELATION_TYPES = [
   "RELATED",
   "REFERENCES",

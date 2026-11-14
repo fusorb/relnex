@@ -104,8 +104,21 @@ export class ResourceService {
 
   async archiveResource(resourceId: string, userId: string, tenantId?: string | null) {
     const resource = await this.assertOwnership(resourceId, userId, tenantId);
+    if (resource.status === "ARCHIVED") {
+      throw ApiError.badRequest("Resource is already archived");
+    }
     await this.repo.update(resourceId, { status: "ARCHIVED" });
-    return { ...resource, status: "ARCHIVED" as const };
+    return this.assertOwnership(resourceId, userId, tenantId);
+  }
+
+  async unarchiveResource(resourceId: string, userId: string, tenantId?: string | null) {
+    const resource = await this.assertOwnership(resourceId, userId, tenantId);
+    if (resource.status !== "ARCHIVED") {
+      throw ApiError.badRequest("Only archived resources can be unarchived");
+    }
+    // Restore to DRAFT so the owner can review before republishing.
+    await this.repo.update(resourceId, { status: "DRAFT" });
+    return this.assertOwnership(resourceId, userId, tenantId);
   }
 
   async deleteResource(resourceId: string, userId: string, tenantId?: string | null) {
