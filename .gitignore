@@ -52,4 +52,11 @@ next-env.d.ts
 .husky
 .vscode
 
+# Local agent skill installs (keep tracked .agent docs like episodes.md/todo.txt)
+/.agent/skills/
+/.agents/
+/.claude/
+/.gemini/
+/.github/skills/
+
 *.txt
