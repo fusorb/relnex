@@ -6,8 +6,11 @@ import { Badge, Button, EmptyState, Icon, Skeleton } from "@fusorb/facet-compone
 import { requiresOnboarding, useMe } from "@/hooks/use-me";
 import { useSavedResources, type SavedResourceEntry } from "@/hooks/use-saved";
 
-function pickResource(entry: SavedResourceEntry | null | undefined) {
-  return entry?.resource ?? entry;
+type SavedResourceView = NonNullable<SavedResourceEntry["resource"]> & { id: string };
+
+function pickResource(entry: SavedResourceEntry): SavedResourceView | null {
+  const resource = (entry.resource ?? entry) as Partial<SavedResourceView> | undefined;
+  return resource && typeof resource.id === "string" ? (resource as SavedResourceView) : null;
 }
 
 export default function SavedResourcesPage() {
@@ -36,7 +39,10 @@ export default function SavedResourcesPage() {
 
   const items = (data ?? [])
     .map((entry) => ({ entry, resource: pickResource(entry) }))
-    .filter(({ resource }) => resource?.id);
+    .filter(
+      (item): item is { entry: SavedResourceEntry; resource: SavedResourceView } =>
+        item.resource !== null,
+    );
 
   return (
     <div className="space-y-6">
