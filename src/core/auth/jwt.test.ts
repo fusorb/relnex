@@ -14,7 +14,7 @@ function sign(
   claims: Record<string, unknown> = {},
   opts: { issuer?: string; secret?: string; expiresIn?: string | number } = {}
 ) {
-  return new SignJWT(claims)
+  return new SignJWT({ token_use: "access", ...claims })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuer(opts.issuer ?? ISSUER)
     .setSubject("idn_test123")
@@ -57,5 +57,17 @@ describe("verifySgToken", () => {
 
   it("rejects a malformed token", async () => {
     await expect(verifySgToken("not.a.jwt")).rejects.toThrow();
+  });
+
+  it("rejects an ID token presented as a bearer token", async () => {
+    // An ID token is signed with the same key; only token_use: "access" may
+    // be used as a bearer credential.
+    const idToken = await sign({ token_use: "id", aud: "relnex" });
+    await expect(verifySgToken(idToken)).rejects.toThrow(/token type/i);
+  });
+
+  it("rejects a token with no token_use marker", async () => {
+    const unmarked = await sign({ token_use: undefined });
+    await expect(verifySgToken(unmarked)).rejects.toThrow(/token type/i);
   });
 });

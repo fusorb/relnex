@@ -112,7 +112,7 @@ Every domain in `src/domains/<n>/` owns:
 
 - `User.identityId` - permanent bridge to SovGrant Identity.id
 - JWT `sub` claim = SovGrant `Identity.id` - all middleware depends on this
-- `SG_JWT_SECRET` must match between Relnex and SovGrant `.env` files (until the JWKS migration lands)
+- `SG_JWT_SECRET` must match between Relnex and SovGrant `.env` files (dev/e2e only - production verifies via `SG_JWKS_URL`)
 - `requireAuth`/`requireOnboarded` are the ONLY valid guard patterns
 
 ---
@@ -139,14 +139,15 @@ Full decision: [docs/identity-model.md](./docs/identity-model.md).
 
 ## Auth Verification Direction
 
-`verifySgToken` (`src/core/auth/jwt.ts`) supports three trust anchors, resolved in order:
-**JWKS/RS256** (`SG_JWKS_URL`, the target), a **pinned public key** (`SG_JWT_PUBLIC_KEY`, interim),
-then the shared `SG_JWT_SECRET` (HS256) dev/e2e fallback. Algorithms are pinned per anchor.
+`verifySgToken` (`src/core/auth/jwt.ts`) supports two trust anchors, resolved in order:
+**JWKS/RS256** (`SG_JWKS_URL` - the production anchor; SovGrant publishes the access-token
+signing key with its `kid`), then the shared `SG_JWT_SECRET` (HS256) dev/e2e fallback.
+Algorithms are pinned per anchor, and only `token_use: "access"` tokens are accepted (the
+ID token shares the signing key and must never verify as a bearer credential).
 
-**Blocker:** SovGrant's JWKS currently publishes the tenant VC/DID keys, not the RSA
-access-token signing key, and access tokens carry no `kid` (tracked in `sovgrant/.agent/todo.txt`;
-see `docs/identity-model.md`). Until then, use `SG_JWT_PUBLIC_KEY` or the shared secret;
-switching to JWKS is one env var (`SG_JWKS_URL`) with no code change.
+**Resolved (SovGrant, 2026-11-11):** the JWKS now publishes the RSA access-token signing
+key + `kid`, so flipping production to JWKS is one env var with no code change. The
+`SG_JWT_PUBLIC_KEY` pinned-key anchor is retired (removed here 2026-11-13).
 
 ---
 

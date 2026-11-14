@@ -12,7 +12,7 @@ Package manager: **pnpm**. TypeScript strict mode.
 
 ## Current Status (2026-11-10)
 
-Phases 0-5 and 7 complete; the repo builds clean and has a Vitest suite (105 tests).
+Phases 0-5 and 7 complete; the repo builds clean and has a Vitest suite (104 tests).
 The remaining work is the frontend rebuild Phases F-G.
 
 - Phase 0-5 ✅ - docs, core infra, flow unification, auth consolidation, route fix pass, edge middleware
@@ -76,12 +76,12 @@ stay in Relnex. See `docs/identity-model.md`.
 ## Auth Notes
 
 - Token verification goes through one seam: `verifySgToken` (`@/core/auth/jwt`),
-  resolved in order: **JWKS/RS256** (`SG_JWKS_URL`, target), then a **pinned public
-  key** (`SG_JWT_PUBLIC_KEY`, interim), then the shared `SG_JWT_SECRET` (HS256) for
-  local dev / e2e. Algorithms are pinned per anchor.
-- **Blocker before JWKS works end-to-end:** SovGrant's JWKS publishes the tenant
-  VC/DID keys, not the RSA access-token signing key, and access tokens carry no
-  `kid`. Tracked in `sovgrant/.agent/todo.txt`; see `docs/identity-model.md`. Do not
-  assume the shared secret is permanent.
+  resolved in order: **JWKS/RS256** (`SG_JWKS_URL` - the production anchor; SovGrant
+  publishes the access-token signing key with its `kid`), then the shared
+  `SG_JWT_SECRET` (HS256) for local dev / e2e. Algorithms are pinned per anchor.
+  The pinned-key `SG_JWT_PUBLIC_KEY` anchor is retired.
+- Tokens must be **access** tokens: SovGrant stamps `token_use: "access"`, and the
+  seam rejects anything else - the ID token shares the signing key and must never
+  verify as a bearer credential.
 - `src/proxy.ts` (Next 16 rename of `middleware.ts`) forwards `x-tenant-id` /
   `x-identity-id` from the verified JWT and gates protected page prefixes.

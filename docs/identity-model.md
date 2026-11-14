@@ -84,8 +84,10 @@ name), it is kept in sync **one-way via SovGrant webhooks**.
   session. Relnex owns a *session*, not an *identity*. Browser talks to Relnex's
   `/api/auth/*`, which proxy to SovGrant.
 - Token verification: local via `verifySgToken`, resolved in order - **JWKS/RS256**
-  (`SG_JWKS_URL`, the target), then a **pinned public key** (`SG_JWT_PUBLIC_KEY`,
-  the interim), then the `SG_JWT_SECRET` (HS256) dev/e2e fallback. One seam, three anchors.
+  (`SG_JWKS_URL`, the production anchor; SovGrant publishes the RSA access-token
+  signing key with its `kid`), then the `SG_JWT_SECRET` (HS256) dev/e2e fallback.
+  One seam, two anchors. Access tokens are additionally type-discriminated:
+  SovGrant stamps `token_use: "access"` and anything else is rejected.
 - Onboarding: consume SovGrant's onboarding SDK for user-level progress; Relnex keeps
   any product-specific onboarding state.
 - Org/tenant membership: canonical in SovGrant; Relnex keeps local, non-identity roles only.
@@ -95,10 +97,9 @@ name), it is kept in sync **one-way via SovGrant webhooks**.
 - Decide org/tenant membership ownership fully (SovGrant-canonical vs partly per-relying-party).
 - Client registration for third parties: admin-managed vs dynamic client registration.
 - Define the scope registry + consent screen copy, and per-client branding at SovGrant.
-- Register Relnex (and each relying party) as an OIDC client; move `verifySgToken` to JWKS.
-- **SovGrant-side blocker:** its JWKS (`/api/v1/oauth/jwks`) currently publishes the
-  tenant VC/DID signing keys (EC P-256), not the RSA key that signs access tokens
-  (`certs/*.pem`), and access tokens carry no `kid`. JWKS verification cannot succeed
-  until SovGrant publishes the access-token signing key and/or sets a `kid`. Tracked in
-  `sovgrant/.agent/todo.txt`. Until then, Relnex uses the pinned-public-key or
-  shared-secret anchor; switching to JWKS is one env var (`SG_JWKS_URL`) with no code change.
+- Register Relnex (and each relying party) as an OIDC client; `verifySgToken` is JWKS-ready - production flips by setting `SG_JWKS_URL`.
+- **Resolved (SovGrant, 2026-11-11):** `/api/v1/oauth/jwks` now publishes the RSA
+  access-token signing key first, with the RFC 7638 thumbprint as its `kid`, and
+  SovGrant stamps that `kid` on every RS256 token - so `verifySgToken`'s JWKS anchor
+  works end-to-end (`jwks.route.test.ts` on the SovGrant side). Relnex flips to it by
+  setting `SG_JWKS_URL`; the pinned-public-key anchor has been removed.

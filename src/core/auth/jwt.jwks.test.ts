@@ -47,7 +47,7 @@ afterAll(() => {
 });
 
 function sign(key: PrivateKey) {
-  return new SignJWT({ scope: "read" })
+  return new SignJWT({ scope: "read", token_use: "access" })
     .setProtectedHeader({ alg: "RS256", kid: KID })
     .setIssuer(ISSUER)
     .setSubject("idn_test")

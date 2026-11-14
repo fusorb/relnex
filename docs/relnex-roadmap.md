@@ -5,11 +5,11 @@
 > Relnex owns User profile, Resources, Collections, Comments, Tags, and Search.
 
 > **Status (2026-11-13).** Phases 0-5, 7, and frontend rebuild Phases A-E are
-> complete. The repo is green: `typecheck`, `lint`, `test` (105), `build`, and all
+> complete. The repo is green: `typecheck`, `lint`, `test` (104), `build`, and all
 > drift gates pass (validated with `@fusorb/facet-sdk` 4.0.1).
 > Remaining work: rebuild Phases F-G.
-> Auth verification runs through one seam (`verifySgToken`): JWKS/RS256, a pinned
-> public key, or the shared secret (HS256) dev/e2e fallback.
+> Auth verification runs through one seam (`verifySgToken`): JWKS/RS256 (production)
+> or the shared secret (HS256) dev/e2e fallback.
 
 > Counts in this file (models, enums, routes, domains) are machine-verified by `pnpm check:docs`.
 
@@ -30,13 +30,12 @@
 | Providers | ✅ **Complete** | facet `ThemeProvider` → React Query → facet `Toaster`; session via `use-me`/`use-session`. The facet-auth `SgProvider` swap (Model A) is a later slice. |
 | Documentation | ✅ **Present** | CLAUDE.md, AGENTS.md, architecture docs, and episode tracker all migrated to the Relnex/SovGrant/Facet namespace |
 
-> **Auth verification note:** `verifySgToken` supports three trust anchors, in order:
-> **JWKS/RS256** (`SG_JWKS_URL`, the target), a **pinned public key** (`SG_JWT_PUBLIC_KEY`,
-> the interim that works against `sovgrant/certs/public.pem` today), then the shared
-> `SG_JWT_SECRET` (HS256) dev/e2e fallback. The seam is `@/core/auth/jwt`. **Blocker:**
-> SovGrant's JWKS currently publishes the tenant VC/DID keys, not the RSA access-token
-> signing key, and tokens carry no `kid` - tracked in `sovgrant/.agent/todo.txt`; see
-> `docs/identity-model.md`.
+> **Auth verification note:** `verifySgToken` supports two trust anchors, in order:
+> **JWKS/RS256** (`SG_JWKS_URL` - the production anchor; SovGrant publishes the
+> access-token signing key with its `kid`), then the shared `SG_JWT_SECRET` (HS256)
+> dev/e2e fallback. The seam is `@/core/auth/jwt`. The former SovGrant-side blocker
+> (JWKS missing the access-token key, tokens without `kid`) was resolved on
+> 2026-11-11; the pinned-public-key anchor is retired. See `docs/identity-model.md`.
 
 ### Auth Architecture
 

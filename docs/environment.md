@@ -38,28 +38,21 @@ tokens and receive webhooks.
 | `NEXT_PUBLIC_SG_API_URL` | no | Browser-side SovGrant base URL for facet-sdk (`src/lib/sg/browser-client.ts`). Public - not a secret |
 | `NEXT_PUBLIC_SG_CLIENT_ID` | no | Browser-side OAuth client id for facet-sdk. Public - not a secret |
 | `SG_ISSUER` | yes | Expected `iss` claim; must match SovGrant's `JWT_ISSUER` (`src/core/auth/jwt.ts`) |
-| `SG_JWKS_URL` | no | Preferred: SovGrant JWKS (RS256). Point at a set that contains the access-token signing key (`src/core/auth/jwt.ts`) |
-| `SG_JWT_PUBLIC_KEY` | no | Interim RS256 anchor: an inline PEM or a path to one (e.g. `../sovgrant/certs/public.pem`). Used when `SG_JWKS_URL` is unset |
-| `SG_JWT_SECRET` | no (dev/e2e) | HS256 shared secret fallback when neither asymmetric anchor is set (`src/core/auth/jwt.ts`) |
+| `SG_JWKS_URL` | prod: yes | SovGrant JWKS (RS256) - the production anchor; publishes the access-token signing key with its `kid` (`src/core/auth/jwt.ts`) |
+| `SG_JWT_SECRET` | no (dev/e2e) | HS256 shared secret fallback when `SG_JWKS_URL` is unset (`src/core/auth/jwt.ts`) |
 | `SG_SERVICE_TOKEN` | yes | M2M token for server-to-server calls (`src/lib/sg/client.ts`) |
 | `SG_WEBHOOK_SECRET` | yes | HMAC signing secret for `/api/webhooks/sg` |
 
-> Three trust anchors, one seam (`verifySgToken`), resolved in order:
-> 1. **JWKS (RS256)** - the target. Set `SG_JWKS_URL` to SovGrant's published key set.
-> 2. **Pinned public key (RS256)** - the interim. Set `SG_JWT_PUBLIC_KEY` to SovGrant's
->    access-token public key (inline PEM or path). Works today against
->    `sovgrant/certs/public.pem` while JWKS is being fixed.
-> 3. **Shared secret (HS256)** - dev/e2e fallback. Only works while SovGrant also signs
+> Two trust anchors, one seam (`verifySgToken`), resolved in order:
+> 1. **JWKS (RS256)** - the production anchor. Set `SG_JWKS_URL` to SovGrant's published
+>    key set (`/api/v1/oauth/jwks`); it contains the RSA access-token signing key, whose
+>    `kid` SovGrant stamps on every RS256 token.
+> 2. **Shared secret (HS256)** - dev/e2e fallback. Only works while SovGrant also signs
 >    with HS256 (no `PRIVATE_KEY_PEM`).
 >
-> Algorithms are pinned per anchor. `SG_JWT_SECRET` must equal SovGrant's `JWT_SECRET`,
-> and `SG_WEBHOOK_SECRET` must equal SovGrant's `WEBHOOK_SIGNING_SECRET`.
->
-> **SovGrant-side blocker before JWKS works end-to-end:** its JWKS
-> (`/api/v1/oauth/jwks`) publishes the tenant VC/DID signing keys, not the RSA key that
-> signs access tokens, and access tokens carry no `kid`. Until SovGrant publishes that
-> key (and/or sets a `kid`), use `SG_JWT_PUBLIC_KEY` or the shared secret. See
-> `docs/identity-model.md` and `sovgrant/.agent/todo.txt`.
+> Algorithms are pinned per anchor, and only `token_use: "access"` tokens are accepted.
+> `SG_JWT_SECRET` must equal SovGrant's `JWT_SECRET`, and `SG_WEBHOOK_SECRET` must equal
+> SovGrant's `WEBHOOK_SIGNING_SECRET`. See `docs/identity-model.md`.
 
 ## Storage (S3-compatible: Cloudflare R2 / AWS S3 / MinIO)
 
