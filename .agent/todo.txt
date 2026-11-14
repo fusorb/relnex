@@ -1,11 +1,11 @@
 Relnex - Development Tracker
-Updated: 2026-11-13
+Updated: 2026-11-14
 Source of truth: docs/relnex-roadmap.md
 
 ================================================================================
-STATUS: Phases 0-5 and 7 complete; frontend rebuild Phases A-E done.
+STATUS: Phases 0-5 and 7 complete; frontend rebuild Phases A-E and F Slices 1-2 done.
 Repo green: docs/legacy/env/boundaries/openapi gates, lint, typecheck, test (105),
-and build pass (validated with @fusorb/facet-sdk 4.0.1). Remaining: rebuild Phases F-G.
+and build pass (validated with @fusorb/facet-sdk 4.1.0). Remaining: Phase F Slice 3, Phase G.
 ================================================================================
 
 PHASE 0 - DOCUMENTATION ........................................ [x] DONE
@@ -40,7 +40,7 @@ PHASE 5 - EDGE MIDDLEWARE ..................................... [x] DONE
   [x] Protected page prefixes gated -> redirect to /login
   [x] Edge-safe import (@/core/auth/jwt leaf, not the barrel)
 
-PHASE 6 - FRONTEND REBUILD ON FACET (A-G) .................... [~] A-E DONE
+PHASE 6 - FRONTEND REBUILD ON FACET (A-G) .................... [~] A-E, F1-F2 DONE
   [x] A. Foundation shell - facet providers (ThemeProvider/Toaster), Next
           RouterAdapter, facet LayoutConfig, LandingLayout, auth pages
           (facet-auth LoginForm over BFF), ConsoleLayout + dashboard, Relnex
@@ -57,7 +57,14 @@ PHASE 6 - FRONTEND REBUILD ON FACET (A-G) .................... [~] A-E DONE
           parent + relations + collections (one fetch for the neighborhood)
   [x] D. Graph (relation authoring + visualization)
   [x] E. Collections, tags, search (+ pg_trgm/tsvector index)
-  [ ] F. Engagement (comments, saved, profiles; route the unrouted engagements domain)
+  [~] F. Engagement & management surfaces (existing contracts)
+          [x] Slice 1: comments (read/create/replies/moderation status), saved
+              (save/unsave + /resources/saved), reactions (LIKE toggle/counts)
+              on resource detail / console nav
+          [x] Slice 2: bulk actions UI (/api/resources/bulk), collection reorder
+              UI (/api/collections/{id}/reorder), tag rename/delete/merge UI
+          [ ] Slice 3: public profile pages (/(public)/users/[username]/*) wiring
+              existing profile/resources/collections/graph/analytics/follow APIs
   [ ] G. Polish (api-docs re-skin, a11y, empty/loading/error states, proxy prefixes)
   [x] Extended proxy PROTECTED_PREFIXES (onboarding, resources, collections, graph, tags, search, settings)
 
@@ -113,26 +120,26 @@ VERIFICATION CHECKLIST (current)
       envelope ({ items, total, page, limit }) on every list endpoint; unified
       search now honours ?type=; collection reads respect visibility (404)
   [x] pnpm check:all passes (docs-sync, legacy-names, env-sync, boundaries, openapi, lint, typecheck)
+  [x] Phase F Slice 1-2 UI/hooks wired; pnpm check:all + typecheck + lint green (2026-11-14)
   [ ] Live login -> cookie -> /api/auth/me 200 (needs running SovGrant)
 
 ================================================================================
 OPEN CAPABILITY GAPS (audit - EP 24). Exposed in the API, unreachable in the product.
-===============================================================================
+===================================================================================
 Priority plan (2026-11-14): focus Phase F on wiring existing contracts first.
 
-  NOW - Phase F Slice 1 (high value, low design/API risk)
-  [ ] Comments UI: read + create (root/reply) + owner/moderation status on resource
+  DONE - Phase F Slice 1 (high value, low design/API risk) (2026-11-14)
+  [x] Comments UI: read + create (root/reply) + owner/moderation status on resource
       detail (APIs: /api/resources/{id}/comments, /api/comments/{id}, /replies)
-  [ ] Saved/bookmarks UI: save/unsave on resource detail + saved list surface
-      (APIs: POST|DELETE /api/resources/{id}/save, GET /api/resources/saved,
-      GET /api/users/{username}/saved) — confirm toggle path/shape vs routes/OpenAPI
-  [ ] Reactions UI: LIKE toggle on resource detail (GET/POST/DELETE
+  [x] Saved/bookmarks UI: save/unsave on resource detail + saved list surface
+      (/resources/saved) (APIs: POST|DELETE /api/resources/{id}/save, GET /api/resources/saved)
+  [x] Reactions UI: LIKE toggle on resource detail (GET/POST/DELETE
       /api/resources/{id}/reactions) + counts/state
 
-  NOW - Phase F Slice 2 (management UX, moderate complexity)
-  [ ] Bulk actions UI on resources list (POST /api/resources/bulk)
-  [ ] Collection reorder UI (POST /api/collections/{id}/reorder)
-  [ ] Tag management UI: rename/delete/merge on tags page (APIs live per EP 26)
+  DONE - Phase F Slice 2 (management UX, moderate complexity) (2026-11-14)
+  [x] Bulk actions UI on resources list (POST /api/resources/bulk)
+  [x] Collection reorder UI (POST /api/collections/{id}/reorder)
+  [x] Tag management UI: rename/delete/merge on tags page (APIs live per EP 26)
 
   NOW - Phase F Slice 3 (public/identity surfaces, design decisions)
   [ ] Public profile pages (/(public)/users/[username]/*) wiring existing
@@ -159,9 +166,9 @@ Priority plan (2026-11-14): focus Phase F on wiring existing contracts first.
       asserted; likes counter kept honest (adjustMetric +/-1)
   [x] TAGS MANAGED (EP 26): PATCH /api/tags/{id} (rename), DELETE, POST merge
   [x] Archive/unarchive: owner-only POST + DELETE /resources/{id}/archive (EP 28)
+  [x] Phase F Slice 1: comments/saved/reactions UI + Saved page/nav (EP 29)
+  [x] Phase F Slice 2: bulk actions, collection reorder, tag management UI (EP 29)
 
 Note: /api/search/{resources,collections,users,tags} are exposed but unused by the
 console (the unified /api/search supersedes them) - not a gap, just extra surface.
-===============================================================================
-  [x] Extended proxy coverage for all protected prefixes=
-(legacy items consolidated into prioritized plan above)
+===================================================================================

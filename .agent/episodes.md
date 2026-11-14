@@ -925,3 +925,47 @@ Lesson:
   Prefer additive, owner-checked state transitions and fire-and-forget telemetry that
   cannot break reads; document the contract (OpenAPI) in the same change. Auth anchor
   activation (JWKS) is config+verification once SG publishes the right key.
+
+================================================================================
+EP 29 - PHASE F SLICES 1-2: ENGAGEMENT + MANAGEMENT UI (2026-11-14)
+================================================================================
+
+What happened:
+  Phase F was advanced in two validated slices, wiring existing API contracts
+  (no route/schema/OpenAPI changes) into the facet-based console UI.
+
+Slice 1 (comments, saved, reactions):
+  - Resource detail (`/resources/[id]`) gained Like (toggle) and Save actions for
+    onboarded viewers, likes/saves counts, and a discussion surface (root comment,
+    replies, lazy reply loading, owner/author moderation status updates).
+  - Added `/resources/saved` console page and a "Saved" Workspace nav entry.
+  - Hooks/components: `use-reactions`, `use-saved`, `use-comments`,
+    `resource-comments.tsx`; mutations invalidate relevant resource/query caches.
+  - `pnpm-workspace.yaml` unrecognized `permissions`/`skills` blocks removed so
+    pnpm 12.6.0 (pinned via `packageManager`) could run scripts/gates again.
+  - Commits: e27c443 (feat), f64ccb8/b98ae9d (lint/type fixes).
+
+Slice 2 (management UX):
+  - Resources list: selection, "select page", bulk archive/delete with confirm and
+    feedback via `POST /api/resources/bulk`.
+  - Collection detail: item reorder (move up/down) with dirty/reset/save posting
+    ordered IDs to `POST /api/collections/{id}/reorder`.
+  - Tags page: rename, delete, and merge actions via `PATCH/DELETE /api/tags/{id}`
+    and `POST /api/tags/{id}/merge`.
+  - Hooks: `use-resources`, `use-collections`, `use-tags` extended for mutations.
+  - Commit: 87ecc9d.
+
+Dependency follow-up:
+  - `@fusorb/facet-store` bumped ^1.0.6 -> ^1.1.0 (manifest/lock synced) and
+    `@fusorb/facet-store` added to `minimumReleaseAgeExclude` in
+    `pnpm-workspace.yaml` (commits eba500b, 87ecc9d context).
+
+Validations:
+  - `pnpm check:all` (docs/legacy/env/boundaries/openapi, lint, typecheck) green
+    during the work; follow-up lint/type fixes committed before final green state.
+
+State:
+  Repo green; Phase F Slices 1-2 done. Remaining: Phase F Slice 3 (public profile
+  pages wiring `/api/users/[username]/*` with visibility semantics) and Phase G
+  polish. Env-dependent JWKS activation/e2e and deferred items (version
+  restore/rollback, broader usage telemetry UI, webhook refactor) unchanged.
