@@ -4,15 +4,15 @@ import Link from "next/link";
 import { PageHeader } from "@fusorb/facet-layout";
 import { Badge, Button, EmptyState, Icon, Skeleton } from "@fusorb/facet-components";
 import { requiresOnboarding, useMe } from "@/hooks/use-me";
-import { useSavedResources } from "@/hooks/use-saved";
+import { useSavedResources, type SavedResourceEntry } from "@/hooks/use-saved";
 
-function pickResource(entry: any) {
+function pickResource(entry: SavedResourceEntry | null | undefined) {
   return entry?.resource ?? entry;
 }
 
 export default function SavedResourcesPage() {
   const { data: me, isLoading: meLoading } = useMe();
-  const isAuthed = !requiresOnboarding(me) && Boolean((me as any)?.id);
+  const isAuthed = !requiresOnboarding(me) && Boolean((me as { id?: string } | null)?.id);
   const { data, isLoading, isError } = useSavedResources(isAuthed);
 
   if (meLoading) {
@@ -42,7 +42,7 @@ export default function SavedResourcesPage() {
     <div className="space-y-6">
       <PageHeader
         title="Saved"
-        description="Resources you’ve bookmarked for quick access."
+        description="Resources you've bookmarked for quick access."
       />
 
       {isLoading ? (
