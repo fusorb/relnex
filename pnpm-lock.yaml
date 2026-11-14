@@ -185,8 +185,8 @@ importers:
         specifier: 4.1.0
         version: 4.1.0
       '@fusorb/facet-store':
-        specifier: ^1.0.6
-        version: 1.0.6(@fusorb/facet-sdk@4.1.0)(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.7.0(react@19.2.6))
+        specifier: ^1.1.0
+        version: 1.1.0(@fusorb/facet-sdk@4.1.0)(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.7.0(react@19.2.6))
       '@fusorb/facet-tokens':
         specifier: ^1.5.1
         version: 1.5.1
@@ -551,11 +551,11 @@ packages:
     resolution: {integrity: sha512-GhG7wvacQm0Z06bhyvZZ52ZdqWF+KgamXcn1ogkFddgopr9HEswJX3e1X1ak23jpSVHdupUltxSVzKjrY78BeQ==}
     engines: {node: '>=20'}
 
-  '@fusorb/facet-store@1.0.6':
-    resolution: {integrity: sha512-kFi/GopMO6eIl35ZEAIYlCxQcFxlTf7HSNF3WZwn+X9+aU5/udlt7tA/uJ71V+DPDKI+YcnuG8xzCv2HEQz16A==}
+  '@fusorb/facet-store@1.1.0':
+    resolution: {integrity: sha512-Tsw1+YqCzPYOSXsVF8Ahd/Jm1pnMekHzl0xwZHkaDQ4QzNqb2q8U3QHPYhPDWgJiDL/zXNvz+6epqAY9SfsfHA==}
     engines: {node: '>=22'}
     peerDependencies:
-      '@fusorb/facet-sdk': ^4.0.0
+      '@fusorb/facet-sdk': ^4.1.0
 
   '@fusorb/facet-tokens@1.5.1':
     resolution: {integrity: sha512-cQMiJHYeEAmOcATfTbbsnGZ3/C0WewTN7kgE8NrK/Qabwlq/QcmdmhJR5QpLucTclA38RjrHCJ/mVvXgmiF8Fg==}
@@ -5433,7 +5433,7 @@ snapshots:
 
   '@fusorb/facet-sdk@4.1.0': {}
 
-  '@fusorb/facet-store@1.0.6(@fusorb/facet-sdk@4.1.0)(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.7.0(react@19.2.6))':
+  '@fusorb/facet-store@1.1.0(@fusorb/facet-sdk@4.1.0)(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.7.0(react@19.2.6))':
     dependencies:
       '@fusorb/facet-sdk': 4.1.0
       zustand: 5.0.16(@types/react@19.2.15)(react@19.2.6)(use-sync-external-store@1.7.0(react@19.2.6))

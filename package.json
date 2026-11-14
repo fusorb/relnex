@@ -35,7 +35,7 @@
     "@fusorb/facet-components": "^3.2.2",
     "@fusorb/facet-layout": "^1.7.2",
     "@fusorb/facet-sdk": "4.1.0",
-    "@fusorb/facet-store": "^1.0.6",
+    "@fusorb/facet-store": "^1.1.0",
     "@fusorb/facet-tokens": "^1.5.1",
     "@hookform/resolvers": "^5.2.2",
     "@prisma/adapter-pg": "^7.5.0",
