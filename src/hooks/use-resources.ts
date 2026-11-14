@@ -2,7 +2,7 @@
 
 // Resource listing hooks. Mirrors the API shapes from
 // domains/resources/resources.presenter.ts (ResourceListResponse).
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/useful/api-client";
 
 export interface ResourceListItem {
@@ -73,5 +73,30 @@ export function useResources(filters: ResourceFilters = {}) {
     queryKey: resourceQueryKey(filters),
     queryFn: async (): Promise<ResourceListResponse> =>
       (await apiClient<ApiEnvelope<ResourceListResponse>>(`/api/resources?${toQuery(filters)}`)).data,
+  });
+}
+
+export interface BulkResult {
+  successful: string[];
+  failed: { id: string; error: string }[];
+}
+
+interface BulkEnvelope {
+  success: boolean;
+  message?: string;
+  data: BulkResult;
+}
+
+export function useBulkResources() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { ids: string[]; action: "DELETE" | "ARCHIVE" }): Promise<BulkEnvelope> =>
+      apiClient<BulkEnvelope>("/api/resources/bulk", {
+        method: "POST",
+        bodyData: input,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["resources"] });
+    },
   });
 }

@@ -183,3 +183,20 @@ export function useRemoveResourceFromCollection(collectionId: string) {
     },
   });
 }
+
+export function useReorderCollection(collectionId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (orderedItemIds: string[]): Promise<unknown> =>
+      (
+        await apiClient<ApiEnvelope<unknown>>(`/api/collections/${collectionId}/reorder`, {
+          method: "POST",
+          bodyData: { orderedItemIds },
+        })
+      ).data,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: collectionKey(collectionId) });
+      queryClient.invalidateQueries({ queryKey: ["collections"] });
+    },
+  });
+}
