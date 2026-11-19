@@ -3,30 +3,57 @@ import { prisma } from "@/core/db";
 import { createHash, createHmac, timingSafeEqual } from "crypto";
 
 /**
- * Sg -> Relnex webhook handler.
+ * SovGrant -> Relnex webhook handler.
  * Mounted at: POST /api/webhooks/sg
  *
- * Sg sends lifecycle events (IDENTITY_SUSPENDED, IDENTITY_DELETED etc.)
- * via its WebhookEvent outbox. This handler keeps the Relnex User in sync.
+ * SovGrant sends lifecycle events via its WebhookEvent outbox/worker. This
+ * handler keeps the Relnex User in sync.
  *
  * Secured by HMAC-SHA256 signature verification and made idempotent by an
  * event ledger, so redelivered or out-of-order events are processed at most once.
+ *
+ * Accepts two signature schemes for compatibility:
+ *  - Worker scheme (current): X-SovGrant-Signature = sha256=HMAC(secret, `${ts}.${body}`)
+ *    with X-SovGrant-Timestamp (replay-resistant).
+ *  - Legacy scheme: x-sg-signature = sha256=HMAC(secret, body).
  */
 
-const WEBHOOK_SECRET = process.env.SG_WEBHOOK_SECRET!;
+const WEBHOOK_SECRET =
+  process.env.SG_WEBHOOK_SECRET ?? process.env.WEBHOOK_SIGNING_SECRET;
 
-function verifySignature(body: string, signature: string): boolean {
-  const expected = createHmac("sha256", WEBHOOK_SECRET)
-    .update(body)
-    .digest("hex");
+function safeEqual(a: string, b: string): boolean {
   try {
-    return timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(`sha256=${expected}`)
-    );
+    const ab = Buffer.from(a);
+    const bb = Buffer.from(b);
+    if (ab.length !== bb.length) return false;
+    return timingSafeEqual(ab, bb);
   } catch {
     return false;
   }
+}
+
+function verifySignature(
+  body: string,
+  signature: string,
+  timestamp?: string | null,
+): boolean {
+  if (!WEBHOOK_SECRET || !signature) return false;
+
+  // Current SovGrant worker: sha256=HMAC(secret, `${timestamp}.${body}`)
+  if (timestamp) {
+    const expected =
+      "sha256=" +
+      createHmac("sha256", WEBHOOK_SECRET)
+        .update(`${timestamp}.${body}`)
+        .digest("hex");
+    if (safeEqual(signature, expected)) return true;
+  }
+
+  // Legacy/internal: sha256=HMAC(secret, body)
+  const legacy =
+    "sha256=" +
+    createHmac("sha256", WEBHOOK_SECRET).update(body).digest("hex");
+  return safeEqual(signature, legacy);
 }
 
 interface SgWebhookBody {
@@ -38,9 +65,13 @@ interface SgWebhookBody {
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
-  const signature = req.headers.get("x-sg-signature") ?? "";
+  const signature =
+    req.headers.get("x-sovgrant-signature") ??
+    req.headers.get("x-sg-signature") ??
+    "";
+  const timestamp = req.headers.get("x-sovgrant-timestamp");
 
-  if (!verifySignature(rawBody, signature)) {
+  if (!verifySignature(rawBody, signature, timestamp)) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 

@@ -26,7 +26,10 @@ import { ApiError } from "@/lib/errors/api-error";
 // ("access" / "id") because the ID token is signed with the same key, and a
 // valid signature alone must not let an ID token act as a bearer credential.
 
-const issuer = () => process.env.SG_ISSUER ?? "sovgrant";
+const issuer = () =>
+  process.env.SG_ISSUER ??
+  process.env.SG_API_URL ??
+  "http://localhost:4000";
 
 /** Resolved once; jose caches the remote key set internally. */
 let remoteJwks: JWTVerifyGetKey | null = null;
